@@ -148,7 +148,14 @@
    "sec": "health",
    "urls": [
     "https://suckhoedoisong.vn/y-te.rss",
-    "https://suckhoedoisong.vn/chinh-sach.rss",
+    "https://suckhoedoisong.vn/chinh-sach.rss"
+   ]
+  },
+  {
+   "id": "skds-ts",
+   "lang": "vi",
+   "sec": null,
+   "urls": [
     "https://suckhoedoisong.vn/thoi-su.rss"
    ]
   },
@@ -409,8 +416,7 @@
    "mua sắm tập trung",
    "tender",
    "procurement",
-   "bidding",
-   "bid"
+   "bidding"
   ],
   "health_policy": [
    "nghị định",
@@ -628,7 +634,13 @@
    "eye surgery",
    "cataract",
    "retina",
-   "myopia"
+   "myopia",
+   "lasik",
+   "phẫu thuật khúc xạ",
+   "mổ cận",
+   "nearsighted",
+   "refractive",
+   "khúc xạ"
   ],
   "surgery": [
    "phẫu thuật",
@@ -729,6 +741,18 @@
    "what causes",
    "symptoms",
    "signs of"
+  ],
+  "crime": [
+   "mức án",
+   "bị cáo",
+   "xét xử",
+   "phạt tù",
+   "năm tù",
+   "tạm giam",
+   "truy tố",
+   "lừa đảo",
+   "đường dây",
+   "án tù"
   ]
  },
  "internal": {

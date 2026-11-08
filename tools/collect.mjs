@@ -38,7 +38,7 @@ export function classify(it, feed) {
   let sec = Object.entries(sc).sort((a, b) => b[1] - a[1])[0];
   if (sec[1] <= 0) return null;
   if (health >= 2 || spec || (feed.sec === 'health' && health >= 1)) sec = ['health', Math.max(sc.health, 2)];   // kênh y tế nhưng bài không nói về y tế ⇒ xếp theo nội dung   // có nội dung y tế rõ ⇒ mảng Y tế
-  const crime = count(n, CRIME) > 0;
+  const crime = count(n, CRIME) > 0 || count(nt, KW.crime || []) > 0;
   const tags = [];
   if (sec[0] === 'health' && !crime) { for (const [t, k] of TAGK) if (count(n, KW[k])) tags.push(t); }
   else { if (count(n, KW.public_invest)) tags.push('invest'); if (count(n, KW.market)) tags.push('market'); }
