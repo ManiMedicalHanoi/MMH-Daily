@@ -263,7 +263,6 @@ async function main() {
       try { console.log(`Dịch máy: ${await translateStories(list)}/${list.length} tin`); } catch (e) { console.log('Bỏ qua dịch máy: ' + e.message); }
     }
     templateWrite(ed, picked);
-    for (const x of [...Object.values(picked.sections).flat(), ...picked.cand]) if (!x.why && x.tags?.length && (x.sec === 'health' || x.tags.includes('market'))) x.why = whyOf(x);
     if (process.env.DAILY_MT !== '0') {
       try {
         const { out, ok } = await translate(ed.podcast.turns.map(t => t.text), 'en', 'vi');

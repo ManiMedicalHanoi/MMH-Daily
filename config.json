@@ -640,7 +640,12 @@
    "mổ cận",
    "nearsighted",
    "refractive",
-   "khúc xạ"
+   "khúc xạ",
+   "sụp mi",
+   "mí mắt",
+   "mắt trẻ em",
+   "nhãn áp",
+   "tái cận"
   ],
   "surgery": [
    "phẫu thuật",
@@ -670,7 +675,6 @@
    "hospital fees"
   ],
   "market": [
-   "nhật bản",
    "đồng yên",
    "yên nhật",
    "tỷ giá",
@@ -681,9 +685,6 @@
    "bệnh viện tư",
    "đầu tư bệnh viện",
    "chuỗi phòng khám",
-   "japan",
-   "japanese",
-   "yen",
    "exchange rate",
    "import",
    "imports",
@@ -692,7 +693,9 @@
    "private hospital",
    "private healthcare",
    "healthcare market",
-   "medtech"
+   "medtech",
+   "đồng yên",
+   "yên nhật"
   ],
   "case": [
    "bé trai",
@@ -752,7 +755,66 @@
    "truy tố",
    "lừa đảo",
    "đường dây",
-   "án tù"
+   "án tù",
+   "giả mạo",
+   "trục lợi",
+   "lừa",
+   "bắt",
+   "khởi tố",
+   "giám định tâm thần"
+  ],
+  "japan": [
+   "nhật bản",
+   "japan",
+   "japanese",
+   "jica"
+  ],
+  "biz": [
+   "kinh tế",
+   "thương mại",
+   "đầu tư",
+   "doanh nghiệp",
+   "xuất khẩu",
+   "nhập khẩu",
+   "fdi",
+   "chuỗi cung ứng",
+   "hợp tác kinh tế",
+   "y tế",
+   "economic",
+   "economy",
+   "trade",
+   "investment",
+   "business",
+   "supply chain",
+   "healthcare",
+   "medical"
+  ],
+  "health_anchor": [
+   "y tế",
+   "bộ y tế",
+   "bệnh viện",
+   "khám chữa bệnh",
+   "khám bệnh",
+   "chữa bệnh",
+   "bảo hiểm y tế",
+   "bhyt",
+   "dược",
+   "thuốc",
+   "thiết bị y tế",
+   "vật tư y tế",
+   "nha khoa",
+   "nhãn khoa",
+   "phòng khám",
+   "bác sĩ",
+   "người bệnh",
+   "giá dịch vụ",
+   "health",
+   "hospital",
+   "medical",
+   "pharmaceutical",
+   "drug",
+   "clinic",
+   "ministry of health"
   ]
  },
  "internal": {

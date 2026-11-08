@@ -75,7 +75,6 @@
     let out = '';
     if (S.lang === 'en') { if (en) out += `<p class="sum">${esc(en)}</p>`; else if (vi) out += `<p class="sum">${esc(vi)}</p>`; }
     else { if (vi) out += `<p class="sum">${esc(vi)}</p>`; if (en && opt.both) out += `<p class="sum en">${esc(en)}</p>`; else if (!vi && en) out += `<p class="sum en">${esc(en)}</p>`; }
-    if (x.why && opt.why !== false) out += `<div class="why"><b>Vì sao quan trọng:</b> ${esc(x.why)}</div>`;
     return out;
   }
   const link = (x, inner) => `<a href="${esc(x.u)}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
@@ -495,7 +494,7 @@
   function adminBox(missing) {
     const same = IN.idx?.kid && IN.idx.kid === IN.kid;
     return `<details class="in-admin"${missing || !same ? ' open' : ''}><summary>Thiết lập (Admin)</summary>
-      <p>${same ? 'Khoá trên máy chủ khớp với khoá GitHub đang dùng.' : 'GitHub chưa có khoá này. Chép khoá dưới đây vào <b>Settings ▸ Secrets and variables ▸ Actions ▸ New repository secret</b> của kho MMH Daily, tên <code>DAILY_INTERNAL_KEY</code>, rồi chạy lại workflow.'}</p>
+      <p>${same ? 'Khoá trên máy chủ khớp với khoá GitHub đang dùng.' : (IN.idx?.kid ? 'Khoá trên GitHub KHÁC khoá máy chủ (khoá đã đổi). ' : 'Chưa có bản tin nào được mã hoá nên chưa kiểm được khoá trên GitHub. ') + 'Nếu chưa làm: chép khoá dưới đây vào <b>Settings ▸ Secrets and variables ▸ Actions ▸ New repository secret</b> của kho MMH-Daily, tên <code>DAILY_INTERNAL_KEY</code>. Sau đó bấm <b>Tạo bản tin tuần này</b> — bản tin đầu tiên tạo xong là khoá được xác nhận.'}</p>
       ${same ? '' : `<div class="in-key"><code id="in-k">${esc(IN.key)}</code><button class="in-btn" type="button" id="in-copy">Chép khoá</button></div><p class="in-small">Mã nhận diện: ${esc(IN.kid)}. Không gửi khoá qua chat / email.</p>`}</details>`;
   }
   async function internalPage() {
@@ -519,7 +518,11 @@
     catch (e) { $('#view').innerHTML = loginHtml(e.message); wireLogin(); return; }
     if (!IN.idx) { try { IN.idx = await (await fetch('data/internal/index.json?t=' + Date.now(), { cache: 'no-store' })).json(); } catch { IN.idx = { weeks: [] }; } }
     const want = location.hash.split('/')[2] || IN.idx.weeks?.[0]?.date;
-    if (!want) { $('#view').innerHTML = `<div class="in"><div class="empty">Bản tin nội bộ đầu tiên sẽ có vào tối Chủ nhật.</div>${IN.admin ? adminBox(true) : ''}</div>`; wireAdmin(); return; }
+    if (!want) {
+      $('#view').innerHTML = `<div class="in"><div class="empty in-first"><p>Chưa có bản tin nội bộ nào. Bản tin tự tạo lúc 19:00 Chủ nhật, hoặc tạo ngay cho tuần vừa rồi.</p>
+        <button type="button" class="u2-go" id="in-make">Tạo bản tin tuần này</button><p class="u2-small">Mất khoảng 5–20 phút. Trang tự hiện bản tin khi xong.</p></div>${IN.admin ? adminBox(true) : ''}</div>`;
+      wireAdmin(); $('#in-make').onclick = () => window.MMHUpdate?.open({ kind: 'weekly' }); return;
+    }
     let ed;
     try { ed = await loadInEd(want); } catch (e) { $('#view').innerHTML = `<div class="in"><div class="empty">${esc(e.message)}${IN.idx.kid && IN.idx.kid !== IN.kid ? ' — khoá đã đổi, Admin cần cập nhật khoá trên GitHub.' : ''}</div>${IN.admin ? adminBox(true) : ''}</div>`; wireAdmin(); return; }
     S.cur = ed;

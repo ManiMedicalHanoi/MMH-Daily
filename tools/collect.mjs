@@ -37,11 +37,22 @@ export function classify(it, feed) {
   };
   let sec = Object.entries(sc).sort((a, b) => b[1] - a[1])[0];
   if (sec[1] <= 0) return null;
-  if (health >= 2 || spec || (feed.sec === 'health' && health >= 1)) sec = ['health', Math.max(sc.health, 2)];   // kênh y tế nhưng bài không nói về y tế ⇒ xếp theo nội dung   // có nội dung y tế rõ ⇒ mảng Y tế
+  // Y tế: tiêu đề nói về y tế / nha khoa / nhãn khoa, hoặc nội dung nhắc nhiều (≥ 3). Kênh y tế mà tiêu đề không có từ y tế ⇒ xếp theo nội dung
+  const hTitle = count(nt, CFG.health_core) + count(nt, KW.dental) + count(nt, KW.eye);
+  if (hTitle || spec >= 2 || health >= 4 || (feed.sec === 'health' && health >= 3)) sec = ['health', Math.max(sc.health, 2)];
+  else if (sec[0] === 'health') { const rest = Object.entries(sc).filter(([k]) => k !== 'health').sort((a, b) => b[1] - a[1])[0]; if (rest[1] <= 0) return null; sec = rest; }   // có nội dung y tế rõ ⇒ mảng Y tế
   const crime = count(n, CRIME) > 0 || count(nt, KW.crime || []) > 0;
   const tags = [];
-  if (sec[0] === 'health' && !crime) { for (const [t, k] of TAGK) if (count(n, KW[k])) tags.push(t); }
-  else { if (count(n, KW.public_invest)) tags.push('invest'); if (count(n, KW.market)) tags.push('market'); }
+  const anchor = count(nt, KW.health_anchor) + count(nt, KW.dental) + count(nt, KW.eye) > 0;   // tiêu đề nói về ngành y
+  const japanBiz = count(n, KW.japan) > 0 && count(n, KW.biz) > 0;                               // Nhật Bản + kinh tế / y tế ⇒ thị trường
+  if (sec[0] === 'health' && !crime) {
+    for (const [t, k] of TAGK) {
+      if (t === 'policy') { if (anchor && count(nt, KW[k])) tags.push(t); continue; }                         // chính sách: tiêu đề phải nói về ngành y
+      if (t === 'tender' || t === 'device' || t === 'insurance') { if (count(nt, KW[k]) || (anchor && count(n, KW[k]))) tags.push(t); continue; }
+      if (t === 'market') { if (count(n, KW.market) || japanBiz) tags.push(t); continue; }
+      if (count(n, KW[k])) tags.push(t);
+    }
+  } else if (!crime) { if (count(n, KW.public_invest)) tags.push('invest'); if (count(n, KW.market) || japanBiz) tags.push('market'); }
   const docs = findDocs(it.title + ' ' + it.desc, NOW).map(d => d.no);
   if (docs.length && !tags.includes('policy')) tags.push('policy');
   // liên quan MMH: tổng trọng số nhãn (tối đa 9); tin ca bệnh / tai nạn không có góc kinh doanh ⇒ trừ điểm

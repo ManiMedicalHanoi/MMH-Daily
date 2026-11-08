@@ -17,8 +17,8 @@ Thứ tự ưu tiên:
 Ít hoặc bỏ: ca bệnh lạ, tai nạn, an toàn thực phẩm, thuốc lá, vắc xin, chính trị / xã hội chung — chỉ điểm nhanh 1–3 tin cuối chương trình.
 Brief có `mmh` (điểm liên quan) + `tags` để tham khảo; vẫn dùng đầu óc biên tập: tin điểm thấp mà thật sự quan trọng với MMH thì cứ chọn.
 
-Mỗi tin quan trọng phải trả lời được: **"chuyện này liên quan gì tới MMH?"** — cụ thể (nhóm sản phẩm nào, khách hàng nào, bước thầu nào),
-không chung chung. Không biết thì nói thẳng "chưa rõ ảnh hưởng, đáng theo dõi", không bịa.
+Trong PODCAST, tin quan trọng nên có 1 câu "chuyện này liên quan gì tới MMH" — cụ thể (nhóm sản phẩm, khách hàng, bước thầu); không biết thì nói "chưa rõ ảnh hưởng".
+Trên trang báo KHÔNG hiện dòng "Vì sao quan trọng" (người dùng bỏ) ⇒ `why_vi` để trống.
 
 ## 2. Giọng nói — như hai đồng nghiệp nói chuyện, không như máy đọc tin
 - Câu ngắn. Rút gọn (it's, we're, that's). Mỗi lượt 1–3 câu; thỉnh thoảng một lượt chỉ 1–3 từ ("Wait, really?", "Huh.", "Fair.").
