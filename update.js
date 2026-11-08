@@ -188,14 +188,15 @@
       sel.off = t.checked ? sel.off.filter(d => !doms.includes(d)) : [...new Set([...sel.off, ...doms])]; save(); paint(); wire(); }
   });
 
-  async function open() {
+  async function open(o) {
+    if (o && o.kind) { sel.kind = o.kind; save(); }
     dlg.hidden = false;
     box.innerHTML = '<p class="u2-small">Đang tải…</p>';
     await Promise.all([loadSrc(), loadFlags()]);
     paint(); wire();
   }
   const btn = $('#upd-btn');
-  btn.onclick = open;                          // thay hộp cũ (chỉ có link) bằng bảng chọn
+  btn.onclick = () => open();                          // thay hộp cũ (chỉ có link) bằng bảng chọn
   window.MMHUpdate = { open };
   if (running) { if (Date.now() - running.at < 60 * 60e3) watch(); else { running = null; store.set('mmh_daily_run', null); } }
 })();

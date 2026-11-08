@@ -472,3 +472,5 @@ html.lrn-on,html.lrn-on body{overflow:hidden}
 .gd-dots{display:flex;justify-content:center;gap:6px;margin:4px 0}
 .gd-dots button{width:8px;height:8px;border-radius:50%;border:0;background:var(--hair);padding:0;cursor:pointer}.gd-dots button.on{background:var(--ink);width:20px;border-radius:99px}
 .gd .u2-ft{text-align:left}
+.in-first{display:grid;gap:12px;justify-items:center;text-align:center;font-style:normal}
+.in-first p{margin:0;max-width:46ch}
