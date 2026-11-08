@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MMH Daily</title>
+<meta name="description" content="Tờ báo buổi sáng của MMH: y tế (đấu thầu, chính sách, đầu tư công, bệnh viện), kinh tế, chính trị, xã hội Việt Nam — kèm podcast tiếng Anh mỗi ngày.">
+<meta name="theme-color" content="#FBF9F4">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MMH Daily">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css?v=3">
+</head>
+<body>
+<div id="app">
+  <header class="mast" id="mast">
+    <div class="mast-top">
+      <span id="m-date"></span>
+      <span class="mast-mid" id="m-no"></span>
+      <span class="mast-r"><button class="inst-btn" id="inst-btn" type="button" hidden title="Cài MMH Daily thành ứng dụng trên máy này"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Cài app</button> <button class="upd-btn" id="upd-btn" type="button" title="Tổng hợp bản tin mới ngay bây giờ">Tổng hợp ngay</button> <button class="lang" id="lang" type="button" aria-label="Đổi ngôn ngữ tiêu đề">EN · VI</button></span>
+    </div>
+    <a class="logo" href="#/" aria-label="MMH Daily — trang nhất">MMH Daily</a>
+    <div class="tagline">Health · Economy · Politics · Society — Vietnam, every morning</div>
+    <nav class="nav" id="nav" aria-label="Chuyên mục">
+      <a href="#/" data-r="front">Trang nhất</a>
+      <a href="#/s/health" data-r="health">Y tế</a>
+      <a href="#/s/economy" data-r="economy">Kinh tế</a>
+      <a href="#/s/politics" data-r="politics">Chính trị</a>
+      <a href="#/s/society" data-r="society">Xã hội</a>
+      <a href="#/docs" data-r="docs">Văn bản</a>
+      <a href="#/listen" data-r="listen" class="nav-listen">Nghe podcast</a>
+      <a href="#/archive" data-r="archive">Số cũ</a>
+      <a href="#/noibo" data-r="noibo" class="nav-in">Nội bộ</a>
+    </nav>
+  </header>
+  <main id="view" tabindex="-1"></main>
+  <footer class="foot" id="foot"></footer>
+</div>
+
+<div class="mini" id="mini" hidden>
+  <button class="mini-cover" id="mini-open" type="button" aria-label="Mở trang nghe"></button>
+  <div class="mini-meta"><b id="mini-t"></b><span id="mini-s"></span></div>
+  <button class="mini-btn" id="mini-back" type="button" aria-label="Lùi 15 giây"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z" fill="currentColor"/><text x="12" y="16.5" font-size="6.5" text-anchor="middle" fill="currentColor" font-family="Inter" font-weight="700">15</text></svg></button>
+  <button class="mini-play" id="mini-play" type="button" aria-label="Phát"></button>
+  <button class="mini-btn" id="mini-fwd" type="button" aria-label="Tới 15 giây"><svg viewBox="0 0 24 24"><path d="M12 5V2l5 4-5 4V7a6 6 0 1 0 6 6h2a8 8 0 1 1-8-8z" fill="currentColor"/><text x="12" y="16.5" font-size="6.5" text-anchor="middle" fill="currentColor" font-family="Inter" font-weight="700">15</text></svg></button>
+  <div class="mini-bar" id="mini-bar"><i id="mini-prog"></i></div>
+</div>
+<audio id="audio" preload="metadata"></audio>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="dlg" id="upd-dlg" hidden role="dialog" aria-modal="true" aria-labelledby="upd-h"><div class="dlg-box">
+  <h2 id="upd-h">Tổng hợp bản tin ngay</h2>
+  <p class="dlg-sub">Chạy bất kỳ lúc nào, không cần chờ lịch. Xong việc trang tự hiện số mới.</p>
+  <div class="dlg-opt"><div><b>Claude viết</b><span>Mở phiên Claude Code (dùng gói thuê bao, không tốn API) — bấm <i>Run now</i> trên trang mở ra. Khoảng 10–20 phút.</span></div>
+    <div class="dlg-row"><a class="dlg-a" id="upd-claude-daily" target="_blank" rel="noopener">Tin y tế &amp; thời sự</a><a class="dlg-a" id="upd-claude-week" target="_blank" rel="noopener">Bản tin nội bộ</a></div></div>
+  <div class="dlg-opt"><div><b>Bản tự động miễn phí</b><span>Chạy trên GitHub (bấm <i>Run workflow</i>). Khoảng 5 phút, tin dịch máy + giọng đọc miễn phí.</span></div>
+    <div class="dlg-row"><a class="dlg-a" id="upd-gh" target="_blank" rel="noopener">Chạy trên GitHub</a></div></div>
+  <p class="dlg-wait" id="upd-wait" hidden>Đang chờ số mới… trang tự kiểm tra mỗi phút.</p>
+  <div class="dlg-ft"><button type="button" id="upd-close" class="dlg-x">Đóng</button></div>
+</div></div>
+<div class="dlg" id="inst-dlg" hidden role="dialog" aria-modal="true" aria-labelledby="inst-h"><div class="dlg-box inst">
+  <div class="inst-top"><img src="icons/icon-192.png" alt="" width="64" height="64"><div><h2 id="inst-h">Cài MMH Daily</h2><p class="dlg-sub">Có biểu tượng trên màn hình chính, mở như một ứng dụng, không cần tìm link.</p></div></div>
+  <ol class="inst-steps" id="inst-steps"></ol>
+  <div class="dlg-ft"><button type="button" id="inst-close" class="dlg-x">Đã hiểu</button></div>
+</div></div>
+<script>
+/* Cấu hình: link Routine (claude.ai/code/routines/…) + kho GitHub. demo = bản xem thử (bản tin nội bộ dữ liệu giả, không cần đăng nhập). */
+window.DAILY_CFG = window.DAILY_CFG || {
+  repo: 'ManiMedicalHanoi/MMH-Daily',
+  routines: { daily: 'https://claude.ai/code/routines', weekly: 'https://claude.ai/code/routines' },
+  demo: false
+};
+</script>
+<script src="app.js?v=3"></script>
+<script src="install.js?v=1"></script>
+</body>
+</html>

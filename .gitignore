@@ -1,0 +1,7 @@
+node_modules/
+_site/
+data/pool.json
+__pycache__/
+audio/*
+!audio/2026-11-08.mp3
+!audio/2026-11-09.mp3

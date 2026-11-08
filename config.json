@@ -1,0 +1,763 @@
+{
+ "_ghi_chu": "MMH Daily — nguồn tin + từ khoá. Ưu tiên tin ảnh hưởng tới kinh doanh MMH: nha khoa, nhãn khoa, phẫu thuật, thiết bị / vật tư y tế, đấu thầu, BHYT, chính sách Bộ Y tế, bệnh viện, thị trường (Nhật Bản, tỷ giá, nhập khẩu). Tin chung về kinh tế / chính trị / xã hội chỉ giữ ít, chọn tin liên quan.",
+ "keepDays": 4,
+ "sections": {
+  "health": {
+   "vi": "Y tế",
+   "en": "Health",
+   "quota": 14,
+   "w": 6
+  },
+  "economy": {
+   "vi": "Kinh tế",
+   "en": "Economy",
+   "quota": 5,
+   "w": 2
+  },
+  "politics": {
+   "vi": "Chính trị",
+   "en": "Politics",
+   "quota": 3,
+   "w": 0.5
+  },
+  "society": {
+   "vi": "Xã hội",
+   "en": "Society",
+   "quota": 2,
+   "w": 0
+  }
+ },
+ "trusted": {
+  "baochinhphu.vn": "Báo Chính phủ",
+  "chinhphu.vn": "Cổng TTĐT Chính phủ",
+  "moh.gov.vn": "Bộ Y tế",
+  "vanban.chinhphu.vn": "Văn bản Chính phủ",
+  "suckhoedoisong.vn": "Sức khỏe & Đời sống",
+  "nhandan.vn": "Nhân Dân",
+  "vietnamplus.vn": "VietnamPlus",
+  "vtv.vn": "VTV",
+  "vov.vn": "VOV",
+  "baodauthau.vn": "Báo Đấu thầu",
+  "vnexpress.net": "VnExpress",
+  "tuoitre.vn": "Tuổi Trẻ",
+  "thanhnien.vn": "Thanh Niên",
+  "dantri.com.vn": "Dân trí",
+  "vneconomy.vn": "VnEconomy",
+  "baodautu.vn": "Báo Đầu tư",
+  "thesaigontimes.vn": "Kinh tế Sài Gòn",
+  "laodong.vn": "Lao Động",
+  "tienphong.vn": "Tiền Phong",
+  "vietnamnet.vn": "VietNamNet",
+  "qdnd.vn": "Quân đội Nhân dân",
+  "dangcongsan.vn": "Báo Đảng Cộng sản",
+  "quochoi.vn": "Quốc hội",
+  "daibieunhandan.vn": "Đại biểu Nhân dân",
+  "baotintuc.vn": "Báo Tin tức (TTXVN)",
+  "hanoimoi.vn": "Hà Nội Mới",
+  "sggp.org.vn": "Sài Gòn Giải Phóng",
+  "nld.com.vn": "Người Lao Động",
+  "plo.vn": "Pháp luật TP.HCM",
+  "luatvietnam.vn": "Luật Việt Nam",
+  "mof.gov.vn": "Bộ Tài chính",
+  "sbv.gov.vn": "Ngân hàng Nhà nước",
+  "gso.gov.vn": "Tổng cục Thống kê",
+  "nso.gov.vn": "Cục Thống kê",
+  "e.vnexpress.net": "VnExpress International",
+  "tuoitrenews.vn": "Tuoi Tre News",
+  "en.vietnamplus.vn": "VietnamPlus English",
+  "vietnamnews.vn": "Viet Nam News",
+  "vir.com.vn": "Vietnam Investment Review",
+  "theinvestor.vn": "The Investor",
+  "en.nhandan.vn": "Nhan Dan English",
+  "english.vov.vn": "VOV English",
+  "english.thesaigontimes.vn": "The Saigon Times",
+  "hanoitimes.vn": "Hanoi Times",
+  "vietnam-briefing.com": "Vietnam Briefing",
+  "reuters.com": "Reuters",
+  "bloomberg.com": "Bloomberg",
+  "asia.nikkei.com": "Nikkei Asia",
+  "ft.com": "Financial Times",
+  "apnews.com": "AP News",
+  "bbc.com": "BBC",
+  "cnbc.com": "CNBC",
+  "scmp.com": "South China Morning Post",
+  "thediplomat.com": "The Diplomat",
+  "who.int": "WHO",
+  "worldbank.org": "World Bank",
+  "adb.org": "ADB"
+ },
+ "feeds": [
+  {
+   "id": "bcp-yt",
+   "lang": "vi",
+   "sec": "health",
+   "urls": [
+    "https://baochinhphu.vn/y-te.rss"
+   ]
+  },
+  {
+   "id": "bcp-cs",
+   "lang": "vi",
+   "sec": null,
+   "urls": [
+    "https://baochinhphu.vn/chinh-sach-moi.rss",
+    "https://baochinhphu.vn/van-ban-moi.rss"
+   ]
+  },
+  {
+   "id": "bcp-kt",
+   "lang": "vi",
+   "sec": "economy",
+   "urls": [
+    "https://baochinhphu.vn/kinh-te.rss"
+   ]
+  },
+  {
+   "id": "bcp-ct",
+   "lang": "vi",
+   "sec": "politics",
+   "urls": [
+    "https://baochinhphu.vn/chinh-tri.rss",
+    "https://baochinhphu.vn/thoi-su.rss"
+   ]
+  },
+  {
+   "id": "bcp-xh",
+   "lang": "vi",
+   "sec": "society",
+   "urls": [
+    "https://baochinhphu.vn/xa-hoi.rss"
+   ]
+  },
+  {
+   "id": "skds",
+   "lang": "vi",
+   "sec": "health",
+   "urls": [
+    "https://suckhoedoisong.vn/y-te.rss",
+    "https://suckhoedoisong.vn/chinh-sach.rss",
+    "https://suckhoedoisong.vn/thoi-su.rss"
+   ]
+  },
+  {
+   "id": "nd",
+   "lang": "vi",
+   "sec": null,
+   "urls": [
+    "https://nhandan.vn/rss/y-te-1309.rss",
+    "https://nhandan.vn/rss/kinhte-1185.rss",
+    "https://nhandan.vn/rss/chinhtri-1171.rss",
+    "https://nhandan.vn/rss/xahoi-1211.rss"
+   ]
+  },
+  {
+   "id": "vnp",
+   "lang": "vi",
+   "sec": "health",
+   "urls": [
+    "https://www.vietnamplus.vn/rss/suckhoe-327.rss"
+   ]
+  },
+  {
+   "id": "bdt",
+   "lang": "vi",
+   "sec": null,
+   "urls": [
+    "https://baodauthau.vn/rss/dau-thau-2.rss",
+    "https://baodauthau.vn/rss/thoi-su-14.rss"
+   ]
+  },
+  {
+   "id": "vne",
+   "lang": "vi",
+   "sec": null,
+   "urls": [
+    "https://vnexpress.net/rss/suc-khoe.rss",
+    "https://vnexpress.net/rss/kinh-doanh.rss",
+    "https://vnexpress.net/rss/thoi-su.rss"
+   ]
+  },
+  {
+   "id": "tt",
+   "lang": "vi",
+   "sec": null,
+   "urls": [
+    "https://tuoitre.vn/rss/suc-khoe.rss",
+    "https://tuoitre.vn/rss/kinh-doanh.rss"
+   ]
+  },
+  {
+   "id": "tn",
+   "lang": "vi",
+   "sec": null,
+   "urls": [
+    "https://thanhnien.vn/rss/suc-khoe.rss",
+    "https://thanhnien.vn/rss/kinh-te.rss",
+    "https://thanhnien.vn/rss/chinh-tri.rss"
+   ]
+  },
+  {
+   "id": "dt",
+   "lang": "vi",
+   "sec": "health",
+   "urls": [
+    "https://dantri.com.vn/rss/suc-khoe.rss"
+   ]
+  },
+  {
+   "id": "vnec",
+   "lang": "vi",
+   "sec": "economy",
+   "urls": [
+    "https://vneconomy.vn/tai-chinh.rss"
+   ]
+  },
+  {
+   "id": "e-vne",
+   "lang": "en",
+   "sec": null,
+   "urls": [
+    "https://e.vnexpress.net/rss/news.rss",
+    "https://e.vnexpress.net/rss/business.rss",
+    "https://e.vnexpress.net/rss/life.rss"
+   ]
+  },
+  {
+   "id": "e-tt",
+   "lang": "en",
+   "sec": null,
+   "urls": [
+    "https://tuoitrenews.vn/rss"
+   ]
+  },
+  {
+   "id": "e-vnp",
+   "lang": "en",
+   "sec": null,
+   "urls": [
+    "https://en.vietnamplus.vn/rss/home.rss",
+    "https://en.vietnamplus.vn/rss/business-311.rss"
+   ]
+  },
+  {
+   "id": "e-misc",
+   "lang": "en",
+   "sec": null,
+   "urls": [
+    "https://en.nhandan.vn/rss/home.rss"
+   ]
+  },
+  {
+   "id": "gn-intl",
+   "lang": "en",
+   "sec": null,
+   "gnews": [
+    "Vietnam economy when:2d",
+    "Vietnam (Reuters OR Bloomberg OR Nikkei) when:3d",
+    "Vietnam health OR hospital OR pharmaceutical when:3d",
+    "Vietnam public investment OR infrastructure when:3d",
+    "\"Vietnam\" (\"Ministry of Health\" OR hospital OR hospitals) when:3d",
+    "Vietnam (\"medical equipment\" OR \"medical devices\" OR pharmaceutical OR drug procurement) when:5d",
+    "Vietnam (dental OR dentistry OR \"eye hospital\" OR ophthalmology OR cataract) when:7d",
+    "Vietnam (\"medical device\" OR medtech OR \"private hospital\" OR \"healthcare market\") when:7d",
+    "Vietnam Japan (healthcare OR \"medical\" OR investment) when:4d",
+    "(\"yen\" OR \"exchange rate\") Vietnam dong when:3d"
+   ]
+  },
+  {
+   "id": "gn-yte",
+   "lang": "vi",
+   "sec": "health",
+   "gnews": [
+    "site:moh.gov.vn when:3d",
+    "(\"đấu thầu\" OR \"mua sắm\") (thuốc OR \"thiết bị y tế\" OR \"vật tư y tế\" OR \"bệnh viện\") when:3d",
+    "(\"thiết bị y tế\" OR \"trang thiết bị y tế\") when:3d",
+    "(\"Bạch Mai\" OR \"Chợ Rẫy\" OR \"Việt Đức\" OR \"Bệnh viện K\" OR \"Trung ương Huế\" OR \"Bệnh viện 108\" OR \"Nhi Trung ương\" OR \"Từ Dũ\" OR \"Mắt Trung ương\" OR \"Răng Hàm Mặt Trung ương\") when:3d",
+    "(\"đầu tư công\" OR \"giải ngân\") (\"bệnh viện\" OR \"y tế\") when:7d",
+    "(\"bảo hiểm y tế\" OR BHYT) when:3d",
+    "(\"nha khoa\" OR \"răng hàm mặt\" OR \"implant\" OR \"chỉnh nha\") when:4d",
+    "(\"nhãn khoa\" OR \"bệnh viện mắt\" OR \"đục thủy tinh thể\" OR \"phẫu thuật mắt\" OR \"tật khúc xạ\") when:4d",
+    "(\"vật tư y tế\" OR \"trang thiết bị y tế\") (\"nhập khẩu\" OR \"đăng ký lưu hành\" OR \"giá\" OR \"thiếu\") when:5d",
+    "(\"giá dịch vụ kỹ thuật\" OR \"thanh toán bảo hiểm y tế\" OR \"tự chủ bệnh viện\") when:5d",
+    "(\"bệnh viện tư\" OR \"y tế tư nhân\" OR \"chuỗi phòng khám\" OR \"đầu tư bệnh viện\") when:5d",
+    "(\"Bệnh viện Mắt\" OR \"Răng Hàm Mặt\") (đầu tư OR \"mua sắm\" OR \"kỹ thuật mới\" OR \"khai trương\") when:7d"
+   ]
+  },
+  {
+   "id": "gn-kt",
+   "lang": "vi",
+   "sec": "economy",
+   "gnews": [
+    "(\"tỷ giá\" OR \"đồng yên\" OR \"nhập khẩu\") when:2d",
+    "(\"đầu tư công\" OR \"giải ngân\") (\"y tế\" OR \"bệnh viện\") when:5d",
+    "(\"Nhật Bản\" OR JICA) (\"y tế\" OR \"đầu tư\") when:4d"
+   ]
+  }
+ ],
+ "docSites": [
+  {
+   "id": "vbcp",
+   "name": "Văn bản Chính phủ",
+   "type": "vbcp",
+   "url": "https://vanban.chinhphu.vn/he-thong-van-ban"
+  }
+ ],
+ "health_core": [
+  "y tế",
+  "bộ y tế",
+  "sở y tế",
+  "bệnh viện",
+  "bệnh nhân",
+  "người bệnh",
+  "khám bệnh",
+  "chữa bệnh",
+  "bác sĩ",
+  "thuốc",
+  "dược",
+  "vắc xin",
+  "bảo hiểm y tế",
+  "bhyt",
+  "thiết bị y tế",
+  "vật tư y tế",
+  "trang thiết bị y tế",
+  "sức khỏe",
+  "nha khoa",
+  "nhãn khoa",
+  "phẫu thuật",
+  "dịch bệnh",
+  "trạm y tế",
+  "viện phí",
+  "an toàn thực phẩm",
+  "health",
+  "hospital",
+  "hospitals",
+  "medical",
+  "medicine",
+  "pharmaceutical",
+  "pharma",
+  "drug",
+  "drugs",
+  "vaccine",
+  "patients",
+  "doctor",
+  "doctors",
+  "healthcare",
+  "health insurance",
+  "ministry of health",
+  "disease",
+  "dengue",
+  "clinic",
+  "surgery"
+ ],
+ "kw": {
+  "health_tender": [
+   "đấu thầu",
+   "gói thầu",
+   "nhà thầu",
+   "mua sắm",
+   "lựa chọn nhà thầu",
+   "trúng thầu",
+   "đàm phán giá",
+   "mua sắm tập trung",
+   "tender",
+   "procurement",
+   "bidding",
+   "bid"
+  ],
+  "health_policy": [
+   "nghị định",
+   "thông tư",
+   "quyết định",
+   "luật",
+   "dự thảo",
+   "chính sách",
+   "quy định",
+   "decree",
+   "circular",
+   "law",
+   "regulation",
+   "policy",
+   "draft"
+  ],
+  "public_invest": [
+   "đầu tư công",
+   "giải ngân",
+   "vốn ngân sách",
+   "dự án",
+   "xây mới",
+   "cơ sở vật chất",
+   "public investment",
+   "disbursement",
+   "infrastructure",
+   "state budget"
+  ],
+  "hospital": [
+   "bạch mai",
+   "chợ rẫy",
+   "việt đức",
+   "bệnh viện k",
+   "trung ương huế",
+   "bệnh viện 108",
+   "nhi trung ương",
+   "từ dũ",
+   "mắt trung ương",
+   "răng hàm mặt trung ương",
+   "bệnh viện đa khoa tỉnh",
+   "bệnh viện trung ương",
+   "cho ray",
+   "bach mai",
+   "viet duc",
+   "central hospital"
+  ],
+  "device": [
+   "thiết bị y tế",
+   "trang thiết bị",
+   "vật tư y tế",
+   "số lưu hành",
+   "medical equipment",
+   "medical device",
+   "medical devices",
+   "medical supplies",
+   "trang thiết bị y tế",
+   "đăng ký lưu hành",
+   "cấp phép lưu hành",
+   "nhà cung cấp",
+   "vật tư tiêu hao",
+   "dụng cụ y tế",
+   "consumables",
+   "medtech"
+  ],
+  "economy": [
+   "kinh tế",
+   "gdp",
+   "cpi",
+   "lạm phát",
+   "xuất khẩu",
+   "nhập khẩu",
+   "fdi",
+   "đầu tư",
+   "ngân hàng",
+   "lãi suất",
+   "tỷ giá",
+   "chứng khoán",
+   "doanh nghiệp",
+   "thuế",
+   "ngân sách",
+   "bất động sản",
+   "giá vàng",
+   "tăng trưởng",
+   "economy",
+   "economic",
+   "gdp",
+   "inflation",
+   "export",
+   "exports",
+   "investment",
+   "investors",
+   "bank",
+   "banks",
+   "interest rate",
+   "stock",
+   "stocks",
+   "tax",
+   "budget",
+   "property",
+   "growth",
+   "trade",
+   "tariff",
+   "tariffs",
+   "fdi"
+  ],
+  "politics": [
+   "quốc hội",
+   "chính phủ",
+   "thủ tướng",
+   "tổng bí thư",
+   "chủ tịch nước",
+   "bộ chính trị",
+   "trung ương",
+   "đại hội",
+   "nghị quyết",
+   "bổ nhiệm",
+   "ngoại giao",
+   "hội nghị",
+   "đối ngoại",
+   "national assembly",
+   "government",
+   "prime minister",
+   "party",
+   "general secretary",
+   "president",
+   "diplomatic",
+   "diplomacy",
+   "minister",
+   "ministry",
+   "politburo",
+   "congress"
+  ],
+  "society": [
+   "xã hội",
+   "giáo dục",
+   "lao động",
+   "việc làm",
+   "giao thông",
+   "môi trường",
+   "thời tiết",
+   "bão",
+   "lũ",
+   "tai nạn",
+   "an sinh",
+   "người dân",
+   "học sinh",
+   "văn hóa",
+   "lễ hội",
+   "du lịch",
+   "society",
+   "education",
+   "labor",
+   "jobs",
+   "traffic",
+   "environment",
+   "weather",
+   "storm",
+   "flood",
+   "floods",
+   "accident",
+   "students",
+   "culture",
+   "festival",
+   "tourism"
+  ],
+  "dental": [
+   "nha khoa",
+   "nha sĩ",
+   "bác sĩ răng",
+   "răng hàm mặt",
+   "răng miệng",
+   "implant",
+   "cấy ghép răng",
+   "chỉnh nha",
+   "niềng răng",
+   "nội nha",
+   "điều trị tủy",
+   "tủy răng",
+   "sâu răng",
+   "phòng khám nha",
+   "phục hình răng",
+   "dental",
+   "dentist",
+   "dentistry",
+   "orthodontic",
+   "orthodontics",
+   "oral health"
+  ],
+  "eye": [
+   "nhãn khoa",
+   "bệnh viện mắt",
+   "mắt trung ương",
+   "khám mắt",
+   "bệnh về mắt",
+   "bệnh mắt",
+   "phẫu thuật mắt",
+   "mổ mắt",
+   "thị lực",
+   "mù lòa",
+   "đục thủy tinh thể",
+   "thủy tinh thể",
+   "phaco",
+   "glôcôm",
+   "glaucoma",
+   "võng mạc",
+   "giác mạc",
+   "tật khúc xạ",
+   "cận thị",
+   "lác mắt",
+   "ophthalmic",
+   "ophthalmology",
+   "ophthalmologist",
+   "eye hospital",
+   "eye care",
+   "eye surgery",
+   "cataract",
+   "retina",
+   "myopia"
+  ],
+  "surgery": [
+   "phẫu thuật",
+   "ca mổ",
+   "khâu",
+   "chỉ khâu",
+   "ngoại khoa",
+   "vi phẫu",
+   "nội soi",
+   "phòng mổ",
+   "surgery",
+   "surgical",
+   "suture",
+   "operating room"
+  ],
+  "insurance": [
+   "bảo hiểm y tế",
+   "bhyt",
+   "quỹ bhyt",
+   "giá dịch vụ",
+   "giá dịch vụ kỹ thuật",
+   "viện phí",
+   "thanh toán bhyt",
+   "tự chủ bệnh viện",
+   "tự chủ tài chính",
+   "health insurance",
+   "hospital fees"
+  ],
+  "market": [
+   "nhật bản",
+   "đồng yên",
+   "yên nhật",
+   "tỷ giá",
+   "nhập khẩu",
+   "thuế nhập khẩu",
+   "hải quan",
+   "y tế tư nhân",
+   "bệnh viện tư",
+   "đầu tư bệnh viện",
+   "chuỗi phòng khám",
+   "japan",
+   "japanese",
+   "yen",
+   "exchange rate",
+   "import",
+   "imports",
+   "tariff",
+   "tariffs",
+   "private hospital",
+   "private healthcare",
+   "healthcare market",
+   "medtech"
+  ],
+  "case": [
+   "bé trai",
+   "bé gái",
+   "cứu sống",
+   "nguy kịch",
+   "hiếm gặp",
+   "tai nạn",
+   "đột quỵ",
+   "ngộ độc",
+   "tử vong",
+   "qua đời",
+   "cấp cứu",
+   "nhập viện",
+   "khối u",
+   "phát hiện"
+  ],
+  "lowrel": [
+   "an toàn thực phẩm",
+   "thực phẩm chức năng",
+   "thuốc lá",
+   "thuốc lá điện tử",
+   "y học cổ truyền",
+   "thuốc cổ truyền",
+   "dược liệu",
+   "sốt xuất huyết",
+   "vắc xin",
+   "food safety",
+   "tobacco",
+   "e-cigarettes",
+   "dengue",
+   "vaccine",
+   "traditional medicine"
+  ],
+  "advice": [
+   "có cần",
+   "nguyên nhân",
+   "dấu hiệu",
+   "bệnh gì",
+   "nên làm gì",
+   "cách phòng",
+   "có nguy hiểm",
+   "triệu chứng",
+   "mẹo",
+   "lời khuyên",
+   "what causes",
+   "symptoms",
+   "signs of"
+  ]
+ },
+ "internal": {
+  "_ghi_chu": "Bản tin nội bộ Chủ nhật — nguồn dữ liệu nội bộ (chỉ đọc). Kết quả luôn được mã hoá trước khi đưa lên trang.",
+  "reportHub": [
+   {
+    "id": "marketing",
+    "name": "Marketing",
+    "url": "https://script.google.com/macros/s/AKfycbzn-5chMgO7lQPKmot8P7UkP9C40MdCPtiTTa4H1gcKepVsnr1IYfcB7sSdK1_jrZYY/exec"
+   },
+   {
+    "id": "backoffice",
+    "name": "Back office",
+    "url": "https://script.google.com/macros/s/AKfycbxWT_M07dwPD77zgzouJpJn4R64n6T6l57sVvsU3I2RgtN6JZcMrRR9eoovKE_DuFuN_g/exec"
+   }
+  ],
+  "crm": [
+   {
+    "id": "dental",
+    "name": "Dental Sales",
+    "url": "https://script.google.com/macros/s/AKfycbyzmhECZZfbOZUyXOK5O70ukwTgQ9DHp70MN-HUAL0wMpOptdTTbaGcvMEmcnCrCji6/exec",
+    "orders": true
+   },
+   {
+    "id": "surgical",
+    "name": "Surgical Sales",
+    "url": "https://script.google.com/macros/s/AKfycbxxckrqwkfhE0fszm1XVdpYyEHU_PCKQWMKE_2wBnMTgoJCZ-1nRZ_fhOCPXXsVfEE/exec",
+    "orders": true
+   },
+   {
+    "id": "eyeless",
+    "name": "Eyeless Sales",
+    "url": "https://script.google.com/macros/s/AKfycbxsoTRbRWZRaf-z7-xRy_oIkM-Yv1HoCOjVRO-K6oRRh3Dr7MMg4v53K0qqpMfZ_K5IAg/exec",
+    "orders": true
+   },
+   {
+    "id": "thai",
+    "name": "Thailand Surgical",
+    "url": "https://script.google.com/macros/s/AKfycbwglPhfcC3y20-lPO8mRC7yapGUyVHSO2Mp3k4fyPJXnraQEu6bbO4dysL0E9MNadwHwg/exec",
+    "orders": false
+   },
+   {
+    "id": "thaid",
+    "name": "Thailand Dental",
+    "url": "https://script.google.com/macros/s/AKfycbz2QxuRLqmadEoM5bWaXRflzOkX9J44JmxeKHOAQmwVvv-m--iD5CY1LHWty8bZZg74ug/exec",
+    "orders": false
+   }
+  ],
+  "tenders": [
+   {
+    "id": "hungvi",
+    "name": "Hùng Vĩ",
+    "url": "https://script.google.com/macros/s/AKfycbyL5FRVXl0Zr35ndE1PGJMGXzHOYzHjdsyQK7vHwIYhqe5owjSg3o1QtH-i8qGNBKJ-/exec"
+   },
+   {
+    "id": "icare",
+    "name": "iCare",
+    "url": "https://script.google.com/macros/s/AKfycbx8xuGaBOVgLxb8JtaH25t1pcisacigDecTMLKOVaBucuDWZ7hw2W_W4IngA1nSODg4/exec"
+   }
+  ],
+  "training": {
+   "url": "https://script.google.com/macros/s/AKfycbwsX4cQEoH4LNlmcNfe8qWIM9K6EiDEXy7PjhP9bHY2citL6xHn5L1unsAlQJHyL9EP/exec",
+   "rhKey": "mmh-rh-training-2026"
+  },
+  "keyUrl": "https://script.google.com/macros/s/AKfycbwsX4cQEoH4LNlmcNfe8qWIM9K6EiDEXy7PjhP9bHY2citL6xHn5L1unsAlQJHyL9EP/exec",
+  "_management": "Management Task Tracker chỉ cho người đăng nhập đọc ⇒ chưa đưa vào bản tin (cần quyền đọc riêng cho máy chủ GitHub)."
+ },
+ "mmhWeight": {
+  "dental": 5,
+  "eye": 5,
+  "surgery": 3,
+  "device": 4,
+  "tender": 4,
+  "insurance": 3,
+  "policy": 2.5,
+  "hospital": 1.5,
+  "invest": 1.5,
+  "market": 2.5
+ }
+}
