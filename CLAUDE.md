@@ -11,8 +11,10 @@ Phiên do app mở có khối `<routine-fire-payload>` chứa JSON `{kind, sourc
 - `voice` = eleven ⇒ khi apply: `DAILY_VOICE=eleven DAILY_VOICES=<voices> node tools/apply.mjs …` (GitHub tạo giọng ElevenLabs; hết credit tự về giọng miễn phí).
 
 ## A. Tin hằng ngày — Claude viết (Routine "MMH Daily · Tin y tế")
-1. Số báo hôm nay đã có chưa: `ls data/editions` (tên = ngày giờ VN). Chưa có / quá 6 giờ ⇒ chạy workflow **MMH Daily** (`workflow_dispatch`, `kind=daily`)
-   bằng công cụ GitHub, chờ xong (≈ 5 phút), `git pull`.
+1. Số báo hôm nay đã có chưa: `ls data/editions` (tên = ngày giờ VN). Chưa có / quá 6 giờ / app yêu cầu nguồn – chủ đề riêng ⇒ chạy workflow **MMH Daily**
+   (`workflow_dispatch`, `kind=daily`, inputs `sources` / `topics` / `show`) bằng công cụ GitHub. KHÔNG có công cụ GitHub ⇒ ghi
+   `data/requests/daily.json` = `{"at":"<giờ hiện tại ISO>","sources":"…","topics":"…","show":""}`, commit + `git push origin HEAD:main` (GitHub tự gom tin, dựng số).
+   Chờ xong (≈ 5 phút): lặp `git pull` tới khi `data/index.json ▸ updated` mới hơn lúc bắt đầu.
 2. `node tools/brief.mjs` ⇒ đọc chương trình hôm nay (người dẫn, kiểu: solo / duo / qa / desk / deep) + danh sách tin.
 3. Đọc **WRITING.md** (chọn tin theo mức ảnh hưởng tới MMH + giọng nói tự nhiên). Viết file `/tmp/out.json` theo đúng mẫu ở đầu `tools/apply.mjs`:
    - **Mọi** tin trong brief: tiêu đề Anh + Việt, 1 dòng dẫn tiếng Anh, tóm tắt 2–3 câu Việt + Anh, "vì sao quan trọng với MMH" (cụ thể: nhóm sản phẩm, khách hàng, bước thầu; không có thì để trống).
