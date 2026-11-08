@@ -131,7 +131,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data
           git diff --cached --quiet || git commit -qm "MMH Daily $(TZ=Asia/Ho_Chi_Minh date '+%d/%m/%Y %H:%M')"
-          for i in 1 2 3; do git pull -q --rebase -X theirs origin main && git push -q origin HEAD:main && break; sleep 5; done
+          ok=0
+          for i in 1 2 3; do git pull -q --rebase --autostash -X theirs origin main && git push -q origin HEAD:main && ok=1 && break; sleep 5; done
+          [ "$ok" = 1 ] || { echo "::error::Không lưu được dữ liệu vào kho"; exit 1; }
       - name: Dựng trang (kèm MP3 21 ngày + bản tin nội bộ 8 tuần, đã mã hoá)
         run: |
           mkdir -p _site/audio
