@@ -10,7 +10,7 @@ on:
     - cron: '0 12 * * 0'
   push:
     branches: [main]
-    paths: ['data/editions/**', 'data/inbox/**']   # phiên Claude Code vừa viết số báo / bản tin nội bộ (đã khoá) ⇒ tạo giọng + đăng trang
+    paths: ['data/editions/**', 'data/inbox/**', 'data/requests/**']   # phiên Claude Code vừa viết số báo / bản tin nội bộ (đã khoá) ⇒ tạo giọng + đăng trang
   workflow_dispatch:
     inputs:
       kind: { description: 'daily = tin hằng ngày · weekly = bản tin nội bộ · both = cả hai', required: false, default: 'daily' }
@@ -30,8 +30,9 @@ jobs:
       HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
       HAS_INKEY: ${{ secrets.DAILY_INTERNAL_KEY != '' }}
       GH_TOKEN: ${{ github.token }}
-      DO_DAILY: ${{ github.event.schedule == '45 22 * * *' || (github.event_name == 'workflow_dispatch' && inputs.kind != 'weekly') }}
-      DO_AUDIO: ${{ github.event_name == 'push' }}
+      IS_REQ: ${{ github.event_name == 'push' && (contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/')) }}
+      DO_DAILY: ${{ github.event.schedule == '45 22 * * *' || (github.event_name == 'workflow_dispatch' && inputs.kind != 'weekly') || (github.event_name == 'push' && (contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/'))) }}
+      DO_AUDIO: ${{ github.event_name == 'push' && !(contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/')) }}
       DAILY_VOICE: ${{ inputs.voice || vars.DAILY_VOICE || '' }}
       DAILY_VOICES: ${{ inputs.voices || vars.DAILY_VOICES || '' }}
       ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
@@ -54,13 +55,17 @@ jobs:
         uses: actions/cache@v4
         with: { path: data/pool.json, key: 'pool-${{ github.run_id }}', restore-keys: 'pool-' }
 
+      - name: Yêu cầu từ phiên Claude (data/requests/daily.json)
+        if: env.IS_REQ == 'true'
+        run: |
+          node -e "const r=require('./data/requests/daily.json');const c=s=>String(s||'').replace(/[^a-z0-9.,\-]/gi,'');console.log('REQ_SOURCES='+c(r.sources)+'\nREQ_TOPICS='+c(r.topics)+'\nREQ_SHOW='+c(r.show).replace(/[^a-z]/g,''))" >> $GITHUB_ENV
       # ── tin hằng ngày ──
       - name: Gom tin
         if: env.DO_DAILY == 'true'
         run: node tools/collect.mjs
       - name: Dựng số báo
         if: env.DO_DAILY == 'true'
-        env: { ANTHROPIC_API_KEY: '${{ secrets.ANTHROPIC_API_KEY }}', DAILY_SHOW: '${{ inputs.show }}', DAILY_SOURCES: '${{ inputs.sources }}', DAILY_TOPICS: '${{ inputs.topics }}', DAILY_BY: '${{ inputs.by }}' }
+        env: { ANTHROPIC_API_KEY: '${{ secrets.ANTHROPIC_API_KEY }}', DAILY_SHOW: '${{ inputs.show || env.REQ_SHOW }}', DAILY_SOURCES: '${{ inputs.sources || env.REQ_SOURCES }}', DAILY_TOPICS: '${{ inputs.topics || env.REQ_TOPICS }}', DAILY_BY: '${{ inputs.by }}' }
         run: node tools/edition.mjs
       - name: Tạo podcast
         if: env.DO_DAILY == 'true'
@@ -107,6 +112,11 @@ jobs:
           done
 
       # ── bản tin nội bộ Chủ nhật (bản rõ chỉ nằm ở RUNNER_TEMP, xoá ngay sau khi mã hoá) ──
+      - name: Bản tin nội bộ — Claude đã viết tuần này thì không ghi đè
+        if: env.DO_WEEKLY == 'true' && github.event_name == 'schedule'
+        run: |
+          W=$(TZ=Asia/Ho_Chi_Minh date +%F)
+          node -e "const w=(require('./data/internal/index.json').weeks||[]).find(x=>x.date==='$W');process.exit(w&&w.writer==='claude-code'?0:1)" 2>/dev/null && echo "DO_WEEKLY=false" >> $GITHUB_ENV && echo "Tuần $W đã có bản Claude viết — bỏ qua bản tự động" || true
       - name: Bản tin nội bộ — gom + viết
         if: env.DO_WEEKLY == 'true' && env.HAS_INKEY == 'true'
         env: { ANTHROPIC_API_KEY: '${{ secrets.ANTHROPIC_API_KEY }}', WEEKLY_OUT: '${{ runner.temp }}/wk' }
