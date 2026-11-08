@@ -84,7 +84,20 @@
   "thediplomat.com": "The Diplomat",
   "who.int": "WHO",
   "worldbank.org": "World Bank",
-  "adb.org": "ADB"
+  "adb.org": "ADB",
+  "baoquocte.vn": "Báo Quốc tế",
+  "vietq.vn": "VietQ",
+  "congthuong.vn": "Công Thương",
+  "tapchitaichinh.vn": "Tạp chí Tài chính",
+  "customs.gov.vn": "Hải quan Việt Nam",
+  "baohiemxahoi.gov.vn": "BHXH Việt Nam",
+  "benhvienmattrunguong.vn": "BV Mắt Trung ương",
+  "rhmtw.vn": "BV Răng Hàm Mặt TW",
+  "kcb.vn": "Cục Quản lý Khám chữa bệnh",
+  "dav.gov.vn": "Cục Quản lý Dược",
+  "muasamcong.mpi.gov.vn": "Mua sắm công",
+  "nikkei.com": "Nikkei",
+  "japantimes.co.jp": "The Japan Times"
  },
  "feeds": [
   {
@@ -291,6 +304,41 @@
     "(\"tỷ giá\" OR \"đồng yên\" OR \"nhập khẩu\") when:2d",
     "(\"đầu tư công\" OR \"giải ngân\") (\"y tế\" OR \"bệnh viện\") when:5d",
     "(\"Nhật Bản\" OR JICA) (\"y tế\" OR \"đầu tư\") when:4d"
+   ]
+  },
+  {
+   "id": "gn-site-vi",
+   "lang": "vi",
+   "sec": null,
+   "name": "Báo theo tên (y tế)",
+   "gnews": [
+    "site:vtv.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:vov.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:laodong.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:nld.com.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:plo.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:baodautu.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:vietnamnet.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:tienphong.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:baotintuc.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:kcb.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:baohiemxahoi.gov.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d",
+    "site:congthuong.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"nha khoa\" OR \"nhãn khoa\" OR \"đấu thầu\" OR BHYT) when:3d"
+   ]
+  },
+  {
+   "id": "gn-site-en",
+   "lang": "en",
+   "sec": null,
+   "name": "English outlets (health / market)",
+   "gnews": [
+    "site:vietnamnews.vn (health OR hospital OR \"medical\" OR dental OR \"eye\" OR Japan OR yen) when:4d",
+    "site:vir.com.vn (health OR hospital OR \"medical\" OR dental OR \"eye\" OR Japan OR yen) when:4d",
+    "site:theinvestor.vn (health OR hospital OR \"medical\" OR dental OR \"eye\" OR Japan OR yen) when:4d",
+    "site:hanoitimes.vn (health OR hospital OR \"medical\" OR dental OR \"eye\" OR Japan OR yen) when:4d",
+    "site:vietnam-briefing.com (health OR hospital OR \"medical\" OR dental OR \"eye\" OR Japan OR yen) when:4d",
+    "site:reuters.com Vietnam (health OR hospital OR medical OR Japan) when:5d",
+    "site:asia.nikkei.com Vietnam (health OR hospital OR medical OR Japan) when:5d"
    ]
   }
  ],
@@ -759,5 +807,255 @@
   "hospital": 1.5,
   "invest": 1.5,
   "market": 2.5
+ },
+ "outletGroups": [
+  {
+   "id": "gov",
+   "vi": "Cơ quan nhà nước & văn bản",
+   "doms": [
+    "chinhphu.vn",
+    "baochinhphu.vn",
+    "vanban.chinhphu.vn",
+    "moh.gov.vn",
+    "kcb.vn",
+    "dav.gov.vn",
+    "baohiemxahoi.gov.vn",
+    "quochoi.vn",
+    "daibieunhandan.vn",
+    "mof.gov.vn",
+    "sbv.gov.vn",
+    "gso.gov.vn",
+    "nso.gov.vn",
+    "customs.gov.vn",
+    "luatvietnam.vn",
+    "muasamcong.mpi.gov.vn"
+   ]
+  },
+  {
+   "id": "health",
+   "vi": "Y tế & chuyên ngành",
+   "doms": [
+    "suckhoedoisong.vn",
+    "baodauthau.vn",
+    "benhvienmattrunguong.vn",
+    "rhmtw.vn",
+    "vietq.vn"
+   ]
+  },
+  {
+   "id": "vn",
+   "vi": "Báo chính thống",
+   "doms": [
+    "nhandan.vn",
+    "vietnamplus.vn",
+    "baotintuc.vn",
+    "vtv.vn",
+    "vov.vn",
+    "qdnd.vn",
+    "dangcongsan.vn",
+    "vnexpress.net",
+    "tuoitre.vn",
+    "thanhnien.vn",
+    "dantri.com.vn",
+    "vietnamnet.vn",
+    "laodong.vn",
+    "tienphong.vn",
+    "nld.com.vn",
+    "plo.vn",
+    "sggp.org.vn",
+    "hanoimoi.vn",
+    "baoquocte.vn"
+   ]
+  },
+  {
+   "id": "biz",
+   "vi": "Kinh tế – đầu tư",
+   "doms": [
+    "vneconomy.vn",
+    "baodautu.vn",
+    "thesaigontimes.vn",
+    "congthuong.vn",
+    "tapchitaichinh.vn"
+   ]
+  },
+  {
+   "id": "en",
+   "vi": "Tiếng Anh – trong nước",
+   "doms": [
+    "e.vnexpress.net",
+    "tuoitrenews.vn",
+    "en.vietnamplus.vn",
+    "vietnamnews.vn",
+    "vir.com.vn",
+    "theinvestor.vn",
+    "en.nhandan.vn",
+    "english.vov.vn",
+    "english.thesaigontimes.vn",
+    "hanoitimes.vn",
+    "vietnam-briefing.com"
+   ]
+  },
+  {
+   "id": "intl",
+   "vi": "Quốc tế",
+   "doms": [
+    "reuters.com",
+    "bloomberg.com",
+    "asia.nikkei.com",
+    "nikkei.com",
+    "japantimes.co.jp",
+    "ft.com",
+    "apnews.com",
+    "bbc.com",
+    "cnbc.com",
+    "scmp.com",
+    "thediplomat.com",
+    "who.int",
+    "worldbank.org",
+    "adb.org"
+   ]
+  }
+ ],
+ "topics": [
+  {
+   "id": "dental",
+   "vi": "Nha khoa",
+   "tags": [
+    "dental"
+   ]
+  },
+  {
+   "id": "eye",
+   "vi": "Nhãn khoa",
+   "tags": [
+    "eye"
+   ]
+  },
+  {
+   "id": "tender",
+   "vi": "Đấu thầu & thiết bị",
+   "tags": [
+    "tender",
+    "device"
+   ]
+  },
+  {
+   "id": "insurance",
+   "vi": "BHYT & giá dịch vụ",
+   "tags": [
+    "insurance"
+   ]
+  },
+  {
+   "id": "policy",
+   "vi": "Chính sách y tế",
+   "tags": [
+    "policy"
+   ]
+  },
+  {
+   "id": "hospital",
+   "vi": "Bệnh viện & phẫu thuật",
+   "tags": [
+    "hospital",
+    "surgery",
+    "invest"
+   ]
+  },
+  {
+   "id": "market",
+   "vi": "Thị trường & Nhật Bản",
+   "tags": [
+    "market"
+   ]
+  },
+  {
+   "id": "economy",
+   "vi": "Kinh tế",
+   "secs": [
+    "economy"
+   ]
+  },
+  {
+   "id": "politics",
+   "vi": "Chính trị",
+   "secs": [
+    "politics"
+   ]
+  },
+  {
+   "id": "society",
+   "vi": "Xã hội",
+   "secs": [
+    "society"
+   ]
+  }
+ ],
+ "voice": {
+  "engines": {
+   "edge": "Miễn phí (Microsoft)",
+   "eleven": "Tự nhiên (ElevenLabs)"
+  },
+  "default": "edge",
+  "model": "eleven_multilingual_v2",
+  "note": "ElevenLabs cần secret ELEVENLABS_API_KEY. Mỗi lượt ~1 credit / ký tự (model multilingual v2); số báo 8 phút ≈ 6–8 nghìn ký tự.",
+  "presets": [
+   {
+    "id": "news",
+    "vi": "Bản tin Mỹ · Bella & Chris",
+    "f": {
+     "id": "hpp4J3VqNfWAUOO0d1Us",
+     "name": "Bella",
+     "preview": "https://storage.googleapis.com/eleven-public-prod/premade/voices/hpp4J3VqNfWAUOO0d1Us/dab0f5ba-3aa4-48a8-9fad-f138fea1126d.mp3"
+    },
+    "m": {
+     "id": "iP95p4xoKVk53GoZ742B",
+     "name": "Chris",
+     "preview": "https://storage.googleapis.com/eleven-public-prod/premade/voices/iP95p4xoKVk53GoZ742B/3f4bde72-cc48-40dd-829f-57fbf906f4d7.mp3"
+    }
+   },
+   {
+    "id": "uk",
+    "vi": "Giọng Anh · Lily & Roger",
+    "f": {
+     "id": "pFZP5JQG7iQjIQuC4Bku",
+     "name": "Lily",
+     "preview": "https://storage.googleapis.com/eleven-public-prod/premade/voices/pFZP5JQG7iQjIQuC4Bku/89b68b35-b3dd-4348-a84a-a3c13a3c2b30.mp3"
+    },
+    "m": {
+     "id": "CwhRBWXzGAHq8TQ4Fs17",
+     "name": "Roger",
+     "preview": "https://storage.googleapis.com/eleven-public-prod/premade/voices/CwhRBWXzGAHq8TQ4Fs17/58ee3ff5-f6f2-4628-93b8-e38eb31806b0.mp3"
+    }
+   },
+   {
+    "id": "warm",
+    "vi": "Ấm, chậm rãi · Matilda & Eric",
+    "f": {
+     "id": "XrExE9yKIg1WjnnlVkGX",
+     "name": "Matilda",
+     "preview": "https://storage.googleapis.com/eleven-public-prod/premade/voices/XrExE9yKIg1WjnnlVkGX/b930e18d-6b4d-466e-bab2-0ae97c6d8535.mp3"
+    },
+    "m": {
+     "id": "cjVigY5qzO86Huf0OWal",
+     "name": "Eric",
+     "preview": "https://storage.googleapis.com/eleven-public-prod/premade/voices/cjVigY5qzO86Huf0OWal/d098fda0-6456-4030-b3d8-63aa048c9070.mp3"
+    }
+   },
+   {
+    "id": "casual",
+    "vi": "Trẻ, thoải mái · Jessica & Will",
+    "f": {
+     "id": "cgSgspJ2msm6clMCkdW9",
+     "name": "Jessica",
+     "preview": "https://storage.googleapis.com/eleven-public-prod/premade/voices/cgSgspJ2msm6clMCkdW9/56a97bf8-b69b-448f-846c-c3a11683d45a.mp3"
+    },
+    "m": {
+     "id": "bIHbv24MWmeRgasZH58o",
+     "name": "Will",
+     "preview": "https://storage.googleapis.com/eleven-public-prod/premade/voices/bIHbv24MWmeRgasZH58o/8caf8f3d-ad29-4980-af41-53f20c72d7a4.mp3"
+    }
+   }
+  ]
  }
 }

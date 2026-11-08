@@ -2,6 +2,8 @@
 """MMH Daily — tạo file podcast MP3 từ kịch bản trong data/editions/<ngày>.json.
 
 Giọng: edge-tts (giọng neural Microsoft, miễn phí). Lỗi ⇒ thử lại; hỏng hẳn ⇒ Piper (offline) nếu đã cài.
+Tuỳ chọn: DAILY_VOICE=eleven (+ secret ELEVENLABS_API_KEY) ⇒ giọng ElevenLabs tự nhiên hơn, bộ giọng theo DAILY_VOICES (config.json ▸ voice.presets).
+ElevenLabs lỗi / hết credit giữa chừng ⇒ cả số quay về edge-tts (không trộn giọng).
 Nhạc hiệu mở / kết tự tạo bằng ffmpeg (hợp âm khác nhau theo chương trình). Âm lượng chuẩn -16 LUFS, MP3 mono 64 kbps.
 Ghi lại mốc thời gian từng lượt lời (turns[i].t) để app chạy phụ đề theo giọng đọc.
 
@@ -18,6 +20,45 @@ CHORDS = {  # nhạc hiệu: nốt gốc (Hz) theo chương trình
     'thisweek': [349.2, 440.0, 523.3, 659.3], 'notes': [261.6, 311.1, 392.0], 'roundup': [293.7, 370.0, 440.0, 587.3], 'desk': [329.6, 392.0, 493.9],
 }
 PIPER = {'A': 'en_US-lessac-medium', 'B': 'en_GB-alan-medium'}
+FEMALE = {'Ava', 'Emma', 'Jenny', 'Michelle', 'Libby', 'Sonia', 'Natasha', 'Aria', 'Sara', 'Clara', 'Jane', 'Nancy', 'Maisie', 'Hollie', 'Ana'}
+
+
+def eleven_voices(hosts):
+    """Gán giọng ElevenLabs cho từng người dẫn theo bộ giọng (nữ / nam theo tên người dẫn)."""
+    cfg = json.loads((ROOT / 'config.json').read_text()).get('voice', {})
+    want = os.environ.get('DAILY_VOICES') or (cfg.get('presets') or [{}])[0].get('id')
+    p = next((x for x in cfg.get('presets', []) if x['id'] == want), (cfg.get('presets') or [None])[0])
+    if not p:
+        return None, None
+    out, used = {}, set()
+    for h in hosts:
+        g = 'f' if h['name'] in FEMALE else 'm'
+        if p[g]['id'] in used:                       # 2 người cùng giới ⇒ người thứ hai lấy giọng còn lại
+            g = 'm' if g == 'f' else 'f'
+        out[h['id']] = p[g]['id']; used.add(p[g]['id'])
+    return out, cfg.get('model', 'eleven_multilingual_v2')
+
+
+def tts_eleven(text, voice_id, out, model, prev_text='', next_text=''):
+    import urllib.request, urllib.error
+    body = {'text': text, 'model_id': model, 'previous_text': prev_text[-600:], 'next_text': next_text[:600],
+            'voice_settings': {'stability': 0.42, 'similarity_boost': 0.8, 'style': 0.18, 'use_speaker_boost': True}}
+    req = urllib.request.Request(f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}?output_format=mp3_44100_128', data=json.dumps(body).encode(),
+                                 headers={'xi-api-key': os.environ['ELEVENLABS_API_KEY'], 'Content-Type': 'application/json', 'Accept': 'audio/mpeg'})
+    for i in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                out.write_bytes(r.read())
+            return out.stat().st_size > 1000
+        except urllib.error.HTTPError as e:
+            msg = e.read().decode(errors='ignore')[:200]
+            print(f'  ElevenLabs lỗi {e.code}: {msg}')
+            if e.code in (401, 402, 403) or 'quota' in msg.lower():
+                return False                          # hết credit / sai khoá ⇒ không thử lại
+        except Exception as e:
+            print(f'  ElevenLabs lỗi mạng (lần {i+1}): {e}')
+        time.sleep(3 * (i + 1))
+    return False
 
 
 def run(cmd):
@@ -87,7 +128,37 @@ async def main():
     # 1. giọng đọc từng lượt (song song 4 lượt)
     sem = asyncio.Semaphore(4)
     rate = os.environ.get('DAILY_RATE', '+0%')
-    engine = {'edge': 0, 'piper': 0, 'fail': 0}
+    engine = {'edge': 0, 'piper': 0, 'fail': 0, 'eleven': 0}
+    turns = pod['turns']
+    files = None
+    req = pod.get('voiceReq') or {}                  # số do Claude viết: lựa chọn giọng đi kèm số báo
+    if req.get('engine') and not os.environ.get('DAILY_VOICE'):
+        os.environ['DAILY_VOICE'] = req['engine']
+        if req.get('preset'): os.environ['DAILY_VOICES'] = req['preset']
+    if os.environ.get('DAILY_VOICE') == 'eleven' and os.environ.get('ELEVENLABS_API_KEY'):
+        ev, model = eleven_voices(pod['hosts'])
+        chars = sum(len(t['text']) for t in turns)
+        print(f'ElevenLabs: {len(turns)} lượt · {chars} ký tự · model {model}')
+        if ev:
+            def el(i):
+                t = turns[i]
+                same = lambda j: 0 <= j < len(turns) and turns[j]['sp'] == t['sp']
+                mp3 = tmp / f'e{i:03d}.mp3'
+                ok = tts_eleven(t['text'], ev.get(t['sp'], list(ev.values())[0]), mp3, model,
+                                turns[i - 1]['text'] if same(i - 1) else '', turns[i + 1]['text'] if same(i + 1) else '')
+                return mp3 if ok else None
+            esem = asyncio.Semaphore(3)               # ElevenLabs giới hạn số lượt song song theo gói
+            async def el_async(i):
+                async with esem:
+                    return await asyncio.to_thread(el, i)
+            res = await asyncio.gather(*[el_async(i) for i in range(len(turns))])
+            if all(res):
+                files = res; engine['eleven'] = len(res)
+                pod['voice'] = {'engine': 'eleven', 'preset': os.environ.get('DAILY_VOICES', ''), 'chars': chars}
+            else:
+                print('ElevenLabs không tạo đủ các lượt ⇒ dùng giọng miễn phí cho cả số')
+    elif os.environ.get('DAILY_VOICE') == 'eleven':
+        print('Chưa có secret ELEVENLABS_API_KEY ⇒ dùng giọng miễn phí')
 
     async def one(i, turn):
         mp3 = tmp / f't{i:03d}.mp3'
@@ -103,7 +174,9 @@ async def main():
         engine['fail'] += 1
         return None
 
-    files = await asyncio.gather(*[one(i, t) for i, t in enumerate(pod['turns'])])
+    if files is None:
+        files = await asyncio.gather(*[one(i, t) for i, t in enumerate(turns)])
+        pod['voice'] = {'engine': 'edge'}
     if engine['fail'] > len(files) * 0.2:
         sys.exit(f'Quá nhiều lượt không tạo được giọng: {engine}')
 

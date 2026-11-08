@@ -15,6 +15,14 @@ Tờ báo buổi sáng của MMH + podcast tiếng Anh mỗi ngày.
 3. `tools/audio.py`: giọng đọc neural (edge-tts, miễn phí), mỗi người dẫn một giọng, có nhạc hiệu, chuẩn âm lượng, ghi mốc thời gian để phụ đề chạy theo.
 4. Lưu `data/` vào git, MP3 lên Releases (`ep-yyyy-mm-dd`), đăng trang lên GitHub Pages (kèm MP3 của 21 ngày gần nhất).
 
+## Trên app
+- **Tổng hợp ngay** (`update.js`): chọn chủ đề, nguồn báo (`data/sources.json` do `collect.mjs` sinh: nhóm báo + số tin 48 giờ), Claude viết / Tự động, giọng ElevenLabs (bộ giọng `config.json ▸ voice.presets`, nghe thử) / miễn phí
+  ⇒ Training Hub `dailyRun` (đăng nhập email công ty; máy chủ giữ token) ⇒ GitHub Actions (inputs `sources`, `topics`, `voice`, `voices`) hoặc Routine Claude. Tiến độ: `dailyStatus`.
+  Admin: Thiết lập ▸ token GitHub (fine-grained, kho này, Actions R/W), Fire URL + token Routine, số lượt ElevenLabs / ngày.
+- **Chế độ học** (`learn.js`): phụ đề Anh + Việt chạy theo câu, lặp câu, dừng sau mỗi câu, ẩn Anh / Việt, từ vựng gạch chân.
+- **Hướng dẫn** (`guide.js`, nút ?), **Cài app** (`install.js`, `manifest.webmanifest`, `sw.js` — đổi quy tắc đệm ⇒ tăng `V`).
+- Giọng ElevenLabs: secret `ELEVENLABS_API_KEY` (Settings ▸ Secrets ▸ Actions). Không có ⇒ luôn giọng miễn phí.
+
 ## Cài đặt kho mới (1 lần)
 - Settings ▸ Pages ▸ Build and deployment ▸ Source: **GitHub Actions**.
 - (Khuyên dùng) Settings ▸ Secrets and variables ▸ Actions ▸ New secret `ANTHROPIC_API_KEY`.

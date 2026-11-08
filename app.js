@@ -570,6 +570,6 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !dlg.hidden) close(); });
   })();
 
-  window.DAILY = { S, route, playDate, IN };
+  window.DAILY = { S, route, playDate, IN, setEp, loadEd, hub, tkGet, tkSet, inKey, toast, store, esc, audio, viDate, mmss, ICON, loadIndex, seekBy };
   boot();
 })();
