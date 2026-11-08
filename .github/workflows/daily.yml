@@ -107,6 +107,11 @@ jobs:
           done
 
       # ── bản tin nội bộ Chủ nhật (bản rõ chỉ nằm ở RUNNER_TEMP, xoá ngay sau khi mã hoá) ──
+      - name: Bản tin nội bộ — Claude đã viết tuần này thì không ghi đè
+        if: env.DO_WEEKLY == 'true' && github.event_name == 'schedule'
+        run: |
+          W=$(TZ=Asia/Ho_Chi_Minh date +%F)
+          node -e "const w=(require('./data/internal/index.json').weeks||[]).find(x=>x.date==='$W');process.exit(w&&w.writer==='claude-code'?0:1)" 2>/dev/null && echo "DO_WEEKLY=false" >> $GITHUB_ENV && echo "Tuần $W đã có bản Claude viết — bỏ qua bản tự động" || true
       - name: Bản tin nội bộ — gom + viết
         if: env.DO_WEEKLY == 'true' && env.HAS_INKEY == 'true'
         env: { ANTHROPIC_API_KEY: '${{ secrets.ANTHROPIC_API_KEY }}', WEEKLY_OUT: '${{ runner.temp }}/wk' }

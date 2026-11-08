@@ -37,7 +37,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   fs.writeFileSync(path.join(ROOT, 'data', 'internal', `${date}.json.enc`), seal(Buffer.from(JSON.stringify(ed)), key));
   const ip = path.join(ROOT, 'data', 'internal', 'index.json');
   let idx = { weeks: [] }; try { idx = JSON.parse(fs.readFileSync(ip, 'utf8')); } catch { /* lần đầu */ }
-  idx.weeks = [{ date, from: ed.week.from, kid, show: ed.podcast.show, dur: ed.podcast.audio?.dur || 0 }, ...idx.weeks.filter(w => w.date !== date)].sort((a, b) => b.date.localeCompare(a.date));
+  idx.weeks = [{ date, from: ed.week.from, kid, show: ed.podcast.show, dur: ed.podcast.audio?.dur || 0, writer: ed.writer || '' }, ...idx.weeks.filter(w => w.date !== date)].sort((a, b) => b.date.localeCompare(a.date));
   idx.updated = new Date().toISOString(); idx.kid = kid;
   fs.writeFileSync(ip, JSON.stringify(idx));
   console.log(`Đã mã hoá bản tin nội bộ ${date} (khoá ${kid}).`);
