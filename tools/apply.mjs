@@ -28,6 +28,7 @@ for (const s of out.stories) Object.assign(ed.stories[s.id], { h_en: s.h_en, h_v
 ed.note = out.note; ed.healthDesk.analysis = out.health; ed.vocab = out.vocab;
 Object.assign(ed.podcast, { title: out.podcast.title, desc: out.podcast.desc, turns: turns.map(t => ({ sp: t.sp, text: speech(t.text), vi: t.vi })), words });
 delete ed.podcast.audio;                      // GitHub sẽ tạo lại giọng đọc
+if (process.env.DAILY_VOICE) ed.podcast.voiceReq = { engine: process.env.DAILY_VOICE, preset: process.env.DAILY_VOICES || '' };
 ed.writer = 'claude-code'; ed.updated = new Date().toISOString();
 fs.writeFileSync(fp, JSON.stringify(ed));
 const ip = path.join(ROOT, 'data', 'index.json'), idx = JSON.parse(fs.readFileSync(ip, 'utf8'));

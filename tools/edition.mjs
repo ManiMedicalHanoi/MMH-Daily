@@ -13,6 +13,8 @@ const CFG = JSON.parse(fs.readFileSync(path.join(ROOT, 'config.json'), 'utf8'));
 const NOW = process.env.DAILY_NOW ? new Date(process.env.DAILY_NOW) : new Date();
 const DATE = process.env.DAILY_DATE || vnDay(NOW);
 const ED_DIR = path.join(ROOT, 'data', 'editions');
+const list = v => String(v || '').split(',').map(x => x.trim()).filter(Boolean);
+const FILTER = { sources: list(process.env.DAILY_SOURCES), topics: list(process.env.DAILY_TOPICS) };
 const readJson = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return d; } };
 
 // ── chọn tin ──
@@ -38,6 +40,14 @@ function pick(pool) {
   const fresh = h => pool.items.filter(x => NOW - new Date(x.d) <= h * 36e5 && !used.has(x.id));
   let cand = fresh(30);
   if (cand.length < 40) cand = fresh(54);
+  // lọc theo lựa chọn khi bấm "Tổng hợp ngay": DAILY_SOURCES = tên miền báo, DAILY_TOPICS = mã chủ đề (config.json ▸ topics)
+  if (FILTER.sources.length) { const ok = new Set(FILTER.sources); cand = cand.filter(x => ok.has(x.dom) || (x.kind === 'doc' && ok.has('vanban.chinhphu.vn'))); }
+  if (FILTER.topics.length) {
+    const T = CFG.topics.filter(t => FILTER.topics.includes(t.id));
+    const hit = x => T.some(t => (t.tags || []).some(g => x.tags?.includes(g)) || (t.secs || []).includes(x.sec));
+    const strict = cand.filter(hit);
+    cand = strict.length >= 8 ? strict : [...strict, ...cand.filter(x => !hit(x) && x.sec === 'health')].slice(0, 12);
+  }
   const rank = x => x.sc + (x.also?.length || 0) * 1.5 + Math.max(0, 1 - (NOW - new Date(x.d)) / (30 * 36e5)) + (x.img ? 0.3 : 0);
   cand.sort((a, b) => rank(b) - rank(a));
   const sections = {};
@@ -242,6 +252,7 @@ async function main() {
     date: DATE, no, updated: iso(NOW), writer: '',
     lead: picked.lead?.id, sections: {}, healthDesk: { groups: picked.desk, order: Object.keys(DESK) }, docs: picked.docs.map(x => x.id),
     podcast: { show: showId, name: SHOWS[showId].name, hosts: SHOWS[showId].hosts, color: SHOWS[showId].color },
+    filter: (FILTER.sources.length || FILTER.topics.length) ? { sources: FILTER.sources, topics: FILTER.topics, by: process.env.DAILY_BY || '' } : undefined,
     stories: {}, sources: pool.status.map(s => ({ id: s.id, lang: s.lang, ok: !!s.ok, kept: s.kept })),
   };
   const freeWrite = async () => {

@@ -131,6 +131,14 @@ async function main() {
 
   const items = [...byId.values()].filter(x => new Date(x.d) >= since).sort((a, b) => b.d.localeCompare(a.d));
   fs.writeFileSync(POOL, JSON.stringify({ updated: iso(NOW), status, items }));
+  // danh mục nguồn + chủ đề cho app (ô chọn khi bấm "Tổng hợp ngay"): số tin 48 giờ qua của từng báo / chủ đề
+  const recent = items.filter(x => NOW - new Date(x.d) <= 2 * DAY);
+  const nDom = {}; for (const x of recent) nDom[x.dom] = (nDom[x.dom] || 0) + 1;
+  const topicN = t => recent.filter(x => (t.tags || []).some(g => x.tags?.includes(g)) || (t.secs || []).includes(x.sec)).length;
+  fs.writeFileSync(path.join(ROOT, 'data', 'sources.json'), JSON.stringify({ updated: iso(NOW),
+    groups: CFG.outletGroups.map(g => ({ id: g.id, vi: g.vi, outlets: g.doms.map(d => ({ dom: d, name: CFG.trusted[d] || d, n: nDom[d] || 0 })) })),
+    topics: CFG.topics.map(t => ({ id: t.id, vi: t.vi, n: topicN(t) })),
+    voice: { engines: CFG.voice.engines, presets: CFG.voice.presets.map(p => ({ id: p.id, vi: p.vi, f: { name: p.f.name, preview: p.f.preview }, m: { name: p.m.name, preview: p.m.preview } })) } }));
   const by = {}; for (const x of items) by[x.sec + '/' + x.lang] = (by[x.sec + '/' + x.lang] || 0) + 1;
   console.log(`\nKho tin: ${items.length} · ${JSON.stringify(by)}`);
   if (!status.some(s => s.ok)) process.exit(1);

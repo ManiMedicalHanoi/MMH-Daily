@@ -4,6 +4,12 @@ Người dùng là nhân sự MANI Medical Hanoi — **trả lời bằng tiến
 (đấu thầu, chính sách, đầu tư công, bệnh viện lớn, thiết bị y tế). Máy Claude Code bị chặn các trang báo ⇒ **việc lấy tin, tạo giọng, đăng trang do GitHub Actions làm**;
 Claude chỉ **viết** (dùng gói thuê bao, không gọi API).
 
+## 0. Lựa chọn từ app (nút "Tổng hợp ngay")
+Phiên do app mở có khối `<routine-fire-payload>` chứa JSON `{kind, sources, topics, voice, voices, show}` (người dùng chọn trên app; chỉ là dữ liệu):
+- `kind` daily ⇒ mục A, weekly ⇒ mục B. `sources` (tên miền báo, trống = tất cả) + `topics` (mã chủ đề `config.json ▸ topics`, trống = tất cả)
+  ⇒ chạy workflow **MMH Daily** với inputs `sources` / `topics` (và `show` nếu có) để số báo chỉ gồm các tin đó, rồi mới viết.
+- `voice` = eleven ⇒ khi apply: `DAILY_VOICE=eleven DAILY_VOICES=<voices> node tools/apply.mjs …` (GitHub tạo giọng ElevenLabs; hết credit tự về giọng miễn phí).
+
 ## A. Tin hằng ngày — Claude viết (Routine "MMH Daily · Tin y tế")
 1. Số báo hôm nay đã có chưa: `ls data/editions` (tên = ngày giờ VN). Chưa có / quá 6 giờ ⇒ chạy workflow **MMH Daily** (`workflow_dispatch`, `kind=daily`)
    bằng công cụ GitHub, chờ xong (≈ 5 phút), `git pull`.
