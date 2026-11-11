@@ -30,7 +30,7 @@ const W = (id, needle, nth = 0, off = 0) => {
   throw new Error(`Không thấy mốc "${needle}" trong đoạn ${id}`);
 };
 const SEG = (id) => tl.segs[id];
-const ORDER = ['hook', 'trio', 'arch', 'step1', 'step2', 'step3', 'prompt', 'build', 'daily', 'phone', 'deep', 'close'];
+const ORDER = ['hook', 'trio', 'arch', 'step1', 'step2', 'step3', 'prompt', 'build', 'daily', 'phone', 'deep', 'close', 'ep2'];
 const SB: any = {};
 ORDER.forEach((id, i) => { SB[id] = [i === 0 ? 0 : SEG(id).start - 0.45, i < ORDER.length - 1 ? SEG(ORDER[i + 1]).start - 0.45 : tl.endcard]; });
 SB.end = [tl.endcard, tl.total + 1];
@@ -259,7 +259,7 @@ const Hook = ({ t, v }) => {
   return (
     <>
       <div style={{ ...abs(v ? 40 : 120, v ? 185 : 250, v ? 1000 : 1000), textAlign: v ? 'center' : 'left' }}>
-        <In t={t} at={0.25}><div style={{ fontSize: v ? 25 : 24, letterSpacing: 4, fontWeight: 700, color: C.claude }}>CLAUDE CODE · GITHUB · GOOGLE SHEETS</div></In>
+        <In t={t} at={0.25}><div style={{ fontSize: v ? 25 : 24, letterSpacing: 4, fontWeight: 700, color: C.claude }}>TẬP 1 · CLAUDE CODE · GITHUB · ELEVENLABS</div></In>
         <In t={t} at={c.pod - 0.3}><div style={{ fontSize: v ? 80 : 100, fontWeight: 800, lineHeight: 1.04, marginTop: 16, letterSpacing: -2.5 }}>Một app podcast</div></In>
         <In t={t} at={c.gom - 0.15}><div style={{ fontSize: v ? 80 : 100, fontWeight: 800, lineHeight: 1.04, letterSpacing: -2.5 }}><span style={{ color: C.claude }}>tự đọc báo</span> mỗi sáng</div></In>
       </div>
@@ -289,7 +289,7 @@ const Hook = ({ t, v }) => {
         </div>
       ))}
       <div style={{ ...abs(v ? 0 : 120, v ? 1268 : 790, v ? 1080 : 1000), display: 'flex', alignItems: 'center', justifyContent: v ? 'center' : 'flex-start', gap: 18 }}>
-        {['claude', 'github', 'sheets'].map((k, i) => (
+        {['claude', 'github', 'el'].map((k, i) => (
           <React.Fragment key={k}>
             {i > 0 && <In t={t} at={c.hai + 0.1 + i * 0.12}><div style={{ fontSize: 44, fontWeight: 300, color: C.mute }}>+</div></In>}
             <Pop t={t} at={c.hai + i * 0.12}><Tile k={k} s={v ? 104 : 100} /></Pop>
@@ -302,11 +302,11 @@ const Hook = ({ t, v }) => {
 };
 
 const Trio = ({ t, v }) => {
-  const c = { ba: W('trio', 'ba'), cc: W('trio', 'Claude'), gh: W('trio', 'GitHub'), kho: W('trio', 'kho'), td: W('trio', 'tự'), web: W('trio', 'web'), gs: W('trio', 'Google'), csdl: W('trio', 'cơ') };
+  const c = { ba: W('trio', 'ba'), cc: W('trio', 'Claude'), gh: W('trio', 'GitHub'), kho: W('trio', 'kho'), td: W('trio', 'tự'), web: W('trio', 'web'), el: W('trio', 'ElevenLabs'), bien: W('trio', 'biến') };
   const cards = [
     { k: 'claude', name: 'Claude Code', role: 'Người viết code', at: c.cc, col: C.claude, chips: [['Bạn ra lệnh, Claude viết', c.cc + 0.8]] },
     { k: 'github', name: 'GitHub', role: 'Kho chứa + máy chạy + web', at: c.gh, col: C.gh, chips: [['Repository · kho code', c.kho], ['Actions · chạy tự động', c.td], ['Pages · web miễn phí', c.web]] },
-    { k: 'sheets', name: 'Google Sheets', role: 'Cơ sở dữ liệu', at: c.gs, col: C.sheet, chips: [['Apps Script · cổng API', c.csdl + 0.5]] },
+    { k: 'el', name: 'ElevenLabs', role: 'Giọng đọc như người thật', at: c.el, col: '#111111', chips: [['API · chữ thành giọng nói', c.bien + 0.4]] },
   ];
   const act = cards.reduce((a, cd, i) => (t >= cd.at - 0.1 ? i : a), -1);
   const cw = v ? 960 : 500, chh = v ? 300 : 560;
@@ -327,7 +327,7 @@ const Trio = ({ t, v }) => {
                   <div style={{ fontSize: v ? 28 : 28, color: C.mute, marginTop: 4, fontWeight: 500 }}>{cd.role}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: v ? 'row' : 'column', gap: 10, marginTop: v ? 16 : 26 }}>
                     {cd.chips.map(([lab, at]) => (
-                      <Pop key={lab} t={t} at={at}><div style={{ padding: v ? '8px 16px' : '10px 18px', borderRadius: 12, background: i === 0 ? C.claudeL : i === 1 ? '#EEF0F3' : C.sheetL, fontSize: v ? 24 : 24, fontWeight: 600, color: i === 2 ? C.sheet : C.ink, whiteSpace: 'nowrap' }}>{lab}</div></Pop>
+                      <Pop key={lab} t={t} at={at}><div style={{ padding: v ? '8px 16px' : '10px 18px', borderRadius: 12, background: i === 0 ? C.claudeL : i === 1 ? '#EEF0F3' : '#EFEFEF', fontSize: v ? 24 : 24, fontWeight: 600, color: C.ink, whiteSpace: 'nowrap' }}>{lab}</div></Pop>
                     ))}
                   </div>
                 </div>
@@ -341,11 +341,11 @@ const Trio = ({ t, v }) => {
 };
 
 const Arch = ({ t, v }) => {
-  const c = { ng: W('arch', 'Nguyên'), gd: W('arch', 'Giao'), khi: W('arch', 'Khi'), goi: W('arch', 'gọi'), as1: W('arch', 'Apps'), as2: W('arch', 'Apps', 1), gs: W('arch', 'Google'), kc: W('arch', 'Không') };
+  const c = { ng: W('arch', 'Nguyên'), gd: W('arch', 'Giao'), viec: W('arch', 'Việc'), gom: W('arch', 'gom'), tao: W('arch', 'tạo'), act: W('arch', 'Actions'), khoa: W('arch', 'Khoá'), sec: W('arch', 'Secrets'), kc: W('arch', 'Không') };
   const nodes = [
-    { k: 'pages', lab: 'FRONTEND', title: 'Giao diện web', sub: 'GitHub Pages', code: 'index.html · app.js', at: c.gd, col: C.gh },
-    { k: 'gas', lab: 'API', title: 'Apps Script', sub: 'link …/exec', code: 'doGet() · doPost()', at: c.as1, col: C.gas },
-    { k: 'sheets', lab: 'DATABASE', title: 'Google Sheet', sub: 'các trang tính', code: 'episodes · listeners', at: c.gs, col: C.sheet },
+    { k: 'pages', lab: 'GIAO DIỆN', title: 'Trang web tĩnh', sub: 'GitHub Pages', code: 'index.html · app.js', at: c.gd, col: C.gh },
+    { k: 'actions', lab: 'MÁY CHẠY', title: 'Việc nặng', sub: 'GitHub Actions', code: 'gom tin · tạo giọng', at: c.viec, col: '#2088FF' },
+    { k: 'el', lab: 'GIỌNG ĐỌC', title: 'ElevenLabs', sub: 'API chữ → giọng', code: 'khoá trong Secrets', at: c.khoa, col: '#111111' },
   ];
   const NW = v ? 660 : 420, NH = v ? 230 : 300;
   const pos = (i) => (v ? { x: 540, y: 440 + i * 345 } : { x: 330 + i * 630, y: 530 });
@@ -365,7 +365,7 @@ const Arch = ({ t, v }) => {
   return (
     <>
       <In t={t} at={c.ng - 0.3}><div style={{ ...abs(0, v ? 225 : 150, v ? 1080 : 1920), textAlign: 'center', fontSize: v ? 54 : 58, fontWeight: 800, letterSpacing: -1.4 }}>Nguyên lý: <span style={{ color: C.claude }}>3 lớp, 0 máy chủ</span></div></In>
-      {link(0, c.goi)}{link(1, c.as2)}
+      {link(0, c.act)}{link(1, c.khoa)}
       {nodes.map((n, i) => {
         const p = pos(i);
         return (
@@ -382,11 +382,13 @@ const Arch = ({ t, v }) => {
           </In>
         );
       })}
-      {pkt(0, 1, c.goi + 0.2, 'fetch(…/exec)', C.gh)}
-      {pkt(1, 2, c.as2 + 0.4, 'appendRow()', C.gas)}
-      {pkt(2, 1, c.as2 + 1.2, 'JSON', C.sheet, 1.7, 0)}
-      {pkt(1, 0, c.as2 + 1.9, 'JSON', C.sheet, 1.7, 0)}
-      <div style={{ ...abs(0, v ? 1290 : 850, v ? 1080 : 1920), display: 'flex', justifyContent: 'center' }}>
+      {pkt(1, 2, c.khoa + 0.3, 'kịch bản', '#2088FF')}
+      {pkt(2, 1, c.khoa + 1.1, 'MP3', '#111111')}
+      {pkt(1, 0, c.act + 0.2, 'đăng số mới', C.gh)}
+      <div style={{ ...abs(v ? 0 : pos(2).x - 230, v ? pos(2).y + NH / 2 + 14 : pos(2).y + NH / 2 + 22, v ? 1080 : 460), display: 'flex', justifyContent: 'center' }}>
+        <Pop t={t} at={c.sec - 0.1}><div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 18px', borderRadius: 12, background: C.gh, color: '#fff', fontFamily: MONO, fontSize: v ? 22 : 19, fontWeight: 600 }}><Lock s={20} />secrets.ELEVENLABS_API_KEY</div></Pop>
+      </div>
+      <div style={{ ...abs(0, v ? 1325 : 850, v ? 1080 : 1920), display: 'flex', justifyContent: 'center' }}>
         <Pop t={t} at={c.kc}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '14px 30px 14px 20px', background: '#fff', borderRadius: 999, border: `2px solid ${C.ink}`, boxShadow: '0 16px 36px rgba(22,22,27,.14)' }}>
             <ServerMark s={64} /><div style={{ fontSize: v ? 34 : 34, fontWeight: 800 }}>Không cần máy chủ riêng</div>
@@ -524,75 +526,96 @@ const SheetTabs = ({ CW, CH, active, tabs = ['episodes', 'sources', 'listeners']
   </div>
 );
 
+const VOICES = [['Ninh Đôn', 'Trẻ · miền Bắc · hào hứng'], ['Đức', 'MC · Hà Nội · tự tin'], ['Tony Hoang', 'Chia sẻ kiến thức'], ['Trung Caha', 'Rõ ràng · trò chuyện']];
+const Wave = ({ t, n = 28, h = 40, on = false, color = '#111' }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 3, height: h }}>
+    {Array.from({ length: n }).map((_, i) => { const base = 0.25 + 0.75 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * 0.6)); const a = on ? 0.35 + 0.65 * Math.abs(Math.sin(t * 9 + i * 0.8)) : 1; return <div key={i} style={{ width: 4, height: h * base * a, borderRadius: 2, background: color, opacity: on ? 1 : 0.35 }} />; })}
+  </div>
+);
+const ElTop = ({ CW, tab }) => (
+  <div style={{ ...abs(0, 0, CW, 66), display: 'flex', alignItems: 'center', gap: 14, padding: '0 26px', borderBottom: '1px solid #EEE' }}>
+    <ElMark s={34} /><div style={{ fontSize: 24, fontWeight: 700 }}>ElevenLabs</div>
+    <div style={{ marginLeft: 24, display: 'flex', gap: 22, fontSize: 20, color: C.mute }}>{['Giọng đọc', 'Khoá API'].map((x) => <div key={x} style={{ fontWeight: x === tab ? 700 : 500, color: x === tab ? C.ink : C.mute }}>{x}</div>)}</div>
+  </div>
+);
+
 const Step2 = ({ t, v }) => {
-  const c = { tao: W('step2', 'tạo'), gs: W('step2', 'Google'), ti: W('step2', 'Tiện'), as: W('step2', 'Apps'), dan: W('step2', 'Dán'), trien: W('step2', 'Triển'), udw: W('step2', 'Ứng'), nhan: W('step2', 'nhận'), exec: W('step2', 'exec') };
-  const items = [['Tạo Google Sheet', c.tao], ['Mở Apps Script', c.ti], ['Dán mã, bấm Triển khai', c.dan], ['Copy link …/exec', c.nhan]];
-  const A = c.dan - 0.25, Dl = c.trien - 0.05, Sx = c.nhan - 0.2;
-  const url = t < A ? 'docs.google.com/spreadsheets' : 'script.google.com/home/projects';
+  const c = { vao: W('step2', 'vào'), chon: W('step2', 'chọn'), giong: W('step2', 'giọng'), tao: W('step2', 'tạo'), dan: W('step2', 'Dán'), sec: W('step2', 'Secrets'), kho: W('step2', 'GitHub'), cat: W('step2', 'cất') };
+  const items = [['Chọn giọng đọc', c.chon], ['Tạo khoá API', c.tao], ['Cất khoá vào GitHub Secrets', c.dan]];
+  const B = c.tao - 0.25, Cc = c.dan - 0.2;
+  const url = t < B ? 'elevenlabs.io/app/voice-library' : t < Cc ? 'elevenlabs.io/app/settings/api-keys' : 'github.com/you/dailycast/settings/secrets/actions';
   return (
-    <StepFrame t={t} v={v} id="step2" n={2} title="Google Sheet + Apps Script" logos={['sheets', 'gas']} items={items} url={url}>
+    <StepFrame t={t} v={v} id="step2" n={2} title="Giọng đọc ElevenLabs" logos={['el', 'github']} items={items} url={url}>
       {(CW, CH) => {
-        const fs = v ? 1.12 : 1;
-        if (t < A) {
-          const m = menuX(v); const open = t > c.ti - 0.05;
-          const rows = [['11/11', 'Two Takes', '24', 'Nam · EL', '1.284'], ['10/11', 'Health Desk', '22', 'Nữ · EL', '1.102'], ['09/11', 'Morning Briefing', '26', 'Nam · EL', '987'], ['08/11', 'Week in Review', '30', 'Nữ · EL', '1.420'], ['07/11', 'The Explainer', '21', 'Nam · EL', '865'], ['06/11', 'Two Takes', '23', 'Nam · EL', '1.010']];
-          const cols = v ? ['Ngày', 'Chương trình', 'Số tin', 'Lượt nghe'] : ['Ngày', 'Chương trình', 'Số tin', 'Giọng', 'Lượt nghe'];
-          const rr = v ? rows.map((r) => [r[0], r[1], r[2], r[4]]) : rows;
+        const fs = v ? 1.12 : 1, px = v ? 36 : 50;
+        if (t < B) {
+          const cols = 2, gw = (CW - px * 2 - 24) / cols, gh = v ? 200 : 190;
+          const picked = t > c.giong + 0.5;
           return (
             <>
-              <SheetTop v={v} CW={CW} menuHi={open ? 'Tiện ích mở rộng' : null} />
-              <SheetGrid t={t} CW={CW} top={166} bottom={CH - 52} v={v} cols={cols} rows={rr} rowAt={(i) => c.gs + 0.2 + i * 0.22} fs={21 * fs} />
-              <SheetTabs CW={CW} CH={CH} active="episodes" />
-              {open && (
-                <div style={{ ...abs(m.x - 8, 76, 330 * fs), background: '#fff', borderRadius: 10, boxShadow: '0 14px 40px rgba(0,0,0,.2)', padding: '8px 0', opacity: P(t, c.ti - 0.05, 0.2) }}>
-                  {[['Tiện ích bổ sung', null], ['Macro', null], ['Apps Script', 'gas'], ['AppSheet', null]].map(([x, ic], i) => (
-                    <div key={x} style={{ height: 54 * fs, display: 'flex', alignItems: 'center', gap: 14, padding: '0 20px', fontSize: 21 * fs, background: i === 2 && t > c.as - 0.25 ? '#E8F0FE' : '#fff', fontWeight: i === 2 ? 600 : 400 }}>{ic ? <Logo k="gas" s={28} /> : <div style={{ width: 28 }} />}{x}</div>
-                  ))}
-                </div>
-              )}
-              <Cursor t={t} s={fs} keys={[{ t: c.gs, x: CW * 0.7, y: CH * 0.62 }, { t: c.ti - 0.05, x: m.x + m.w / 2, y: 58, c: 1, d: 0.6 }, { t: c.as + 0.05, x: m.x + 120, y: 84 + 54 * fs * 2.5, c: 1, d: 0.4 }]} />
+              <ElTop CW={CW} tab="Giọng đọc" />
+              <div style={{ ...abs(px, 92), fontSize: 34 * fs, fontWeight: 700 }}>Thư viện giọng</div>
+              <div style={{ ...abs(px, 148), display: 'flex', gap: 10 }}>{['Tiếng Việt', 'Nam', 'Kể chuyện'].map((x) => <div key={x} style={{ padding: '7px 16px', borderRadius: 999, background: '#F2F2F2', fontSize: 19 * fs, fontWeight: 600 }}>{x}</div>)}</div>
+              {VOICES.map(([n, d], i) => {
+                const x = px + (i % cols) * (gw + 24), y = 210 + Math.floor(i / cols) * (gh + 22); const on = i === 0 && t > c.chon;
+                return (
+                  <In key={n} t={t} at={c.vao - 0.2 + i * 0.1} y={16} style={{ ...abs(x, y, gw, gh) }}>
+                    <div style={{ width: '100%', height: '100%', boxSizing: 'border-box', borderRadius: 18, border: `${on ? 2.5 : 1.5}px solid ${on ? '#111' : '#E6E6E6'}`, padding: 20, background: '#fff', boxShadow: on ? '0 14px 30px rgba(0,0,0,.12)' : 'none' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                        <div style={{ width: 52, height: 52, borderRadius: 26, background: on ? '#111' : '#F2F2F2', color: on ? '#fff' : '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{on ? '❚❚' : '▶'}</div>
+                        <div><div style={{ fontSize: 25 * fs, fontWeight: 700 }}>{n}</div><div style={{ fontSize: 18 * fs, color: C.mute }}>{d}</div></div>
+                      </div>
+                      <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Wave t={t} on={on} n={v ? 22 : 24} h={42} />
+                        {i === 0 && <div style={{ padding: '8px 14px', borderRadius: 10, background: picked ? C.sheet : '#111', color: '#fff', fontSize: 17 * fs, fontWeight: 700, whiteSpace: 'nowrap' }}>{picked ? 'Đã chọn ✓' : 'Dùng giọng này'}</div>}
+                      </div>
+                    </div>
+                  </In>
+                );
+              })}
+              <Cursor t={t} s={fs} keys={[{ t: c.vao, x: CW * 0.8, y: CH * 0.85 }, { t: c.chon + 0.05, x: px + 46, y: 210 + 46, c: 1, d: 0.5 }, { t: c.giong + 0.45, x: px + gw - 80, y: 210 + 20 + 66 + 18 + 21, c: 1, d: 0.45 }]} />
             </>
           );
         }
-        const ex = v ? 0 : 230; const efs = v ? 23 : 20.5;
+        if (t < Cc) {
+          const made = t > c.tao + 0.35, copied = t > c.tao + 1.3;
+          return (
+            <>
+              <ElTop CW={CW} tab="Khoá API" />
+              <div style={{ ...abs(px, 92), fontSize: 34 * fs, fontWeight: 700 }}>Khoá API</div>
+              <div style={{ ...abs(CW - px - 200 * fs, 92, 200 * fs, 52), borderRadius: 12, background: '#111', color: '#fff', fontSize: 20 * fs, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${t > c.tao - 0.05 && t < c.tao + 0.12 ? 0.94 : 1})` }}>+ Tạo khoá</div>
+              {made && (
+                <div style={{ ...abs(px, 180, CW - px * 2), borderRadius: 18, border: '1.5px solid #E6E6E6', padding: 26, boxSizing: 'border-box', opacity: P(t, c.tao + 0.35, 0.3), transform: `translateY(${(1 - P(t, c.tao + 0.35, 0.35)) * 20}px)` }}>
+                  <div style={{ fontSize: 20 * fs, color: C.mute }}>Tên khoá</div>
+                  <div style={{ fontSize: 26 * fs, fontWeight: 700, marginTop: 4 }}>DailyCast</div>
+                  <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>{['Text to Speech', 'Voices'].map((x) => <div key={x} style={{ padding: '6px 14px', borderRadius: 999, background: '#E6F4EA', color: C.sheet, fontSize: 18 * fs, fontWeight: 700 }}>✓ {x}</div>)}</div>
+                  <div style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'center', flexWrap: v ? 'wrap' : 'nowrap' }}>
+                    <div style={{ flex: 1, minWidth: 300, fontFamily: MONO, fontSize: (v ? 24 : 22), background: '#F6F6F6', borderRadius: 10, padding: '14px 18px' }}>sk_••••••••••••••••••••7c1e</div>
+                    <div style={{ padding: '14px 22px', borderRadius: 10, background: copied ? C.sheet : '#111', color: '#fff', fontSize: 20 * fs, fontWeight: 700, whiteSpace: 'nowrap' }}>{copied ? 'Đã sao chép ✓' : 'Sao chép'}</div>
+                  </div>
+                </div>
+              )}
+              <Cursor t={t} s={fs} keys={[{ t: B, x: CW * 0.5, y: CH * 0.6 }, { t: c.tao - 0.05, x: CW - px - 100 * fs, y: 118, c: 1, d: 0.45 }, { t: c.tao + 1.25, x: CW - px - 90 * fs, y: v ? 180 + 26 + 24 + 34 + 52 + 20 + 30 : 180 + 26 + 24 + 34 + 52 + 20 + 26, c: 1, d: 0.5 }]} />
+            </>
+          );
+        }
+        const nm = typed('ELEVENLABS_API_KEY', t, c.dan, 20); const added = t > c.kho + 0.45;
         return (
           <>
-            <div style={{ ...abs(0, 0, CW, 64), borderBottom: '1px solid #E3E3E3', display: 'flex', alignItems: 'center', gap: 14, padding: '0 22px' }}>
-              <Logo k="gas" s={36} /><div style={{ fontSize: 23 * fs, fontWeight: 500 }}>DailyCast API</div>
-              <div style={{ marginLeft: 'auto', padding: '8px 18px', fontSize: 19 * fs, color: C.mute }}>▷ Chạy</div>
-              <div style={{ padding: '10px 22px', borderRadius: 8, background: '#1A73E8', color: '#fff', fontSize: 19 * fs, fontWeight: 600, transform: `scale(${t > c.trien - 0.12 && t < c.trien + 0.1 ? 0.94 : 1})` }}>Triển khai ▾</div>
-            </div>
-            {!v && <div style={{ ...abs(0, 64, 230, CH - 64), background: '#F8F9FA', borderRight: '1px solid #E3E3E3', padding: 20, boxSizing: 'border-box', fontSize: 19 }}><div style={{ color: C.mute, fontWeight: 600, marginBottom: 12 }}>Tệp</div><div style={{ padding: '8px 12px', background: '#E8F0FE', borderRadius: 8, fontWeight: 600 }}>Code.gs</div><div style={{ color: C.mute, fontWeight: 600, margin: '22px 0 8px' }}>Thư viện</div><div style={{ color: C.mute, fontWeight: 600 }}>Dịch vụ</div></div>}
-            <div style={{ ...abs(ex + 14, 84, CW - ex - 20, CH - 90), overflow: 'hidden' }}><Code lines={CODE_GS} t={t} at={c.dan} mode="paste" fs={efs} theme="light" /></div>
-            {t > Dl && (
-              <AbsoluteFill style={{ background: `rgba(20,20,28,${0.38 * P(t, Dl, 0.3)})` }}>
-                {t < Sx ? (
-                  <div style={{ ...abs(v ? 30 : (CW - 860) / 2, v ? 90 : 90, v ? CW - 60 : 860, v ? 700 : 560), background: '#fff', borderRadius: 18, boxShadow: '0 30px 80px rgba(0,0,0,.3)', padding: 34, boxSizing: 'border-box', opacity: P(t, Dl, 0.25), transform: `scale(${0.95 + 0.05 * P(t, Dl, 0.3)})` }}>
-                    <div style={{ fontSize: 30 * fs, fontWeight: 700 }}>Tùy chọn triển khai mới</div>
-                    <div style={{ display: 'flex', flexDirection: v ? 'column' : 'row', gap: 26, marginTop: 24 }}>
-                      <div style={{ width: v ? '100%' : 280 }}>
-                        <div style={{ fontSize: 19 * fs, color: C.mute, marginBottom: 10 }}>Chọn loại</div>
-                        {['Ứng dụng web', 'Tiện ích bổ sung', 'API có thể thực thi'].map((x, i) => <div key={x} style={{ padding: '12px 16px', fontSize: 22 * fs, borderRadius: 10, background: i === 0 && t > c.udw - 0.15 ? '#E8F0FE' : 'transparent', color: i === 0 && t > c.udw - 0.15 ? '#1A73E8' : C.ink, fontWeight: i === 0 ? 700 : 400 }}>{x}</div>)}
-                      </div>
-                      <div style={{ flex: 1, opacity: P(t, c.udw, 0.3) }}>
-                        {[['Mô tả', 'DailyCast v1'], ['Thực thi với tư cách', 'Tôi'], ['Người có quyền truy cập', 'Bất kỳ ai']].map(([a, b]) => <div key={a} style={{ marginBottom: 16 }}><div style={{ fontSize: 18 * fs, color: C.mute }}>{a}</div><div style={{ border: '1.5px solid #DADCE0', borderRadius: 8, padding: '10px 14px', fontSize: 22 * fs, marginTop: 4 }}>{b}</div></div>)}
-                      </div>
-                    </div>
-                    <div style={{ position: 'absolute', right: 34, bottom: 30, padding: '12px 30px', borderRadius: 8, background: '#1A73E8', color: '#fff', fontSize: 21 * fs, fontWeight: 700 }}>Triển khai</div>
-                  </div>
-                ) : (
-                  <div style={{ ...abs(v ? 30 : (CW - 900) / 2, v ? 160 : 140, v ? CW - 60 : 900, v ? 460 : 400), background: '#fff', borderRadius: 18, boxShadow: '0 30px 80px rgba(0,0,0,.3)', padding: 36, boxSizing: 'border-box', opacity: P(t, Sx, 0.25) }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 30 * fs, fontWeight: 700 }}><Check s={36} bg={C.sheet} /> Đã triển khai</div>
-                    <div style={{ fontSize: 20 * fs, color: C.mute, marginTop: 26 }}>Ứng dụng web · URL</div>
-                    <div style={{ marginTop: 10, border: '1.5px solid #DADCE0', borderRadius: 10, padding: '14px 16px', fontFamily: MONO, fontSize: v ? 23 : 21, wordBreak: 'break-all', lineHeight: 1.45 }}>
-                      https://script.google.com/macros/s/AKfycbx9Qe…<span style={{ background: t > c.exec - 0.05 ? '#FDE2D6' : 'transparent', color: t > c.exec - 0.05 ? '#B4441F' : C.ink, fontWeight: 600, borderBottom: t > c.exec - 0.05 ? `3px solid ${C.claude}` : 'none', padding: '0 2px' }}>/exec</span>
-                    </div>
-                    <div style={{ position: 'absolute', right: 36, bottom: 30, padding: '12px 28px', borderRadius: 8, background: t > c.exec + 0.5 ? C.sheet : '#1A73E8', color: '#fff', fontSize: 21 * fs, fontWeight: 700 }}>{t > c.exec + 0.5 ? 'Đã sao chép ✓' : 'Sao chép'}</div>
-                  </div>
-                )}
-              </AbsoluteFill>
+            <GhBar text="you / dailycast" />
+            <div style={{ ...abs(px, 96), fontSize: 30 * fs, fontWeight: 700 }}>Actions secrets / New secret</div>
+            <div style={{ ...abs(px, 160), fontSize: 21 * fs, fontWeight: 600 }}>Name *</div>
+            <div style={{ ...abs(px, 196, CW - px * 2, 60), border: `2px solid ${t < c.sec ? '#0969DA' : '#D0D7DE'}`, borderRadius: 10, display: 'flex', alignItems: 'center', padding: '0 16px', fontFamily: MONO, fontSize: 24 * fs }}>{nm}{t < c.sec && <Caret t={t} h={30} color="#0969DA" />}</div>
+            <div style={{ ...abs(px, 278), fontSize: 21 * fs, fontWeight: 600 }}>Secret *</div>
+            <div style={{ ...abs(px, 314, CW - px * 2, 110), border: `2px solid ${t >= c.sec && t < c.kho + 0.3 ? '#0969DA' : '#D0D7DE'}`, borderRadius: 10, padding: '16px', boxSizing: 'border-box', fontFamily: MONO, fontSize: 24 * fs, letterSpacing: 2 }}>{t > c.sec ? '•'.repeat(Math.min(28, Math.floor((t - c.sec) * 60))) : ''}</div>
+            <div style={{ ...abs(px, 446, 210 * fs, 58), borderRadius: 12, background: C.ghGreen, color: '#fff', fontSize: 22 * fs, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${t > c.kho + 0.25 && t < c.kho + 0.42 ? 0.94 : 1})` }}>Add secret</div>
+            {added && (
+              <div style={{ ...abs(px, 530, CW - px * 2), opacity: P(t, c.kho + 0.45, 0.3) }}>
+                <div style={{ background: '#DAFBE1', border: '1.5px solid #4AC26B', borderRadius: 14, padding: '16px 22px', display: 'flex', gap: 14, alignItems: 'center', fontSize: 22 * fs }}><Check s={30} /> Đã cất khoá. Không ai xem lại được, kể cả bạn.</div>
+                <div style={{ marginTop: 16, border: '1px solid #D0D7DE', borderRadius: 12, padding: '14px 20px', display: 'flex', gap: 14, alignItems: 'center', fontFamily: MONO, fontSize: 21 * fs }}><Lock s={22} />ELEVENLABS_API_KEY<span style={{ marginLeft: 'auto', fontFamily: FONT, color: C.mute, fontSize: 18 * fs }}>vừa cập nhật</span></div>
+              </div>
             )}
-            <Cursor t={t} s={fs} keys={[{ t: A + 0.1, x: CW * 0.55, y: CH * 0.55 }, { t: c.trien - 0.05, x: CW - 90, y: 32, c: 1, d: 0.55 }, { t: c.udw, x: (v ? 30 : (CW - 860) / 2) + 34 + 110, y: (v ? 90 : 90) + 34 + 70 + 34 + 26, c: 1, d: 0.45 }, { t: c.udw + 0.9, x: (v ? CW - 30 : (CW + 860) / 2) - 110, y: (v ? 90 + 700 : 90 + 560) - 52, c: 1, d: 0.45 }, { t: c.exec + 0.45, x: (v ? CW - 30 : (CW + 900) / 2) - 110, y: (v ? 160 + 460 : 140 + 400) - 52, c: 1, d: 0.5 }]} />
+            <Cursor t={t} s={fs} keys={[{ t: Cc + 0.1, x: CW * 0.7, y: CH * 0.75 }, { t: c.dan - 0.05, x: px + 300, y: 226, c: 1, d: 0.4 }, { t: c.sec - 0.05, x: px + 300, y: 360, c: 1, d: 0.4 }, { t: c.kho + 0.3, x: px + 105 * fs, y: 475, c: 1, d: 0.45 }]} />
           </>
         );
       }}
@@ -615,8 +638,8 @@ const URL_CHIP = (fs) => (
 );
 
 const Step3 = ({ t, v }) => {
-  const c = { mo: W('step3', 'mở'), kn: W('step3', 'kết'), chon: W('step3', 'chọn'), dan: W('step3', 'dán') };
-  const items = [['Mở Claude Code', c.mo], ['Kết nối GitHub', c.kn], ['Chọn kho dailycast', c.chon], ['Dán link …/exec', c.dan]];
+  const c = { mo: W('step3', 'mở'), kn: W('step3', 'kết'), chon: W('step3', 'chọn') };
+  const items = [['Mở Claude Code', c.mo], ['Kết nối GitHub', c.kn], ['Chọn kho dailycast', c.chon]];
   return (
     <StepFrame t={t} v={v} id="step3" n={3} title="Kết nối Claude Code" logos={['claude', 'github']} items={items} url="claude.ai/code">
       {(CW, CH) => {
@@ -633,13 +656,13 @@ const Step3 = ({ t, v }) => {
                 <div style={{ marginLeft: 'auto', padding: '10px 20px', borderRadius: 10, background: connected ? '#E6F4EA' : C.ink, color: connected ? C.sheet : '#fff', fontSize: 20 * fs, fontWeight: 700, display: 'flex', gap: 8, alignItems: 'center' }}>{connected ? <>Đã kết nối <Check s={22} bg={C.sheet} /></> : 'Kết nối'}</div>
               </div>
             </In>
-            <div style={{ ...abs(ix, iy, IW, ih), background: '#fff', border: `1.5px solid ${t > c.dan - 0.2 ? C.claude : '#E5E2DA'}`, borderRadius: 24, boxShadow: '0 18px 44px rgba(60,50,30,.10)' }}>
-              <div style={{ ...abs(24, 22, IW - 48), fontSize: 24 * fs, color: '#A19D92' }}>{t < c.dan ? 'Mô tả việc cần làm…' : <div style={{ opacity: P(t, c.dan, 0.2), transform: `scale(${1 + 0.04 * (1 - P(t, c.dan, 0.35))})`, transformOrigin: 'left' }}>{URL_CHIP(v ? 22 : 19)}</div>}</div>
+            <div style={{ ...abs(ix, iy, IW, ih), background: '#fff', border: `1.5px solid ${t > c.chon + 0.7 ? C.claude : '#E5E2DA'}`, borderRadius: 24, boxShadow: '0 18px 44px rgba(60,50,30,.10)' }}>
+              <div style={{ ...abs(24, 22, IW - 48), fontSize: 24 * fs, color: '#A19D92' }}>Mô tả việc cần làm…{t > c.chon + 0.8 && <Caret t={t} h={30} />}</div>
               <div style={{ ...abs(20, ih - 66, 320 * fs, 48), borderRadius: 12, border: '1.5px solid #E5E2DA', display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px', fontSize: 20 * fs, fontWeight: 600, background: repoOn ? '#F0EEE6' : '#fff' }}><Logo k="github" s={22} />{repoOn ? 'you/dailycast' : 'Chọn kho'}<span style={{ marginLeft: 'auto', color: C.mute }}>▾</span></div>
-              <div style={{ ...abs(IW - 74, ih - 70, 54, 54), borderRadius: 27, background: t > c.dan ? C.claude : '#E8C8BA', color: '#fff', fontSize: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>↑</div>
+              <div style={{ ...abs(IW - 74, ih - 70, 54, 54), borderRadius: 27, background: '#E8C8BA', color: '#fff', fontSize: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>↑</div>
             </div>
             {dd && <div style={{ ...abs(ix + 20, iy + ih - 14, 360 * fs), background: '#fff', borderRadius: 14, boxShadow: '0 18px 44px rgba(0,0,0,.18)', padding: '8px 0', opacity: P(t, c.chon - 0.05, 0.2) }}>{['you/dailycast', 'you/blog-ca-nhan', 'you/ghi-chu'].map((x, i) => <div key={x} style={{ height: 54, display: 'flex', alignItems: 'center', gap: 12, padding: '0 18px', fontSize: 21 * fs, background: i === 0 && t > c.chon + 0.3 ? '#FBEDE7' : '#fff', fontWeight: i === 0 ? 700 : 400 }}><Logo k="github" s={20} />{x}</div>)}</div>}
-            <Cursor t={t} s={fs} keys={[{ t: c.mo, x: CW * 0.7, y: CH * 0.8 }, { t: c.kn + 0.25, x: (CW + 560 * fs) / 2 - 70, y: by + 38, c: 1, d: 0.5 }, { t: c.chon, x: ix + 150, y: iy + ih - 42, c: 1, d: 0.45 }, { t: c.chon + 0.5, x: ix + 140, y: iy + ih - 14 + 8 + 27, c: 1, d: 0.3 }, { t: c.dan - 0.1, x: ix + IW * 0.5, y: iy + 60, c: 1, d: 0.45 }]} />
+            <Cursor t={t} s={fs} keys={[{ t: c.mo, x: CW * 0.7, y: CH * 0.8 }, { t: c.kn + 0.25, x: (CW + 560 * fs) / 2 - 70, y: by + 38, c: 1, d: 0.5 }, { t: c.chon, x: ix + 150, y: iy + ih - 42, c: 1, d: 0.45 }, { t: c.chon + 0.5, x: ix + 140, y: iy + ih - 14 + 8 + 27, c: 1, d: 0.3 }]} />
           </AbsoluteFill>
         );
       }}
@@ -647,7 +670,7 @@ const Step3 = ({ t, v }) => {
   );
 };
 
-const PROMPT_TXT = 'Làm cho mình app podcast DailyCast: mỗi sáng 5:45 tự gom tin từ các báo lớn, chọn tin quan trọng, viết tóm tắt và kịch bản, đọc thành giọng nói bằng ElevenLabs, lưu lượt nghe vào Google Sheet qua link Apps Script ở trên, và cài được lên điện thoại.';
+const PROMPT_TXT = 'Làm cho mình app podcast DailyCast: mỗi sáng 5:45 tự gom tin từ các báo lớn, chọn tin quan trọng, viết tóm tắt và kịch bản, đọc thành giọng nói bằng ElevenLabs (khoá đã cất trong GitHub Secrets), đăng lên GitHub Pages và cài được lên điện thoại.';
 const BIGBOX = (v) => (v ? { x: 50, y: 300, w: 980, h: 1090 } : { x: 210, y: 120, w: 1500, h: 810 });
 
 const Prompt = ({ t, v }) => {
@@ -663,8 +686,7 @@ const Prompt = ({ t, v }) => {
         <div style={{ ...abs(0, v ? 100 : 96, CW), textAlign: 'center', fontSize: (v ? 40 : 40), fontWeight: 500, fontFamily: 'Georgia, serif', color: '#3D3929' }}>Bạn muốn xây gì hôm nay?</div>
         <div style={{ ...abs(ix, iy, IW, ih), background: '#fff', border: `2px solid ${C.claude}`, borderRadius: 26, boxShadow: '0 24px 60px rgba(60,50,30,.12)' }}>
           <div style={{ ...abs(30, 26, IW - 60) }}>
-            {URL_CHIP(v ? 22 : 20)}
-            <div style={{ marginTop: 22, fontSize: v ? 42 : 40, lineHeight: 1.45, fontWeight: 500, color: C.ink }}>{typed(PROMPT_TXT, t, at, cps)}{t < send + 0.2 && <Caret t={t} h={v ? 46 : 44} />}</div>
+            <div style={{ marginTop: 4, fontSize: v ? 42 : 40, lineHeight: 1.45, fontWeight: 500, color: C.ink }}>{typed(PROMPT_TXT, t, at, cps)}{t < send + 0.2 && <Caret t={t} h={v ? 46 : 44} />}</div>
           </div>
           <div style={{ ...abs(26, ih - 74, 300, 52), borderRadius: 12, background: '#F0EEE6', display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px', fontSize: 21, fontWeight: 600 }}><Logo k="github" s={24} />you/dailycast</div>
           <div style={{ ...abs(IW - 88, ih - 84, 64, 64), borderRadius: 32, background: C.claude, color: '#fff', fontSize: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, transform: `scale(${t > send - 0.1 && t < send + 0.15 ? 0.85 : 1 + 0.06 * Math.max(0, Math.sin((t - send) * 8)) * (t > send - 1.2 && t < send ? 1 : 0)})`, boxShadow: t > send - 1.2 ? '0 0 0 10px rgba(217,119,87,.18)' : 'none' }}>↑</div>
@@ -679,16 +701,16 @@ const Prompt = ({ t, v }) => {
 };
 
 const FILES = {
-  'app.js': ["const API = 'https://script.google.com/…/exec';", '', 'async function loadEpisodes() {', "  const r = await fetch(API + '?action=episodes');", '  render(await r.json());', '}', 'function logListen(ep) {', '  fetch(API, { method: \'POST\',', '    body: JSON.stringify({ user, ep }) });', '}'],
+  'app.js': ["const res = await fetch('data/today.json');", 'const ep = await res.json();', '', 'renderStories(ep.stories);      // tin theo chuyên mục', 'player.src = ep.audio;          // MP3 giọng ElevenLabs', 'showSubtitles(ep.turns);        // phụ đề song ngữ', '', "navigator.serviceWorker.register('sw.js');  // cài như app"],
   'tools/collect.mjs': ["import config from '../config.json' with { type: 'json' };", '', 'const pool = [];', 'for (const feed of config.feeds) {   // hàng chục nguồn', '  const items = await readRSS(feed.url);', '  pool.push(...items.map(scoreStory));', '}', 'const top = pickTop(dedupe(pool), 12);', "await save('data/today.json', top);"],
-  '.github/workflows/daily.yml': ['name: DailyCast', 'on:', '  schedule:', "    - cron: '45 22 * * *'   # 05:45 giờ VN", 'jobs:', '  build:', '    runs-on: ubuntu-latest', '    steps:', '      - run: node tools/collect.mjs', '      - run: node tools/write.mjs', '      - run: python3 tools/voice.py'],
-  'apps-script/Code.gs': CODE_GS.slice(0, 11),
+  'tools/voice.py': ['import os, requests', "KEY = os.environ['ELEVENLABS_API_KEY']   # lấy từ GitHub Secrets", '', 'def speak(text, voice):', '    r = requests.post(', "        f'https://api.elevenlabs.io/v1/text-to-speech/{voice}',", "        headers={'xi-api-key': KEY},", "        json={'text': text, 'model_id': 'eleven_v3'})", "    open('audio/today.mp3', 'wb').write(r.content)"],
+  '.github/workflows/daily.yml': ['name: DailyCast', 'on:', '  schedule:', "    - cron: '45 22 * * *'   # 05:45 giờ VN", 'jobs:', '  build:', '    runs-on: ubuntu-latest', '    env:', '      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}', '    steps:', '      - run: node tools/collect.mjs', '      - run: python3 tools/voice.py'],
   'terminal': ['$ git add . && git commit -m "DailyCast v1"', '$ git push origin main', '✓ Đã đẩy lên GitHub · main'],
 };
 
 const Build = ({ t, v }) => {
-  const c = { k: W('build', 'kế'), gd: W('build', 'giao'), gom: W('build', 'gom'), lich: W('build', 'lịch'), as: W('build', 'Apps'), day: W('build', 'đẩy'), viec: W('build', 'Việc'), duyet: W('build', 'duyệt') };
-  const todo = [['Lên kế hoạch kiến trúc', c.k, null], ['Giao diện · app.js, app.css', c.gd, 'app.js'], ['Gom tin · tools/collect.mjs', c.gom, 'tools/collect.mjs'], ['Lịch chạy · daily.yml', c.lich, '.github/workflows/daily.yml'], ['Backend · Code.gs', c.as, 'apps-script/Code.gs'], ['git push → main', c.day, 'terminal']];
+  const c = { k: W('build', 'kế'), gd: W('build', 'giao'), gom: W('build', 'gom'), goi: W('build', 'gọi'), lich: W('build', 'lịch'), day: W('build', 'đẩy'), viec: W('build', 'Việc'), duyet: W('build', 'duyệt') };
+  const todo = [['Lên kế hoạch kiến trúc', c.k, null], ['Giao diện · app.js, app.css', c.gd, 'app.js'], ['Gom tin · tools/collect.mjs', c.gom, 'tools/collect.mjs'], ['Giọng đọc · tools/voice.py', c.goi, 'tools/voice.py'], ['Lịch chạy · daily.yml', c.lich, '.github/workflows/daily.yml'], ['git push → main', c.day, 'terminal']];
   const box = BIGBOX(v), CW = box.w, CH = box.h - 52;
   const curI = todo.reduce((a, it, i) => (t >= it[1] - 0.1 ? i : a), 0);
   const fileIdx = todo.reduce((a, it, i) => (it[2] && t >= it[1] - 0.1 ? i : a), 1);
@@ -871,62 +893,74 @@ const Phone2 = ({ t, v }) => {
 };
 
 const Deep = ({ t, v }) => {
-  const c = { sau: W('deep', 'sâu'), bang: W('deep', 'Bảng'), luot: W('deep', 'lượt'), nguon: W('deep', 'nguồn'), dk: W('deep', 'người'), bam: W('deep', 'Bấm'), th: W('deep', 'Tổng'), cd: W('deep', 'chủ'), gd: W('deep', 'giọng'), vp: W('deep', 'vài'), so: W('deep', 'số') };
-  const tab = t < c.nguon - 0.1 ? 'listeners' : t < c.dk - 0.1 ? 'sources' : 'subscribers';
-  const T = {
-    listeners: { cols: ['Thời gian', 'Người nghe', 'Số', 'Phút'], rows: Array.from({ length: 9 }).map((_, i) => [`06:${String(2 + i * 3).padStart(2, '0')}`, `user_${String(141 + i * 7).padStart(4, '0')}`, '11/11', String(4 + ((i * 3) % 6))]), rowAt: (i) => SB.deep[0] + 0.5 + i * 0.28 },
-    sources: { cols: ['Nguồn báo', 'Ngôn ngữ', 'Nhóm', 'Bật'], rows: [['VnExpress', 'VI', 'Thời sự', '✓'], ['Tuổi Trẻ', 'VI', 'Thời sự', '✓'], ['VTV', 'VI', 'Y tế', '✓'], ['Lao Động', 'VI', 'Xã hội', '✓'], ['Reuters', 'EN', 'Thế giới', '✓'], ['Nikkei Asia', 'EN', 'Kinh tế', '✓'], ['Bloomberg', 'EN', 'Kinh tế', '✓']], rowAt: (i) => c.nguon - 0.1 + i * 0.07 },
-    subscribers: { cols: ['Email', 'Chủ đề', 'Giọng', 'Ngày'], rows: [['an***@mail.com', 'Y tế', 'Nam', '02/11'], ['binh***@mail.com', 'Kinh tế', 'Nữ', '04/11'], ['chi***@mail.com', 'Công nghệ', 'Nam', '06/11'], ['dung***@mail.com', 'Y tế', 'Nữ', '08/11'], ['hoa***@mail.com', 'Thế giới', 'Nam', '10/11']], rowAt: (i) => c.dk - 0.1 + i * 0.08 },
-  }[tab];
-  const sheetBox = v ? { x: 50, y: 330, w: 980, h: 980 } : { x: 80, y: 140, w: 1060, h: 820 };
-  const showSheet = !v || t < c.bam - 0.1;
-  const ph = v ? { x: 330, y: 300, w: 420 } : { x: 1330, y: 95, w: 425 };
-  const sw = ph.w * 0.93, sh = ph.w * 2.1 - ph.w * 0.07; const showPhone = !v || t > c.bam - 0.3;
-  const open = t > c.th + 0.1; const topics = ['Y tế', 'Kinh tế', 'Công nghệ', 'Thế giới', 'Xã hội', 'Thể thao'];
-  const onT = (i) => (i === 0 && t > c.cd) || (i === 2 && t > c.cd + 0.35);
-  const prog = ['Gom tin', 'Claude viết', 'Giọng đọc', 'Đăng số mới']; const pStart = c.vp - 0.1, pEnd = c.so - 0.1;
-  const fs = sw / 400;
+  const c = { sau: W('deep', 'sâu'), th: W('deep', 'Tổng'), cd: W('deep', 'chủ'), ng: W('deep', 'nguồn'), gd: W('deep', 'giọng'), nam: W('deep', 'nam'), vp: W('deep', 'Vài'), so: W('deep', 'số') };
+  const ph = v ? { x: 330, y: 300, w: 420 } : { x: 1300, y: 95, w: 425 };
+  const sw = ph.w * 0.93, sh = ph.w * 2.1 - ph.w * 0.07, fs = sw / 400;
+  const open = t > c.th + 0.1;
+  const topics = ['Y tế', 'Kinh tế', 'Công nghệ', 'Thế giới', 'Xã hội'];
+  const srcs = ['VnExpress', 'Tuổi Trẻ', 'VTV', 'Reuters'];
+  const onT = (i) => (i === 0 && t > c.cd) || (i === 2 && t > c.cd + 0.3);
+  const onS = (i) => (i === 0 && t > c.ng) || (i === 3 && t > c.ng + 0.3);
+  const voices = [['ElevenLabs', 'Nam'], ['ElevenLabs', 'Nữ'], ['Miễn phí', 'Giọng máy']];
+  const vSel = t > c.nam ? 0 : t > c.gd + 0.15 ? 1 : -1;
+  const prog = ['Gom tin', 'Claude viết', 'Giọng ElevenLabs', 'Đăng số mới']; const pStart = c.vp - 0.1, pEnd = c.so - 0.1;
+  const opts = [['Chủ đề', 'Y tế · Công nghệ', c.cd], ['Nguồn báo', 'VnExpress · Reuters …', c.ng], ['Giọng đọc', 'ElevenLabs · nam hoặc nữ', c.gd]];
+  const curO = opts.reduce((a, o, i) => (t >= o[2] - 0.15 ? i : a), -1);
+  const lab = (x) => <div style={{ fontSize: 14 * fs, fontWeight: 700, marginTop: 16 * fs, letterSpacing: 1, color: '#555' }}>{x}</div>;
+  const chip = (x, on) => <div key={x} style={{ padding: `${6 * fs}px ${12 * fs}px`, borderRadius: 999, fontSize: 15 * fs, fontWeight: 600, background: on ? '#121212' : '#fff', color: on ? '#fff' : C.ink, border: '1.5px solid #D9D4C8' }}>{x}</div>;
   return (
     <>
-      {showSheet && (
-        <In t={t} at={SB.deep[0] + 0.1} y={40} out={v ? c.bam - 0.4 : undefined}>
-          <Win box={sheetBox} url="docs.google.com/spreadsheets">
-            <SheetTop v={v} CW={sheetBox.w} title="DailyCast · Dữ liệu" />
-            <SheetGrid key={tab} t={t} CW={sheetBox.w} top={166} bottom={sheetBox.h - 52 - 52} v={v} cols={T.cols} rows={T.rows} rowAt={T.rowAt} flashNew={tab === 'listeners'} fs={v ? 23 : 21} />
-            <SheetTabs CW={sheetBox.w} CH={sheetBox.h - 52} active={tab} tabs={['listeners', 'sources', 'subscribers']} />
-          </Win>
-        </In>
+      {v ? (
+        <>
+          <In t={t} at={SB.deep[0] + 0.2}><div style={{ ...abs(0, 215, 1080), textAlign: 'center', fontSize: 50, fontWeight: 800, letterSpacing: -1.2 }}>Bấm <span style={{ color: C.claude }}>Tổng hợp ngay</span></div></In>
+          <div style={{ ...abs(0, 1245, 1080), display: 'flex', justifyContent: 'center' }}>
+            {opts.map(([a, b, at], i) => i === curO && <Pop key={i} t={t} at={at - 0.15}><div style={{ padding: '14px 28px', borderRadius: 999, background: '#fff', border: `2px solid ${C.claude}`, fontSize: 32, fontWeight: 700, boxShadow: '0 12px 30px rgba(22,22,27,.14)' }}>{a}: <span style={{ color: C.claude }}>{b}</span></div></Pop>)}
+          </div>
+        </>
+      ) : (
+        <div style={{ ...abs(150, 170, 1050) }}>
+          <In t={t} at={SB.deep[0] + 0.2}><div style={{ fontSize: 64, fontWeight: 800, letterSpacing: -1.8, lineHeight: 1.05 }}>Tổng hợp <span style={{ color: C.claude }}>theo ý bạn</span></div></In>
+          <In t={t} at={c.th - 0.1}><div style={{ fontSize: 30, color: C.mute, marginTop: 14 }}>Một nút bấm trên app, GitHub Actions làm phần còn lại</div></In>
+          <div style={{ marginTop: 40 }}>
+            {opts.map(([a, b, at], i) => (
+              <In key={i} t={t} at={at - 0.15} x={-30} y={0}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 22, height: 104, marginBottom: 14, padding: '0 26px', borderRadius: 22, background: '#fff', border: `2px solid ${curO === i ? C.claude : C.line}`, boxShadow: curO === i ? '0 16px 36px rgba(22,22,27,.10)' : 'none', width: 860 }}>
+                  <div style={{ width: 54, height: 54, borderRadius: 27, background: curO === i ? C.claude : C.ink, color: '#fff', fontSize: 26, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div>
+                  <div><div style={{ fontSize: 30, fontWeight: 800 }}>{a}</div><div style={{ fontSize: 24, color: C.mute }}>{b}</div></div>
+                  {i === 2 && <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 16 }}><ElMark s={48} /><Wave t={t} on={t > c.gd} n={18} h={44} /></div>}
+                </div>
+              </In>
+            ))}
+          </div>
+          {t > c.so - 0.15 && <Pop t={t} at={c.so - 0.15}><div style={{ display: 'inline-flex', alignItems: 'center', gap: 14, marginTop: 10, padding: '14px 26px', borderRadius: 999, background: C.ink, color: '#fff', fontSize: 30, fontWeight: 700 }}><Check s={34} bg="#2BB59A" />Số mới đã lên, nghe ngay</div></Pop>}
+        </div>
       )}
-      {v && t < c.bam && <In t={t} at={SB.deep[0] + 0.2} out={c.bam - 0.4}><div style={{ ...abs(0, 215, 1080), textAlign: 'center', fontSize: 50, fontWeight: 800, letterSpacing: -1.2 }}>Google Sheet <span style={{ color: C.sheet }}>là bộ nhớ</span></div></In>}
-      {v && t > c.bam - 0.3 && <In t={t} at={c.bam - 0.3}><div style={{ ...abs(0, 215, 1080), textAlign: 'center', fontSize: 50, fontWeight: 800, letterSpacing: -1.2 }}>Bấm <span style={{ color: C.claude }}>Tổng hợp ngay</span></div></In>}
-      {!v && <In t={t} at={c.luot} style={{ ...abs(1150, 470, 170) }}><div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}><div style={{ padding: '8px 12px', borderRadius: 10, background: C.gas, color: '#fff', fontFamily: MONO, fontSize: 17, fontWeight: 600 }}>doPost</div><div style={{ width: 160, height: 4, background: `repeating-linear-gradient(90deg, ${C.gas} 0 12px, transparent 12px 20px)`, backgroundPosition: `${-t * 60}px 0` }} /><div style={{ fontSize: 17, color: C.mute }}>appendRow</div></div></In>}
-      {showPhone && (
-        <In t={t} at={v ? c.bam - 0.3 : SB.deep[0] + 0.25} y={60} s={0.95}>
-          <Phone x={ph.x} y={ph.y} w={ph.w}>
-            <Shot src="m_front" />
-            {open && <AbsoluteFill style={{ background: `rgba(0,0,0,${0.45 * P(t, c.th + 0.1, 0.3)})` }} />}
-            {open && (
-              <div style={{ ...abs(0, sh - sh * 0.8 * P(t, c.th + 0.1, 0.45), sw, sh * 0.8), background: '#FBF9F4', borderRadius: '28px 28px 0 0', padding: `${26 * fs}px ${22 * fs}px`, boxSizing: 'border-box' }}>
-                <div style={{ fontFamily: 'Georgia, serif', fontSize: 30 * fs, fontWeight: 700 }}>Tổng hợp ngay</div>
-                <div style={{ fontSize: 15 * fs, color: C.mute, marginTop: 4 }}>Chọn chủ đề và giọng đọc</div>
-                <div style={{ fontSize: 15 * fs, fontWeight: 700, marginTop: 18 * fs, letterSpacing: 1 }}>CHỦ ĐỀ</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 * fs, marginTop: 8 * fs }}>{topics.map((x, i) => <div key={x} style={{ padding: `${7 * fs}px ${13 * fs}px`, borderRadius: 999, fontSize: 15 * fs, fontWeight: 600, background: onT(i) ? '#121212' : '#fff', color: onT(i) ? '#fff' : C.ink, border: '1.5px solid #D9D4C8' }}>{x}</div>)}</div>
-                <div style={{ fontSize: 15 * fs, fontWeight: 700, marginTop: 18 * fs, letterSpacing: 1 }}>GIỌNG ĐỌC</div>
-                <div style={{ display: 'flex', gap: 8 * fs, marginTop: 8 * fs }}>{[['ElevenLabs', 'Nam · tự nhiên'], ['Miễn phí', 'Giọng máy']].map(([a, b], i) => { const on = i === 0 && t > c.gd + 0.1; return <div key={a} style={{ flex: 1, padding: 10 * fs, borderRadius: 12 * fs, border: `2px solid ${on ? '#0E7C6B' : '#D9D4C8'}`, background: on ? '#E7F4F1' : '#fff' }}><div style={{ display: 'flex', alignItems: 'center', gap: 6 * fs, fontSize: 15 * fs, fontWeight: 700 }}>{i === 0 && <ElMark s={18 * fs} />}{a}</div><div style={{ fontSize: 13 * fs, color: C.mute }}>{b}</div></div>; })}</div>
-                {t < pStart ? (
-                  <div style={{ marginTop: 22 * fs, height: 50 * fs, borderRadius: 12 * fs, background: '#0E7C6B', color: '#fff', fontSize: 17 * fs, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Bắt đầu tổng hợp</div>
-                ) : (
-                  <div style={{ marginTop: 18 * fs }}>{prog.map((x, i) => { const at = lerp(pStart, pEnd, i / prog.length) + 0.15, done = t > at + 0.35; return <div key={x} style={{ display: 'flex', alignItems: 'center', gap: 10 * fs, height: 32 * fs, fontSize: 16 * fs, fontWeight: 600, opacity: t > at ? 1 : 0.35 }}>{done ? <Check s={20 * fs} bg="#0E7C6B" /> : <div style={{ width: 18 * fs, height: 18 * fs, borderRadius: 99, border: `3px solid #CFE8E2`, borderTopColor: '#0E7C6B', transform: `rotate(${t * 400}deg)` }} />}{x}</div>; })}</div>
-                )}
-              </div>
-            )}
-            {t > c.so - 0.1 && <div style={{ ...abs(sw * 0.06, ph.w * 0.13 + (1 - P(t, c.so - 0.1, 0.4)) * -60, sw * 0.88), background: '#121212', color: '#fff', borderRadius: 16 * fs, padding: `${12 * fs}px ${16 * fs}px`, display: 'flex', alignItems: 'center', gap: 10 * fs, fontSize: 16 * fs, fontWeight: 700, boxShadow: '0 12px 30px rgba(0,0,0,.3)' }}><Check s={22 * fs} bg="#2BB59A" />Số mới đã sẵn sàng · nghe ngay</div>}
-            <Tap t={t} at={c.th - 0.05} x={sw * 0.665} y={sh * 0.031} s={0.7} />
-            <Tap t={t} at={c.cd + 0.05} x={22 * fs + 30 * fs} y={sh * 0.2 + 26 * fs + 30 * fs + 15 * fs + 4 * fs + 18 * fs + 15 * fs + 8 * fs + 16 * fs} s={0.6} />
-            <Tap t={t} at={c.vp - 0.15} x={sw / 2} y={sh * 0.2 + 360 * fs} s={0.7} />
-          </Phone>
-        </In>
-      )}
+      <In t={t} at={SB.deep[0] + 0.25} y={60} s={0.95}>
+        <Phone x={ph.x} y={ph.y} w={ph.w}>
+          <Shot src="m_front" />
+          {open && <AbsoluteFill style={{ background: `rgba(0,0,0,${0.45 * P(t, c.th + 0.1, 0.3)})` }} />}
+          {open && (
+            <div style={{ ...abs(0, sh - sh * 0.8 * P(t, c.th + 0.1, 0.45), sw, sh * 0.8), background: '#FBF9F4', borderRadius: '28px 28px 0 0', padding: `${24 * fs}px ${22 * fs}px`, boxSizing: 'border-box' }}>
+              <div style={{ fontFamily: 'Georgia, serif', fontSize: 30 * fs, fontWeight: 700 }}>Tổng hợp ngay</div>
+              <div style={{ fontSize: 15 * fs, color: C.mute, marginTop: 4 }}>Chọn chủ đề, nguồn báo và giọng đọc</div>
+              {lab('CHỦ ĐỀ')}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 * fs, marginTop: 8 * fs }}>{topics.map((x, i) => chip(x, onT(i)))}</div>
+              {lab('NGUỒN BÁO')}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 * fs, marginTop: 8 * fs }}>{srcs.map((x, i) => chip(x, onS(i)))}</div>
+              {lab('GIỌNG ĐỌC')}
+              <div style={{ display: 'flex', gap: 7 * fs, marginTop: 8 * fs }}>{voices.map(([a, b], i) => { const on = i === vSel; return <div key={i} style={{ flex: 1, padding: 9 * fs, borderRadius: 12 * fs, border: `2px solid ${on ? '#0E7C6B' : '#D9D4C8'}`, background: on ? '#E7F4F1' : '#fff' }}><div style={{ display: 'flex', alignItems: 'center', gap: 5 * fs, fontSize: 13.5 * fs, fontWeight: 700 }}>{i < 2 && <ElMark s={16 * fs} />}{a}</div><div style={{ fontSize: 13 * fs, color: C.mute }}>{b}</div></div>; })}</div>
+              {t < pStart ? (
+                <div style={{ marginTop: 20 * fs, height: 48 * fs, borderRadius: 12 * fs, background: '#0E7C6B', color: '#fff', fontSize: 17 * fs, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Bắt đầu tổng hợp</div>
+              ) : (
+                <div style={{ marginTop: 14 * fs }}>{prog.map((x, i) => { const at = lerp(pStart, pEnd, i / prog.length) + 0.1, done = t > at + 0.3; return <div key={x} style={{ display: 'flex', alignItems: 'center', gap: 10 * fs, height: 30 * fs, fontSize: 16 * fs, fontWeight: 600, opacity: t > at ? 1 : 0.35 }}>{done ? <Check s={20 * fs} bg="#0E7C6B" /> : <div style={{ width: 18 * fs, height: 18 * fs, borderRadius: 99, border: `3px solid #CFE8E2`, borderTopColor: '#0E7C6B', transform: `rotate(${t * 400}deg)` }} />}{x}</div>; })}</div>
+              )}
+            </div>
+          )}
+          {t > c.so - 0.1 && <div style={{ ...abs(sw * 0.06, ph.w * 0.13 + (1 - P(t, c.so - 0.1, 0.4)) * -60, sw * 0.88), background: '#121212', color: '#fff', borderRadius: 16 * fs, padding: `${12 * fs}px ${16 * fs}px`, display: 'flex', alignItems: 'center', gap: 10 * fs, fontSize: 16 * fs, fontWeight: 700, boxShadow: '0 12px 30px rgba(0,0,0,.3)' }}><Check s={22 * fs} bg="#2BB59A" />Số mới đã sẵn sàng · nghe ngay</div>}
+          <Tap t={t} at={c.th - 0.05} x={sw * 0.665} y={sh * 0.031} s={0.7} />
+          <Tap t={t} at={c.vp - 0.15} x={sw / 2} y={sh - 70 * fs} s={0.7} />
+        </Phone>
+      </In>
     </>
   );
 };
@@ -954,22 +988,46 @@ const Close = ({ t, v }) => {
         </div>
       </In>
       <div style={{ ...abs(0, v ? 1150 : 760, v ? 1080 : 1920), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
-        <div style={{ display: 'flex', gap: 22 }}>{['claude', 'github', 'sheets', 'gas'].map((k, i) => <Pop key={k} t={t} at={c.hay + i * 0.1}><Tile k={k} s={v ? 100 : 96} /></Pop>)}</div>
+        <div style={{ display: 'flex', gap: 22 }}>{['claude', 'github', 'el'].map((k, i) => <Pop key={k} t={t} at={c.hay + i * 0.1}><Tile k={k} s={v ? 100 : 96} /></Pop>)}</div>
         <In t={t} at={c.cc - 0.1}><div style={{ fontSize: v ? 44 : 46, fontWeight: 800, letterSpacing: -1 }}>Hãy để <span style={{ color: C.claude }}>Claude Code</span> viết nó.</div></In>
       </div>
     </>
   );
 };
 
+const Ep2 = ({ t, v }) => {
+  const c = { tap: W('ep2', 'tập'), gs: W('ep2', 'Google'), gh: W('ep2', 'GitHub'), bd: W('ep2', 'bộ'), dn: W('ep2', 'doanh'), hen: W('ep2', 'Hẹn') };
+  const apps = ['Quản lý khách hàng', 'Báo cáo công việc', 'Kho hàng', 'Đào tạo nội bộ', 'Đặt lịch, duyệt việc'];
+  const S = v ? 170 : 170;
+  return (
+    <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: v ? -60 : 40, width: v ? 1000 : 1600 }}>
+        <Pop t={t} at={c.tap - 0.15}><div style={{ padding: '12px 34px', borderRadius: 999, background: C.ink, color: '#fff', fontSize: v ? 34 : 32, fontWeight: 800, letterSpacing: 4 }}>TẬP 2 · SẮP RA MẮT</div></Pop>
+        <div style={{ display: 'flex', alignItems: 'center', gap: v ? 26 : 40, marginTop: v ? 60 : 44 }}>
+          <Pop t={t} at={c.gs - 0.1}><Tile k="sheets" s={S} ring={C.sheet} /></Pop>
+          <In t={t} at={c.gs + 0.2}><div style={{ fontSize: 80, fontWeight: 300, color: C.mute }}>+</div></In>
+          <Pop t={t} at={c.gh - 0.1}><Tile k="github" s={S} ring={C.gh} /></Pop>
+        </div>
+        <In t={t} at={c.gs}><div style={{ fontSize: v ? 72 : 86, fontWeight: 800, letterSpacing: -2.5, marginTop: v ? 46 : 36, textAlign: 'center', lineHeight: 1.05 }}>Google Sheet <span style={{ color: C.mute, fontWeight: 400 }}>+</span> GitHub</div></In>
+        <In t={t} at={c.bd - 0.1}><div style={{ fontSize: v ? 40 : 40, fontWeight: 600, marginTop: 18, textAlign: 'center' }}>Combo cho <span style={{ color: C.sheet }}>mọi ứng dụng trong doanh nghiệp</span></div></In>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 14, marginTop: v ? 54 : 40, maxWidth: v ? 960 : 1500 }}>
+          {apps.map((a, i) => <Pop key={a} t={t} at={c.dn - 0.1 + i * 0.12}><div style={{ padding: v ? '14px 24px' : '14px 26px', borderRadius: 16, background: '#fff', border: `1.5px solid ${C.line}`, boxShadow: '0 10px 24px rgba(22,22,27,.08)', fontSize: v ? 30 : 28, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 12 }}><Logo k="sheets" s={30} />{a}</div></Pop>)}
+        </div>
+        <In t={t} at={c.hen - 0.1}><div style={{ fontSize: v ? 34 : 32, color: C.claude, fontWeight: 700, marginTop: v ? 54 : 40 }}>Hẹn gặp bạn ở tập sau →</div></In>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 const End = ({ t, v }) => {
   const a = tl.endcard;
-  const tools = [['claude', 'Claude Code'], ['github', 'GitHub'], ['sheets', 'Google Sheets'], ['gas', 'Apps Script'], ['el', 'ElevenLabs']];
+  const tools = [['claude', 'Claude Code'], ['github', 'GitHub'], ['el', 'ElevenLabs']];
   return (
     <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: v ? -120 : -40 }}>
         <Pop t={t} at={a + 0.1}><Img src={staticFile('media/dailycast.svg')} style={{ width: v ? 260 : 220, height: v ? 260 : 220, borderRadius: 56, boxShadow: '0 30px 70px rgba(229,72,77,.35)' }} /></Pop>
         <In t={t} at={a + 0.4}><div style={{ fontSize: v ? 104 : 104, fontWeight: 800, letterSpacing: -3, marginTop: 30 }}>DailyCast</div></In>
-        <In t={t} at={a + 0.6}><div style={{ fontSize: v ? 36 : 36, color: C.mute, fontWeight: 500 }}>Podcast tự đọc báo mỗi sáng</div></In>
+        <In t={t} at={a + 0.6}><div style={{ fontSize: v ? 36 : 36, color: C.mute, fontWeight: 500 }}>Tập 1 · Podcast tự đọc báo mỗi sáng</div></In>
         <In t={t} at={a + 1.1}><div style={{ fontSize: 24, letterSpacing: 4, fontWeight: 700, color: C.claude, marginTop: v ? 70 : 54 }}>LÀM BẰNG</div></In>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: v ? 18 : 40, marginTop: 22, width: v ? 1040 : 1500 }}>
           {tools.map(([k, n], i) => <Pop key={k} t={t} at={a + 1.3 + i * 0.12}><div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, width: v ? 160 : 190 }}><Tile k={k} s={v ? 110 : 100} /><div style={{ fontSize: v ? 24 : 24, fontWeight: 700 }}>{n}</div></div></Pop>)}
@@ -980,7 +1038,7 @@ const End = ({ t, v }) => {
 };
 
 // thanh chương
-const CH = [['Ý tưởng', 'trio'], ['Nguyên lý', 'arch'], ['Bước 1', 'step1'], ['Bước 2', 'step2'], ['Bước 3', 'step3'], ['Prompt', 'prompt'], ['Tự vận hành', 'daily'], ['Trên điện thoại', 'phone']];
+const CH = [['Ý tưởng', 'trio'], ['Nguyên lý', 'arch'], ['Bước 1', 'step1'], ['Bước 2', 'step2'], ['Bước 3', 'step3'], ['Prompt', 'prompt'], ['Tự vận hành', 'daily'], ['Trên điện thoại', 'phone'], ['Tập 2', 'ep2']];
 const Chapters = ({ t, v }) => {
   if (t < SB.trio[0] + 0.2 || t > tl.endcard + 0.3) return null;
   const o = P(t, SB.trio[0] + 0.2, 0.5) * (1 - P(t, tl.endcard - 0.2, 0.4));
@@ -1017,18 +1075,20 @@ const SfxTrack = () => {
   ORDER.slice(1).forEach((id) => L.push([SB[id][0], 'whoosh_soft', 0.22]));
   L.push([tl.endcard, 'shimmer', 0.32]);
   [W('hook', 'lập'), W('hook', 'máy'), W('hook', 'đồng')].forEach((a) => L.push([a - 0.1, 'pop', 0.35]));
-  [W('trio', 'Claude'), W('trio', 'GitHub'), W('trio', 'Google')].forEach((a) => L.push([a - 0.25, 'pop', 0.3]));
+  [W('trio', 'Claude'), W('trio', 'GitHub'), W('trio', 'ElevenLabs')].forEach((a) => L.push([a - 0.25, 'pop', 0.3]));
   L.push([W('arch', 'Không'), 'stamp', 0.3]);
   L.push([W('step1', 'đặt') - 0.25, 'click', 0.5], [W('step1', 'bật') - 0.4, 'click', 0.5], [W('step1', 'Pages') + 0.2, 'success', 0.28]);
-  L.push([W('step2', 'Tiện') - 0.05, 'click', 0.5], [W('step2', 'Apps') + 0.05, 'click', 0.5], [W('step2', 'Dán'), 'swoosh_short', 0.3], [W('step2', 'Triển') - 0.05, 'click', 0.5], [W('step2', 'Ứng') + 0.9, 'click', 0.5], [W('step2', 'nhận') - 0.2, 'success', 0.28], [W('step2', 'exec') + 0.45, 'click', 0.5]);
-  L.push([W('step3', 'kết') + 0.25, 'click', 0.5], [W('step3', 'chọn'), 'click', 0.5], [W('step3', 'chọn') + 0.5, 'click', 0.5], [W('step3', 'dán') - 0.1, 'click', 0.5]);
+  L.push([W('step2', 'chọn') + 0.05, 'click', 0.5], [W('step2', 'giọng') + 0.45, 'click', 0.5], [W('step2', 'tạo') - 0.05, 'click', 0.5], [W('step2', 'tạo') + 1.25, 'click', 0.5], [W('step2', 'Dán') - 0.05, 'click', 0.45], [W('step2', 'GitHub') + 0.3, 'click', 0.5], [W('step2', 'GitHub') + 0.45, 'success', 0.28]);
+  L.push([W('step3', 'kết') + 0.25, 'click', 0.5], [W('step3', 'chọn'), 'click', 0.5], [W('step3', 'chọn') + 0.5, 'click', 0.5]);
   L.push([SEG('build').start - 0.55, 'swoosh_short', 0.35]);
-  [W('build', 'giao'), W('build', 'gom'), W('build', 'lịch'), W('build', 'Apps'), W('build', 'đẩy')].forEach((a) => L.push([a - 0.1, 'tick', 0.5]));
+  [W('build', 'giao'), W('build', 'gom'), W('build', 'gọi'), W('build', 'lịch'), W('build', 'đẩy')].forEach((a) => L.push([a - 0.1, 'tick', 0.5]));
   L.push([W('build', 'duyệt') + 0.1, 'success', 0.3]);
   ['Năm', 'GitHub', 'gom', 'chấm', 'Claude', 'ElevenLabs', 'trang'].forEach((w) => L.push([W('daily', w) - 0.1, 'pop', 0.22]));
   L.push([W('phone', 'Cài') - 0.05, 'click', 0.45], [W('phone', 'màn'), 'sparkle', 0.25], [W('deep', 'Tổng') - 0.05, 'click', 0.45], [W('deep', 'số') - 0.1, 'ding', 0.3]);
   L.push([W('close', 'không') - 0.2, 'impact', 0.22], [W('close', 'buổi') - 0.2, 'pop', 0.3], [W('close', 'Hãy'), 'swell', 0.25]);
-  const typing = [[W('step1', 'đặt') - 0.05, 0.7], [SEG('prompt').start + 0.35, SEG('build').start - 0.95 - SEG('prompt').start], [W('close', 'Còn'), 1.6]];
+  L.push([W('ep2', 'tập') - 0.15, 'impact', 0.25], [W('ep2', 'Google') - 0.1, 'pop', 0.3], [W('ep2', 'GitHub') - 0.1, 'pop', 0.3]);
+  [0, 1, 2, 3, 4].forEach((i) => L.push([W('ep2', 'doanh') - 0.1 + i * 0.12, 'tick', 0.4]));
+  const typing = [[W('step1', 'đặt') - 0.05, 0.7], [W('step2', 'Dán'), 0.9], [SEG('prompt').start + 0.35, SEG('build').start - 0.95 - SEG('prompt').start], [W('close', 'Còn'), 1.6]];
   return (
     <>
       {L.map(([a, n, vv], i) => <Sfx key={i} at={a} name={n} vol={vv} />)}
@@ -1055,6 +1115,7 @@ export const Main: React.FC<{ v: boolean }> = ({ v }) => {
       <Scene t={t} id="phone" enter="right"><Phone2 t={t} v={v} /></Scene>
       <Scene t={t} id="deep" enter="zoom"><Deep t={t} v={v} /></Scene>
       <Scene t={t} id="close" enter="rise"><Close t={t} v={v} /></Scene>
+      <Scene t={t} id="ep2" enter="zoom"><Ep2 t={t} v={v} /></Scene>
       <Scene t={t} id="end" enter="focus"><End t={t} v={v} /></Scene>
       <Chapters t={t} v={v} />
       </AbsoluteFill>

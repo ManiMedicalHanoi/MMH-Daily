@@ -1,16 +1,17 @@
 # Video hướng dẫn: tạo app bằng Claude Code + GitHub + Google Sheets
 
-Mã nguồn 2 video 4K (16:9 và 9:16, khoảng 2 phút 20 giây) giới thiệu cách dựng app ví dụ **DailyCast**,
+Mã nguồn Tập 1: 2 video 4K (16:9 và 9:16, khoảng 2 phút 24 giây) giới thiệu cách dựng app ví dụ **DailyCast**,
 một podcast tự đọc báo mỗi sáng: Claude Code viết code, GitHub chứa code, chạy Actions và đăng Pages,
-còn Google Sheet làm cơ sở dữ liệu qua Apps Script (`doGet` / `doPost`, link `/exec`).
+ElevenLabs đọc thành giọng nói (khoá API cất trong GitHub Secrets). Cuối video giới thiệu Tập 2: Google Sheet + GitHub,
+combo cho mọi ứng dụng trong doanh nghiệp.
 
 | Thư mục / tệp | Vai trò |
 |---|---|
-| `tools/script.json` | Lời đọc tiếng Việt, 12 đoạn (giọng ElevenLabs "Ninh Đôn", model `eleven_v3`) |
+| `tools/script.json` | Lời đọc tiếng Việt, 13 đoạn (giọng ElevenLabs "Ninh Đôn", model `eleven_v3`) |
 | `tools/build_tl.py` | Ghép MP3 từng đoạn thành `vo/narration.wav`; lấy mốc từng từ (ElevenLabs `with-timestamps`) ⇒ `timeline.json` + phụ đề |
 | `src/data/timeline.json` | Mốc từng từ: mọi chuyển động khớp lời qua `W('đoạn', 'từ')` |
 | `src/Video.tsx` | Toàn bộ cảnh. Một component cho 2 khổ (`v = true` là dọc 9:16, có phụ đề) |
-| `public/media/` | Ảnh chụp giao diện app (đã bỏ tên MMH), icon GitHub / Google Sheets / Apps Script, icon DailyCast |
+| `public/media/` | Ảnh chụp giao diện app (đã bỏ tên MMH), icon GitHub / Google Sheets / Apps Script (dùng cho phần giới thiệu Tập 2), icon DailyCast |
 | `render.mjs` | Dựng 4K (`scale: 2` từ 1920×1080 / 1080×1920) |
 | `snap.mjs` | Chụp nhanh vài khung để soát bố cục |
 

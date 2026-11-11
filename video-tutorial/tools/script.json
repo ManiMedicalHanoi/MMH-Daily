@@ -8,11 +8,11 @@
   },
   {
    "id": "trio",
-   "text": "Công thức chỉ có ba mảnh ghép. Claude Code: người viết code. GitHub: vừa là kho chứa, vừa chạy tác vụ tự động, vừa đăng trang web miễn phí. Và Google Sheet: cơ sở dữ liệu quen thuộc của bạn."
+   "text": "Công thức chỉ có ba mảnh ghép. Claude Code: người viết code. GitHub: vừa là kho chứa, vừa chạy tác vụ tự động, vừa đăng trang web miễn phí. Và ElevenLabs: biến chữ thành giọng đọc tự nhiên như người thật."
   },
   {
    "id": "arch",
-   "text": "Nguyên lý rất gọn. Giao diện là một trang web tĩnh trên GitHub Pages. Khi cần đọc hay ghi dữ liệu, trang gọi tới một đường link Apps Script, và Apps Script ghi thẳng vào Google Sheet. Không cần máy chủ riêng."
+   "text": "Nguyên lý rất gọn. Giao diện là một trang web tĩnh trên GitHub Pages. Việc nặng, như gom tin và tạo giọng đọc, chạy trên GitHub Actions. Khoá ElevenLabs được cất kín trong GitHub Secrets. Không cần máy chủ riêng."
   },
   {
    "id": "step1",
@@ -20,11 +20,11 @@
   },
   {
    "id": "step2",
-   "text": "Bước hai: tạo một Google Sheet, vào Tiện ích mở rộng, chọn Apps Script. Dán đoạn mã do Claude viết, bấm Triển khai, chọn Ứng dụng web. Bạn nhận về một đường link kết thúc bằng chữ exec."
+   "text": "Bước hai: vào ElevenLabs, chọn một giọng đọc ưng ý, rồi tạo khoá API. Dán khoá đó vào mục Secrets của kho GitHub. Khoá được cất kín, không ai nhìn thấy."
   },
   {
    "id": "step3",
-   "text": "Bước ba: mở Claude Code, kết nối với GitHub, chọn kho DailyCast, và dán đường link đó vào."
+   "text": "Bước ba: mở Claude Code, kết nối với GitHub, rồi chọn kho DailyCast."
   },
   {
    "id": "prompt",
@@ -32,7 +32,7 @@
   },
   {
    "id": "build",
-   "text": "Claude tự lên kế hoạch, viết giao diện, viết bộ gom tin, đặt lịch chạy mỗi sáng, viết luôn mã Apps Script, rồi đẩy tất cả lên GitHub. Việc của bạn chỉ là đọc và duyệt."
+   "text": "Claude tự lên kế hoạch, viết giao diện, viết bộ gom tin, viết phần gọi ElevenLabs, đặt lịch chạy mỗi sáng, rồi đẩy tất cả lên GitHub. Việc của bạn chỉ là đọc và duyệt."
   },
   {
    "id": "daily",
@@ -44,11 +44,15 @@
   },
   {
    "id": "deep",
-   "text": "Muốn đi sâu hơn? Bảng tính Google Sheet ghi lại lượt nghe, nguồn báo và người đăng ký. Bấm nút Tổng hợp ngay, chọn chủ đề, chọn giọng đọc, vài phút sau đã có một số mới."
+   "text": "Muốn đi sâu hơn? Bấm nút Tổng hợp ngay, chọn chủ đề, chọn nguồn báo, chọn giọng đọc ElevenLabs, nam hay nữ. Vài phút sau đã có một số mới."
   },
   {
    "id": "close",
    "text": "Chi phí máy chủ: không đồng. Thời gian: một buổi chiều. Còn ý tưởng tiếp theo của bạn? Hãy để Claude Code viết nó."
+  },
+  {
+   "id": "ep2",
+   "text": "Và ở tập hai: Google Sheet kết hợp GitHub, bộ đôi cho mọi ứng dụng trong doanh nghiệp. Hẹn gặp bạn ở tập sau!"
   }
  ]
 }
