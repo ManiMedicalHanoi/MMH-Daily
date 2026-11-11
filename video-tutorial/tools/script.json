@@ -1,0 +1,54 @@
+{
+ "voice": "aN7cv9yXNrfIR87bDmyD",
+ "model": "eleven_v3",
+ "segments": [
+  {
+   "id": "hook",
+   "text": "Một ứng dụng podcast, mỗi sáng tự gom tin từ hàng chục trang báo và đọc cho bạn nghe. Không lập trình viên, không máy chủ, gần như không tốn đồng nào. Hai phút nữa, bạn sẽ biết cách tạo ra nó."
+  },
+  {
+   "id": "trio",
+   "text": "Công thức chỉ có ba mảnh ghép. Claude Code: người viết code. GitHub: vừa là kho chứa, vừa chạy tác vụ tự động, vừa đăng trang web miễn phí. Và Google Sheet: cơ sở dữ liệu quen thuộc của bạn."
+  },
+  {
+   "id": "arch",
+   "text": "Nguyên lý rất gọn. Giao diện là một trang web tĩnh trên GitHub Pages. Khi cần đọc hay ghi dữ liệu, trang gọi tới một đường link Apps Script, và Apps Script ghi thẳng vào Google Sheet. Không cần máy chủ riêng."
+  },
+  {
+   "id": "step1",
+   "text": "Bắt tay vào làm. Bước một: tạo một kho GitHub mới, đặt tên là DailyCast, rồi bật GitHub Pages."
+  },
+  {
+   "id": "step2",
+   "text": "Bước hai: tạo một Google Sheet, vào Tiện ích mở rộng, chọn Apps Script. Dán đoạn mã do Claude viết, bấm Triển khai, chọn Ứng dụng web. Bạn nhận về một đường link kết thúc bằng chữ exec."
+  },
+  {
+   "id": "step3",
+   "text": "Bước ba: mở Claude Code, kết nối với GitHub, chọn kho DailyCast, và dán đường link đó vào."
+  },
+  {
+   "id": "prompt",
+   "text": "Giờ là phần thú vị nhất. Bạn chỉ cần gõ yêu cầu bằng tiếng Việt, như đang nói chuyện bình thường."
+  },
+  {
+   "id": "build",
+   "text": "Claude tự lên kế hoạch, viết giao diện, viết bộ gom tin, đặt lịch chạy mỗi sáng, viết luôn mã Apps Script, rồi đẩy tất cả lên GitHub. Việc của bạn chỉ là đọc và duyệt."
+  },
+  {
+   "id": "daily",
+   "text": "Từ đây, hệ thống tự vận hành. Năm giờ bốn lăm sáng, GitHub Actions thức dậy, gom tin, chấm điểm, chọn những tin quan trọng. Claude viết kịch bản, ElevenLabs đọc thành giọng tự nhiên, và trang web tự cập nhật số mới."
+  },
+  {
+   "id": "phone",
+   "text": "Mở link trên điện thoại, bấm Cài app, và DailyCast nằm ngay trên màn hình chính, như một ứng dụng thật. Nghe podcast có phụ đề song ngữ, luyện tiếng Anh từng câu, đọc tin theo chuyên mục."
+  },
+  {
+   "id": "deep",
+   "text": "Muốn đi sâu hơn? Bảng tính Google Sheet ghi lại lượt nghe, nguồn báo và người đăng ký. Bấm nút Tổng hợp ngay, chọn chủ đề, chọn giọng đọc, vài phút sau đã có một số mới."
+  },
+  {
+   "id": "close",
+   "text": "Chi phí máy chủ: không đồng. Thời gian: một buổi chiều. Còn ý tưởng tiếp theo của bạn? Hãy để Claude Code viết nó."
+  }
+ ]
+}
