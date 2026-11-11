@@ -256,8 +256,16 @@ const Hook = ({ t, v }) => {
   const news = ['VnExpress', 'Tuổi Trẻ', 'VTV', 'Reuters', 'Lao Động', 'Nikkei Asia', 'Bloomberg'];
   const zeros = [['0', 'lập trình viên', c.lt], ['0', 'máy chủ riêng', c.mc], ['≈0', 'đồng chi phí', c.dong]];
   const zpos = v ? [[40, 640], [745, 830], [40, 1020]] : [[120, 600], [430, 600], [740, 600]];
+  const av = v ? 128 : 124, fl = Math.sin(t * 1.6) * 4;
   return (
     <>
+      <div style={{ ...abs(v ? (1080 - av) / 2 : 120, (v ? 30 : 104) + fl, av, av) }}>
+        <Pop t={t} at={0.15}>
+          <div style={{ width: av, height: av, borderRadius: av, background: 'linear-gradient(150deg, #FBE3D8, #F4B9A0)', border: '5px solid #fff', boxShadow: '0 14px 34px rgba(217,119,87,.30)', overflow: 'hidden', boxSizing: 'border-box' }}>
+            <Img src={staticFile('media/me.png')} style={{ width: '112%', height: '112%', marginLeft: '-6%', marginTop: '2%', objectFit: 'cover' }} />
+          </div>
+        </Pop>
+      </div>
       <div style={{ ...abs(v ? 40 : 120, v ? 185 : 250, v ? 1000 : 1000), textAlign: v ? 'center' : 'left' }}>
         <In t={t} at={0.25}><div style={{ fontSize: v ? 25 : 24, letterSpacing: 4, fontWeight: 700, color: C.claude }}>TẬP 1 · CLAUDE CODE · GITHUB · ELEVENLABS</div></In>
         <In t={t} at={c.pod - 0.3}><div style={{ fontSize: v ? 80 : 100, fontWeight: 800, lineHeight: 1.04, marginTop: 16, letterSpacing: -2.5 }}>Một app podcast</div></In>
