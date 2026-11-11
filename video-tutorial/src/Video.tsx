@@ -1160,3 +1160,26 @@ export const Main: React.FC<{ v: boolean }> = ({ v }) => {
     </AbsoluteFill>
   );
 };
+
+// ảnh bìa Reel 9:16 (1080×1920, dựng scale 2 → 2160×3840). Vùng chính nằm trong khung 4:5 ở giữa (y 285–1635).
+export const ReelThumb: React.FC = () => (
+  <AbsoluteFill style={{ fontFamily: FONT, color: C.ink, overflow: 'hidden' }}>
+    <Bg t={0} />
+    <AbsoluteFill style={{ background: 'radial-gradient(circle at 62% 58%, rgba(217,119,87,.32), transparent 46%)' }} />
+    <div style={{ ...abs(0, 290, 1080), display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+      <div style={{ padding: '10px 28px', borderRadius: 999, background: C.ink, color: '#fff', fontSize: 28, fontWeight: 800, letterSpacing: 3 }}>TẬP 1</div>
+      <div style={{ fontSize: 116, fontWeight: 800, letterSpacing: -4, lineHeight: 1.0, marginTop: 26 }}>Tự làm app</div>
+      <div style={{ fontSize: 116, fontWeight: 800, letterSpacing: -4, lineHeight: 1.0, color: C.claude }}>podcast đọc báo</div>
+      <div style={{ fontSize: 62, fontWeight: 700, letterSpacing: -1.5, marginTop: 16 }}>trong <span style={{ background: C.ink, color: '#fff', padding: '0 18px', borderRadius: 16 }}>1 buổi chiều</span></div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 30 }}>
+        <Tile k="claude" s={92} /><div style={{ fontSize: 44, color: C.mute, fontWeight: 300 }}>+</div><Tile k="github" s={92} /><div style={{ fontSize: 44, color: C.mute, fontWeight: 300 }}>+</div><Tile k="el" s={92} />
+      </div>
+    </div>
+    <div style={{ ...abs(-40, 880, 820, 820), WebkitMaskImage: 'linear-gradient(to bottom, #000 72%, transparent 98%)', maskImage: 'linear-gradient(to bottom, #000 72%, transparent 98%)' }}><Img src={staticFile('media/me.png')} style={{ width: '100%', height: '100%' }} /></div>
+    <div style={{ position: 'absolute', left: 0, top: 0, transform: 'rotate(7deg)', transformOrigin: '830px 1300px' }}>
+      <Phone x={660} y={930} w={340}><Shot src="m_listen" /></Phone>
+    </div>
+    <div style={{ ...abs(560, 900) }}><div style={{ padding: '14px 26px', borderRadius: 999, background: '#fff', border: `3px solid ${C.claude}`, fontSize: 34, fontWeight: 800, boxShadow: '0 14px 34px rgba(22,22,27,.18)', transform: 'rotate(-4deg)' }}>Không cần biết code</div></div>
+    <div style={{ ...abs(0, 1700, 1080), textAlign: 'center', fontSize: 32, fontWeight: 700, color: C.mute }}>Claude Code · GitHub · ElevenLabs</div>
+  </AbsoluteFill>
+);

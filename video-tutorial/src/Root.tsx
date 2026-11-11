@@ -1,5 +1,5 @@
 import React from 'react';
-import { Composition, continueRender, delayRender, staticFile } from 'remotion';
+import { Composition, Still, continueRender, delayRender, staticFile } from 'remotion';
 import '@fontsource/be-vietnam-pro/400.css';
 import '@fontsource/be-vietnam-pro/500.css';
 import '@fontsource/be-vietnam-pro/600.css';
@@ -8,7 +8,7 @@ import '@fontsource/be-vietnam-pro/800.css';
 import '@fontsource/be-vietnam-pro/500-italic.css';
 import '@fontsource/be-vietnam-pro/600-italic.css';
 import TL from './data/timeline.json';
-import { Main } from './Video';
+import { Main, ReelThumb } from './Video';
 
 // chờ font (Be Vietnam Pro cho chữ Việt, JetBrains Mono cho code) trước khi chụp khung
 if (typeof document !== 'undefined') {
@@ -26,5 +26,6 @@ export const Root: React.FC = () => (
   <>
     <Composition id="DailyCast-16x9" component={Main as any} durationInFrames={D} fps={30} width={1920} height={1080} defaultProps={{ v: false }} />
     <Composition id="DailyCast-9x16" component={Main as any} durationInFrames={D} fps={30} width={1080} height={1920} defaultProps={{ v: true }} />
+    <Still id="Thumb-9x16" component={ReelThumb} width={1080} height={1920} />
   </>
 );
