@@ -1,4 +1,4 @@
-# Video hướng dẫn: tạo app bằng Claude Code + GitHub + Google Sheets
+# Video hướng dẫn Tập 1: tạo app bằng Claude Code + GitHub + ElevenLabs
 
 Mã nguồn Tập 1: 2 video 4K (16:9 và 9:16, khoảng 2 phút 24 giây) giới thiệu cách dựng app ví dụ **DailyCast**,
 một podcast tự đọc báo mỗi sáng: Claude Code viết code, GitHub chứa code, chạy Actions và đăng Pages,
