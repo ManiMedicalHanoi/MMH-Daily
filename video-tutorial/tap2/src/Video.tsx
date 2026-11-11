@@ -1,5 +1,5 @@
 // @ts-nocheck
-// Tập 2 · LearnDesk: nền tảng đào tạo online bằng Google Drive + Google Sheet + Apps Script + GitHub (dựng trên bộ khung Tập 1).
+// Tập 2 · LearnDesk: nền tảng đào tạo online (Drive + Sheet + Apps Script + GitHub). Phong cách ra mắt sản phẩm, khác Tập 1.
 // Một component cho 2 khổ: v = false (16:9, 1920×1080) · v = true (9:16, 1080×1920). Dựng 4K bằng --scale=2.
 // Mọi mốc hình lấy theo mốc từng từ của lời đọc ElevenLabs (src/data/timeline.json) qua W(đoạn, từ).
 import React from 'react';
@@ -1108,493 +1108,514 @@ const Subs = ({ t }) => {
 // âm thanh
 const Sfx = ({ at, name, vol = 0.3, dur = 2 }) => { const { fps } = useVideoConfig(); return <Sequence from={Math.max(0, Math.round(at * fps))} durationInFrames={Math.round(dur * fps)}><Audio src={staticFile(`sfx/${name}.wav`)} volume={vol} /></Sequence>; };
 
-// ================= TẬP 2 · NỀN TẢNG ĐÀO TẠO ONLINE (LearnDesk) =================
-const LdMark = ({ s }) => (<svg width={s} height={s} viewBox="0 0 100 100" style={{ display: 'block' }}><defs><linearGradient id="ldg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#14B8A6" /><stop offset="1" stopColor="#0F766E" /></linearGradient></defs><rect width="100" height="100" rx="26" fill="url(#ldg)" /><path d="M14 40 L50 22 L86 40 L50 58Z" fill="none" stroke="#fff" strokeWidth="7" strokeLinejoin="round" /><path d="M28 48 V66 C40 76 60 76 72 66 V48" fill="none" stroke="#fff" strokeWidth="7" strokeLinecap="round" /></svg>);
+// ================= TẬP 2 · LearnDesk · phong cách "ra mắt sản phẩm" (nền tối, thiết bị 3D, chữ lớn) =================
+const D = { bg: '#05070B', ink: '#F8FAFC', mute: '#94A3B8', teal: '#2DD4BF', teal2: '#0D9488', amber: '#F59E0B', glass: 'rgba(255,255,255,.06)', gline: 'rgba(255,255,255,.13)' };
+const GRAD = 'linear-gradient(90deg,#5EEAD4,#2DD4BF 40%,#FBBF24)';
+const LdMark = ({ s }) => (<svg width={s} height={s} viewBox="0 0 100 100" style={{ display: 'block' }}><defs><linearGradient id="ldg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#2DD4BF" /><stop offset="1" stopColor="#0D9488" /></linearGradient></defs><rect width="100" height="100" rx="26" fill="url(#ldg)" /><path d="M14 40 L50 22 L86 40 L50 58Z" fill="none" stroke="#fff" strokeWidth="7" strokeLinejoin="round" /><path d="M28 48 V66 C40 76 60 76 72 66 V48" fill="none" stroke="#fff" strokeWidth="7" strokeLinecap="round" /></svg>);
 const RemotionMark = ({ s }) => (<svg width={s} height={s} viewBox="0 0 100 100" style={{ display: 'block' }}><defs><linearGradient id="rmg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#4F9CFF" /><stop offset="1" stopColor="#0B5FFF" /></linearGradient></defs><rect width="100" height="100" rx="24" fill="url(#rmg)" /><path d="M34 26 L74 50 L34 74Z" fill="#fff" stroke="#fff" strokeWidth="8" strokeLinejoin="round" /></svg>);
-const Logo2 = ({ k, s }) => {
+const Logo2 = ({ k, s, dark = false }) => {
   if (k === 'drive') return <Img src={staticFile('media/google-drive.svg')} style={{ width: s, height: s * 0.895, display: 'block' }} />;
   if (k === 'ld') return <LdMark s={s} />;
   if (k === 'remotion') return <RemotionMark s={s} />;
+  if (k === 'github' && dark) return <Img src={staticFile('media/github-icon.svg')} style={{ width: s, height: s * 0.976, display: 'block', filter: 'invert(1)' }} />;
   return <Logo k={k} s={s} />;
 };
 const Tile2 = ({ k, s = 110, ring = null, style = {} }) => (
-  <div style={{ width: s, height: s, borderRadius: s * 0.26, background: '#fff', border: `${Math.max(1, s * 0.012)}px solid ${ring || C.line}`, boxShadow: '0 10px 30px rgba(22,22,27,.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', ...style }}>
-    <Logo2 k={k} s={s * 0.58} />
-  </div>
+  <div style={{ width: s, height: s, borderRadius: s * 0.26, background: '#fff', border: `${Math.max(1, s * 0.012)}px solid ${ring || C.line}`, boxShadow: '0 10px 30px rgba(22,22,27,.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', ...style }}><Logo2 k={k} s={s * 0.58} /></div>
 );
+const Glass = ({ k, s = 120, glow = D.teal, on = true, style = {} }) => (
+  <div style={{ width: s, height: s, borderRadius: s * 0.28, background: 'linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.04))', border: `1.5px solid ${on ? glow : D.gline}`, boxShadow: on ? `0 0 ${s * 0.5}px ${glow}55, inset 0 1px 0 rgba(255,255,255,.25)` : 'inset 0 1px 0 rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', ...style }}><Logo2 k={k} s={s * 0.56} dark /></div>
+);
+const DarkBg = ({ t }) => (
+  <AbsoluteFill style={{ background: D.bg, overflow: 'hidden' }}>
+    <div style={{ position: 'absolute', width: 1400, height: 1400, left: -400 + Math.sin(t * 0.25) * 140, top: -600 + Math.cos(t * 0.2) * 100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(45,212,191,.22), transparent 60%)' }} />
+    <div style={{ position: 'absolute', width: 1300, height: 1300, right: -500 + Math.cos(t * 0.22) * 120, bottom: -650 + Math.sin(t * 0.18) * 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(245,158,11,.16), transparent 60%)' }} />
+    <AbsoluteFill style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px)', backgroundSize: '80px 80px', backgroundPosition: `0 ${t * 8}px`, maskImage: 'radial-gradient(ellipse at 50% 60%, #000 20%, transparent 75%)', WebkitMaskImage: 'radial-gradient(ellipse at 50% 60%, #000 20%, transparent 75%)' }} />
+    <AbsoluteFill style={{ background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.6) 100%)' }} />
+  </AbsoluteFill>
+);
+// chữ chạy từng từ, mờ → nét
+const Kin = ({ t, at, text, size, grad = false, weight = 800, stagger = 0.07, color = D.ink, align = 'left', lh = 1.04 }) => {
+  const words = text.split(' ');
+  return (
+    <div style={{ fontSize: size, fontWeight: weight, letterSpacing: -size * 0.035, lineHeight: lh, textAlign: align, color }}>
+      {words.map((w, i) => { const k = P(t, at + i * stagger, 0.55); return <span key={i} style={{ display: 'inline-block', marginRight: size * 0.24, opacity: k, filter: `blur(${(1 - k) * 12}px)`, transform: `translateY(${(1 - k) * size * 0.35}px)`, ...(grad ? { backgroundImage: GRAD, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' } : {}) }}>{w}</span>; })}
+    </div>
+  );
+};
+const Sweep = ({ t, at, d = 1.1 }) => { const k = (t - at) / d; if (k < 0 || k > 1) return null; return <AbsoluteFill style={{ background: `linear-gradient(105deg, transparent ${k * 140 - 40}%, rgba(255,255,255,.22) ${k * 140 - 25}%, transparent ${k * 140 - 10}%)`, pointerEvents: 'none' }} />; };
+const Numeral = ({ t, at, n, v }) => <div style={{ ...abs(v ? 40 : 60, v ? 150 : 40), fontSize: v ? 300 : 360, fontWeight: 800, letterSpacing: -20, color: 'transparent', WebkitTextStroke: '2px rgba(255,255,255,.08)', opacity: P(t, at, 0.8), lineHeight: 1 }}>{n}</div>;
+const Label = ({ t, at, text, style = {}, color = D.teal }) => <div style={{ ...style, opacity: P(t, at, 0.4), transform: `translateY(${(1 - P(t, at, 0.4)) * 14}px)`, fontSize: style.fontSize || 24, fontWeight: 800, letterSpacing: 5, color }}>{text}</div>;
+// điện thoại nghiêng 3D + bóng phản chiếu
+const Phone3D = ({ x, y, w, ry = 0, rx = 0, rz = 0, s = 1, children, reflect = true, o = 1 }) => {
+  const h = w * 2.1;
+  return (
+    <div style={{ ...abs(x, y, w, h), perspective: 1800, opacity: o }}>
+      <div style={{ width: '100%', height: '100%', transform: `rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg) scale(${s})`, transformStyle: 'preserve-3d' }}>
+        <Phone x={0} y={0} w={w}>{children}</Phone>
+        {reflect && <div style={{ position: 'absolute', left: 0, top: h + 14, width: w, height: h * 0.35, transform: 'scaleY(-1)', opacity: 0.18, overflow: 'hidden', WebkitMaskImage: 'linear-gradient(to top, #000, transparent 70%)', maskImage: 'linear-gradient(to top, #000, transparent 70%)' }}><div style={{ position: 'absolute', bottom: 0, width: w, height: h }}><Phone x={0} y={0} w={w}>{children}</Phone></div></div>}
+      </div>
+    </div>
+  );
+};
+const Laptop = ({ x, y, w, ry = 0, rx = 0, s = 1, children }) => {
+  const sh = w * 0.625;
+  return (
+    <div style={{ ...abs(x, y, w, sh + w * 0.06), perspective: 2200 }}>
+      <div style={{ width: '100%', height: '100%', transform: `rotateY(${ry}deg) rotateX(${rx}deg) scale(${s})`, transformStyle: 'preserve-3d' }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, width: w, height: sh, borderRadius: w * 0.02, background: '#0A0C10', padding: w * 0.012, boxSizing: 'border-box', boxShadow: '0 40px 100px rgba(0,0,0,.6), 0 0 0 1.5px #2A2E36' }}>
+          <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: w * 0.008, overflow: 'hidden', background: '#fff' }}>{children}</div>
+        </div>
+        <div style={{ position: 'absolute', left: -w * 0.06, top: sh, width: w * 1.12, height: w * 0.035, borderRadius: `0 0 ${w * 0.03}px ${w * 0.03}px`, background: 'linear-gradient(#3A3F48, #1A1D22)' }} />
+      </div>
+    </div>
+  );
+};
 const TEAL = '#0F766E';
-
-// khung trình chiếu bài giảng (giống video Remotion) đặt trong ô video của app
-const LessonPlayer = ({ t, at, w, h, big = false }) => {
-  const u = w / 972; const k = (t - at);
+// khung bài giảng chuyển động (giống video Remotion), nền ảnh thật
+const LessonPlayer = ({ t, at, w, h }) => {
+  const u = w / 972; const k = Math.max(0, t - at);
   const items = ['“Giá cao quá”', '“Để tôi suy nghĩ”', '“Đang dùng bên khác”'];
   const bars = [0.4, 0.62, 0.52, 0.85, 0.7];
   return (
-    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg,#F8FAFC,#E0F2F1)', overflow: 'hidden', borderRadius: 16 * u }}>
-      <div style={{ position: 'absolute', left: 70 * u, top: 60 * u }}>
-        <div style={{ fontSize: 18 * u, fontWeight: 800, letterSpacing: 3 * u, color: TEAL, opacity: P(t, at, 0.4) }}>BÀI 4 · KỸ NĂNG BÁN HÀNG</div>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#000' }}>
+      <Img src={staticFile('media/p_dental.jpg')} style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${1.08 + k * 0.012})` }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(5,7,11,.92) 0%, rgba(5,7,11,.55) 55%, rgba(5,7,11,.15))' }} />
+      <div style={{ position: 'absolute', left: 70 * u, top: 64 * u, color: '#fff' }}>
+        <div style={{ fontSize: 18 * u, fontWeight: 800, letterSpacing: 3 * u, color: '#5EEAD4', opacity: P(t, at, 0.4) }}>BÀI 4 · KỸ NĂNG BÁN HÀNG</div>
         <div style={{ fontSize: 60 * u, fontWeight: 800, letterSpacing: -1.5 * u, lineHeight: 1.05, marginTop: 8 * u, clipPath: `inset(0 ${100 - 100 * P(t, at + 0.2, 0.7)}% 0 0)` }}>5 câu từ chối<br />thường gặp</div>
         <div style={{ marginTop: 26 * u, display: 'flex', flexDirection: 'column', gap: 12 * u }}>
-          {items.map((x, i) => <div key={i} style={{ display: 'flex', gap: 14 * u, alignItems: 'center', fontSize: 26 * u, fontWeight: 600, opacity: P(t, at + 0.8 + i * 0.35, 0.3), transform: `translateX(${(1 - P(t, at + 0.8 + i * 0.35, 0.4)) * -30 * u}px)` }}><span style={{ width: 36 * u, height: 36 * u, borderRadius: 9 * u, background: TEAL, color: '#fff', fontSize: 18 * u, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>{x}</div>)}
+          {items.map((x, i) => <div key={i} style={{ display: 'flex', gap: 14 * u, alignItems: 'center', fontSize: 26 * u, fontWeight: 600, opacity: P(t, at + 0.8 + i * 0.35, 0.3), transform: `translateX(${(1 - P(t, at + 0.8 + i * 0.35, 0.4)) * -30 * u}px)` }}><span style={{ width: 36 * u, height: 36 * u, borderRadius: 9 * u, background: '#0D9488', fontSize: 18 * u, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>{x}</div>)}
         </div>
       </div>
-      <div style={{ position: 'absolute', right: 80 * u, bottom: 90 * u, display: 'flex', gap: 14 * u, alignItems: 'flex-end', height: 260 * u }}>
-        {bars.map((b, i) => <div key={i} style={{ width: 38 * u, height: `${b * 100 * P(t, at + 0.5 + i * 0.12, 0.6)}%`, borderRadius: `${8 * u}px ${8 * u}px 0 0`, background: i === 3 ? C.claude : '#14B8A6' }} />)}
+      <div style={{ position: 'absolute', right: 80 * u, bottom: 90 * u, display: 'flex', gap: 14 * u, alignItems: 'flex-end', height: 240 * u }}>
+        {bars.map((b, i) => <div key={i} style={{ width: 38 * u, height: `${b * 100 * P(t, at + 0.5 + i * 0.12, 0.6)}%`, borderRadius: `${8 * u}px ${8 * u}px 0 0`, background: i === 3 ? '#F59E0B' : 'rgba(94,234,212,.9)' }} />)}
       </div>
-      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 60 * u, background: 'linear-gradient(transparent, rgba(0,0,0,.5))', display: 'flex', alignItems: 'center', gap: 16 * u, padding: `0 ${24 * u}px`, color: '#fff', fontSize: 18 * u }}>
-        <span>❚❚</span><span>{`3:${String(12 + Math.floor(Math.max(0, k))).padStart(2, '0')}`}</span>
-        <div style={{ flex: 1, height: 5 * u, background: 'rgba(255,255,255,.35)', borderRadius: 3 * u }}><div style={{ width: `${38 + Math.max(0, k) * 1.2}%`, height: '100%', background: '#2DD4BF', borderRadius: 3 * u }} /></div><span>8:30</span>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 60 * u, display: 'flex', alignItems: 'center', gap: 16 * u, padding: `0 ${24 * u}px`, color: '#fff', fontSize: 18 * u }}>
+        <span>❚❚</span><span>{`3:${String(12 + Math.floor(k)).padStart(2, '0')}`}</span>
+        <div style={{ flex: 1, height: 5 * u, background: 'rgba(255,255,255,.3)', borderRadius: 3 * u }}><div style={{ width: `${Math.min(95, 38 + k * 1.2)}%`, height: '100%', background: '#2DD4BF', borderRadius: 3 * u }} /></div><span>8:30</span>
       </div>
+    </div>
+  );
+};
+const Callout = ({ t, at, x, y, text, side = 'right', len = 120, out }) => {
+  const k = P(t, at, 0.45); let o = k; if (out !== undefined) o *= 1 - P(t, out, 0.3); if (o <= 0.01) return null;
+  return (
+    <div style={{ ...abs(x, y), opacity: o, display: 'flex', alignItems: 'center', flexDirection: side === 'right' ? 'row' : 'row-reverse', transform: side === 'right' ? 'none' : 'translateX(-100%)' }}>
+      <div style={{ width: 16, height: 16, borderRadius: 8, background: D.teal, boxShadow: `0 0 0 ${6 + 4 * Math.sin(t * 5)}px rgba(45,212,191,.25)`, flexShrink: 0, transform: 'translate(-8px,0)' }} />
+      <div style={{ width: len * k, height: 2, background: `linear-gradient(${side === 'right' ? 90 : 270}deg, ${D.teal}, rgba(45,212,191,.2))` }} />
+      <div style={{ padding: '12px 22px', borderRadius: 16, background: 'rgba(15,23,32,.75)', border: `1px solid ${D.gline}`, color: '#fff', fontSize: 28, fontWeight: 700, whiteSpace: 'nowrap', backdropFilter: 'blur(10px)' }}>{text}</div>
     </div>
   );
 };
 
 const Hook2 = ({ t, v }) => {
   const c = { nen: W('hook', 'nền'), vid: W('hook', 'video'), kt: W('hook', 'kiểm'), cc: W('hook', 'chứng'), cd: W('hook', 'chủ'), dn: W('hook', 'Doanh'), th: W('hook', 'thầy') };
-  const ph = v ? { x: 355, y: 455, w: 370 } : { x: 1230, y: 92, w: 425 };
-  const scr = t < c.vid - 0.1 ? 'ld_m_home' : t < c.kt - 0.1 ? 'ld_m_lesson' : t < c.cc - 0.1 ? 'ld_m_quiz' : 'ld_m_result';
-  const feats = [['Bài giảng video', c.vid], ['Bài kiểm tra', c.kt], ['Chứng chỉ', c.cc]];
-  const fpos = v ? [[40, 640], [760, 830], [40, 1020]] : [[120, 600], [430, 600], [700, 600]];
-  const av = v ? 128 : 124, fl = Math.sin(t * 1.6) * 4;
+  const words = [['Học.', c.vid], ['Kiểm tra.', c.kt], ['Chứng chỉ.', c.cc], ['Chủ động.', c.cd]];
+  const cur = words.reduce((a, w, i) => (t >= w[1] - 0.15 ? i : a), -1);
+  const av = v ? 120 : 110; const rise = (d) => eo(P(t, 0.2 + d, 1.2));
+  const cx = v ? 540 : 1450, cy = v ? 540 : 150, pw = v ? 300 : 300;
   return (
     <>
-      <div style={{ ...abs(v ? (1080 - av) / 2 : 120, (v ? 30 : 104) + fl, av, av) }}>
-        <Pop t={t} at={0.15}><div style={{ width: av, height: av, borderRadius: av, background: 'linear-gradient(150deg, #FBE3D8, #F4B9A0)', border: '5px solid #fff', boxShadow: '0 14px 34px rgba(217,119,87,.30)', overflow: 'hidden', boxSizing: 'border-box' }}><Img src={staticFile('media/me.png')} style={{ width: '112%', height: '112%', marginLeft: '-6%', marginTop: '2%' }} /></div></Pop>
+      <div style={{ ...abs(v ? (1080 - av) / 2 : 110, (v ? 20 : 90) + Math.sin(t * 1.6) * 4, av, av) }}>
+        <Pop t={t} at={0.15}><div style={{ width: av, height: av, borderRadius: av, background: 'linear-gradient(150deg,#134E4A,#0D9488)', border: '3px solid rgba(255,255,255,.85)', boxShadow: '0 0 40px rgba(45,212,191,.45)', overflow: 'hidden', boxSizing: 'border-box' }}><Img src={staticFile('media/me.png')} style={{ width: '112%', height: '112%', marginLeft: '-6%', marginTop: '2%' }} /></div></Pop>
       </div>
-      <div style={{ ...abs(v ? 40 : 120, v ? 185 : 250, 1000), textAlign: v ? 'center' : 'left' }}>
-        <In t={t} at={0.25}><div style={{ fontSize: v ? 24 : 24, letterSpacing: 4, fontWeight: 700, color: C.claude }}>TẬP 2 · GOOGLE DRIVE · APPS SCRIPT · GITHUB</div></In>
-        <In t={t} at={c.nen - 0.3}><div style={{ fontSize: v ? 80 : 100, fontWeight: 800, lineHeight: 1.04, marginTop: 16, letterSpacing: -2.5 }}>Nền tảng</div></In>
-        <In t={t} at={c.nen + 0.1}><div style={{ fontSize: v ? 80 : 100, fontWeight: 800, lineHeight: 1.04, letterSpacing: -2.5 }}><span style={{ color: C.claude }}>đào tạo online</span></div></In>
+      <div style={{ ...abs(v ? 40 : 110, v ? 170 : 240, v ? 1000 : 900), textAlign: v ? 'center' : 'left' }}>
+        <Label t={t} at={0.3} text="TẬP 2 · LEARNDESK" style={{ fontSize: v ? 24 : 24 }} />
+        <div style={{ marginTop: 18 }}><Kin t={t} at={c.nen - 0.3} text="Nền tảng" size={v ? 92 : 104} align={v ? 'center' : 'left'} /></div>
+        <Kin t={t} at={c.nen + 0.05} text="đào tạo online" size={v ? 92 : 104} grad align={v ? 'center' : 'left'} />
       </div>
-      <In t={t} at={0.1} y={80} s={0.94}>
-        <Phone x={ph.x} y={ph.y} w={ph.w}><Shot src={scr} /></Phone>
-      </In>
-      {feats.map(([l, at], i) => (
-        <div key={l} style={{ ...abs(fpos[i][0], fpos[i][1]) }}>
-          <Pop t={t} at={at - 0.1}><div style={{ display: 'flex', alignItems: 'center', gap: 12, background: '#fff', border: `1px solid ${C.line}`, borderRadius: 20, padding: '16px 24px', boxShadow: '0 14px 34px rgba(22,22,27,.12)', fontSize: v ? 30 : 28, fontWeight: 800 }}><Check s={30} bg={TEAL} />{l}</div></Pop>
-        </div>
-      ))}
-      <div style={{ ...abs(v ? 0 : 120, v ? 1265 : 760, v ? 1080 : 1000), display: 'flex', flexDirection: v ? 'row' : 'column', justifyContent: v ? 'center' : 'flex-start', gap: v ? 14 : 16 }}>
+      {[['ld_m_lesson', -1], ['ld_m_result', 1], ['ld_m_home', 0]].map(([src, side], i) => {
+        const r = rise(i * 0.12 + (side === 0 ? 0.25 : 0)); const spread = side * (v ? 250 : 250) * r;
+        return <Phone3D key={src} x={cx - pw / 2 + spread} y={(v ? 520 : 200) + (1 - r) * 420 + (side === 0 ? 0 : 60) + Math.sin(t * 1.2 + i) * 6} w={side === 0 ? pw : pw * 0.86} ry={side * -24 * r} rx={4} o={r}><Shot src={src} /></Phone3D>;
+      })}
+      <div style={{ ...abs(v ? 0 : 110, v ? 1255 : 560, v ? 1080 : 900), height: v ? 120 : 150, textAlign: v ? 'center' : 'left' }}>
+        {words.map(([w, at], i) => { if (i !== cur) return null; const k = P(t, at - 0.15, 0.35); return <div key={w} style={{ position: 'absolute', left: 0, right: 0, fontSize: v ? 96 : 120, fontWeight: 800, letterSpacing: -4, color: i === 3 ? 'transparent' : '#fff', backgroundImage: i === 3 ? GRAD : 'none', WebkitBackgroundClip: 'text', opacity: k, transform: `scale(${1.25 - 0.25 * k})`, transformOrigin: v ? 'center' : 'left', filter: `blur(${(1 - k) * 10}px)` }}>{w}</div>; })}
+      </div>
+      <div style={{ ...abs(v ? 0 : 110, v ? 1400 : 760, v ? 1080 : 900), display: 'flex', gap: 14, justifyContent: v ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
         {[['Doanh nghiệp', 'đào tạo nội bộ', c.dn], ['Thầy cô', 'lớp học online', c.th]].map(([a, b, at]) => (
-          <In key={a} t={t} at={at - 0.15} x={-20} y={0}><div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '14px 24px', borderRadius: 999, background: C.ink, color: '#fff', fontSize: v ? 28 : 30, fontWeight: 700 }}>{a}<span style={{ color: '#F4B9A0', fontWeight: 600 }}>{b}</span></div></In>
+          <In key={a} t={t} at={at - 0.15} y={20}><div style={{ padding: '14px 26px', borderRadius: 999, background: D.glass, border: `1px solid ${D.gline}`, color: '#fff', fontSize: v ? 28 : 30, fontWeight: 700 }}>{a} <span style={{ color: D.teal }}>· {b}</span></div></In>
         ))}
       </div>
+      <Sweep t={t} at={c.nen + 0.6} />
     </>
   );
 };
 
 const Four = ({ t, v }) => {
   const c = { cong: W('four', 'Công'), gh: W('four', 'GitHub'), dr: W('four', 'Drive'), sh: W('four', 'Sheet'), as: W('four', 'Apps'), cau: W('four', 'cầu') };
-  const cards = [
-    { k: 'github', name: 'GitHub', role: 'Đăng giao diện web', chip: 'Pages · miễn phí', at: c.gh, col: C.gh },
-    { k: 'drive', name: 'Google Drive', role: 'Cất video, tài liệu', chip: 'MP4 · PDF bài giảng', at: c.dr, col: '#1A73E8' },
-    { k: 'sheets', name: 'Google Sheet', role: 'Tài khoản, điểm, chứng chỉ', chip: 'Cơ sở dữ liệu', at: c.sh, col: C.sheet },
-    { k: 'gas', name: 'Apps Script', role: 'Cầu nối đọc / ghi', chip: 'API · link …/exec', at: c.as, col: C.gas },
+  const P4 = [
+    { k: 'github', n: 'GitHub', r: 'đăng giao diện web', at: c.gh, col: '#E5E7EB' },
+    { k: 'drive', n: 'Google Drive', r: 'cất video, tài liệu', at: c.dr, col: '#4285F4' },
+    { k: 'sheets', n: 'Google Sheet', r: 'tài khoản · điểm · chứng chỉ', at: c.sh, col: '#22C55E' },
+    { k: 'gas', n: 'Apps Script', r: 'cầu nối đọc / ghi', at: c.as, col: '#60A5FA' },
   ];
-  const act = cards.reduce((a, cd, i) => (t >= cd.at - 0.1 ? i : a), -1);
+  const cx = v ? 540 : 960, cy = v ? 820 : 560, R = v ? 330 : 360;
+  const slot = (i) => v ? [[cx - 260, cy - 330], [cx + 260, cy - 330], [cx - 260, cy + 330], [cx + 260, cy + 330]][i] : [[cx - 560, cy - 200], [cx + 560, cy - 200], [cx - 560, cy + 200], [cx + 560, cy + 200]][i];
+  const act = P4.reduce((a, p, i) => (t >= p.at - 0.15 ? i : a), -1);
   return (
     <>
-      <In t={t} at={c.cong - 0.3}><div style={{ ...abs(0, v ? 225 : 150, v ? 1080 : 1920), textAlign: 'center', fontSize: v ? 58 : 60, fontWeight: 800, letterSpacing: -1.5 }}>Công thức <span style={{ color: C.claude }}>4 mảnh ghép</span></div></In>
-      {cards.map((cd, i) => {
-        const x = v ? 60 : 115 + i * 430, y = v ? 330 + i * 262 : 270, w = v ? 960 : 400, h = v ? 238 : 520; const on = i === act;
+      <div style={{ ...abs(0, v ? 200 : 110, v ? 1080 : 1920), textAlign: 'center' }}><Kin t={t} at={c.cong - 0.25} text="Bốn mảnh ghép" size={v ? 72 : 88} align="center" /></div>
+      {P4.map((p, i) => {
+        const [sx, sy] = slot(i); const k = P(t, p.at - 0.15, 0.4); if (k <= 0) return null;
+        const settle = eio((t - (p.at + 0.9)) / 0.6); const big = i === act && settle < 1;
+        const x = lerp(cx, sx, settle), y = lerp(cy, sy, settle), s = lerp(v ? 1.5 : 1.7, 1, settle);
         return (
-          <In key={cd.k} t={t} at={cd.at - 0.25} y={50} style={{ ...abs(x, y, w, h) }}>
-            <div style={{ width: '100%', height: '100%', boxSizing: 'border-box', borderRadius: 30, background: '#fff', border: `${on ? 3 : 1.5}px solid ${on ? cd.col : C.line}`, boxShadow: on ? '0 30px 70px rgba(22,22,27,.16)' : '0 12px 30px rgba(22,22,27,.07)', padding: v ? 30 : 36, display: 'flex', flexDirection: v ? 'row' : 'column', gap: v ? 30 : 22, alignItems: v ? 'center' : 'flex-start', transform: `translateY(${on ? -8 : 0}px)` }}>
-              <Tile2 k={cd.k} s={v ? 140 : 130} ring={on ? cd.col : null} />
-              <div>
-                <div style={{ fontSize: v ? 46 : 42, fontWeight: 800, letterSpacing: -1 }}>{cd.name}</div>
-                <div style={{ fontSize: 27, color: C.mute, marginTop: 4, fontWeight: 500 }}>{cd.role}</div>
-                <Pop t={t} at={cd.at + 0.5}><div style={{ marginTop: 16, padding: '9px 16px', borderRadius: 12, background: '#F1F0EC', fontSize: 24, fontWeight: 700, display: 'inline-block' }}>{cd.chip}</div></Pop>
-              </div>
+          <React.Fragment key={p.k}>
+            <svg style={{ ...abs(0, 0, v ? 1080 : 1920, v ? 1920 : 1080), overflow: 'visible', opacity: settle * 0.7 }}><line x1={cx} y1={cy} x2={sx} y2={sy} stroke={p.col} strokeWidth="2" strokeDasharray="6 10" strokeDashoffset={-t * 40} /></svg>
+            <div style={{ ...abs(x, y), transform: `translate(-50%,-50%) scale(${s * (0.7 + 0.3 * k)})`, opacity: k, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', width: 420 }}>
+              <Glass k={p.k} s={v ? 150 : 140} glow={p.col} on={i === act} />
+              <div style={{ fontSize: v ? 44 : 42, fontWeight: 800, color: '#fff', marginTop: 18 }}>{p.n}</div>
+              <div style={{ fontSize: v ? 28 : 26, color: D.mute, marginTop: 4 }}>{p.r}</div>
             </div>
-          </In>
+          </React.Fragment>
         );
       })}
-    </>
-  );
-};
-
-const Arch2 = ({ t, v }) => {
-  const c = { ng: W('arch', 'Nguyên'), hoc: W('arch', 'Người'), dn: W('arch', 'đăng'), goi: W('arch', 'gọi'), as: W('arch', 'Apps', 1), kt: W('arch', 'kiểm'), lay: W('arch', 'lấy'), gui: W('arch', 'gửi'), lam: W('arch', 'Làm'), diem: W('arch', 'điểm'), tat: W('arch', 'Tất') };
-  const N = v ? { web: [540, 420], gas: [540, 770], sheets: [290, 1115], drive: [790, 1115] } : { web: [330, 520], gas: [960, 520], sheets: [1590, 380], drive: [1590, 680] };
-  const NW = v ? 460 : 400, NH = v ? 220 : 230;
-  const nodes = [
-    ['web', 'ld', 'GIAO DIỆN', 'Trang học', 'GitHub Pages', W('arch', 'trang'), TEAL],
-    ['gas', 'gas', 'CẦU NỐI', 'Apps Script', 'doGet · doPost', W('arch', 'Apps'), C.gas],
-    ['sheets', 'sheets', 'DỮ LIỆU', 'Google Sheet', 'tài khoản · điểm', c.kt, C.sheet],
-    ['drive', 'drive', 'BÀI GIẢNG', 'Google Drive', 'video · PDF', c.lay, '#1A73E8'],
-  ];
-  const line = (a, b, at) => { const [x1, y1] = N[a], [x2, y2] = N[b]; const L = Math.hypot(x2 - x1, y2 - y1), ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI; return <div key={a + b} style={{ ...abs(x1, y1 - 2, L * P(t, at, 0.6), 4), transformOrigin: '0 50%', transform: `rotate(${ang}deg)`, background: `repeating-linear-gradient(90deg, ${C.mute} 0 10px, transparent 10px 18px)`, opacity: 0.55 }} />; };
-  const fly = (a, b, at, label, col, period = 1.8) => {
-    if (t < at) return null; const ph = ((t - at) % period) / period; const e = eio(ph); const [x1, y1] = N[a], [x2, y2] = N[b];
-    const o = P(t, at, 0.3) * cl(Math.min((ph - 0.22) / 0.1, (0.78 - ph) / 0.1));
-    return <div style={{ ...abs(lerp(x1, x2, e), lerp(y1, y2, e)), transform: 'translate(-50%,-50%)', padding: '8px 16px', borderRadius: 10, background: col, color: '#fff', fontSize: v ? 23 : 21, fontWeight: 700, whiteSpace: 'nowrap', opacity: o, boxShadow: '0 6px 16px rgba(0,0,0,.18)' }}>{label}</div>;
-  };
-  return (
-    <>
-      <In t={t} at={c.ng - 0.3}><div style={{ ...abs(0, v ? 225 : 150, v ? 1080 : 1920), textAlign: 'center', fontSize: v ? 54 : 58, fontWeight: 800, letterSpacing: -1.4 }}>Nguyên lý <span style={{ color: C.claude }}>hoạt động</span></div></In>
-      {line('web', 'gas', c.goi)}{line('gas', 'sheets', c.kt)}{line('gas', 'drive', c.lay)}
-      {nodes.map(([id, k, lab, ti, sub, at, col]) => (
-        <In key={id} t={t} at={at - 0.2} y={30} style={{ ...abs(N[id][0] - NW / 2, N[id][1] - NH / 2, NW, NH) }}>
-          <div style={{ width: '100%', height: '100%', boxSizing: 'border-box', background: '#fff', borderRadius: 26, border: `2.5px solid ${col}`, boxShadow: '0 20px 46px rgba(22,22,27,.12)', padding: '0 26px', display: 'flex', alignItems: 'center', gap: 22 }}>
-            <Tile2 k={k} s={v ? 104 : 100} />
-            <div><div style={{ fontSize: 18, fontWeight: 700, letterSpacing: 3, color: col }}>{lab}</div><div style={{ fontSize: v ? 34 : 34, fontWeight: 800, letterSpacing: -0.6 }}>{ti}</div><div style={{ fontSize: 22, color: C.mute }}>{sub}</div></div>
-          </div>
-        </In>
-      ))}
-      {fly('web', 'gas', c.goi, 'đăng nhập', TEAL)}
-      {fly('gas', 'sheets', c.kt + 0.2, 'kiểm tra tài khoản', C.sheet)}
-      {fly('gas', 'drive', c.lay + 0.2, 'lấy video', '#1A73E8')}
-      {fly('gas', 'web', c.gui, 'bài học', C.gas)}
-      {fly('web', 'sheets', c.diem, 'điểm số', C.claude, 2.2)}
-      <div style={{ ...abs(0, v ? 1300 : 880, v ? 1080 : 1920), display: 'flex', justifyContent: 'center' }}>
-        <Pop t={t} at={c.tat}><div style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '14px 30px 14px 20px', background: '#fff', borderRadius: 999, border: `2px solid ${C.ink}`, boxShadow: '0 16px 36px rgba(22,22,27,.14)' }}><ServerMark s={60} /><div style={{ fontSize: 32, fontWeight: 800 }}>Miễn phí · không cần máy chủ riêng</div></div></Pop>
+      <div style={{ ...abs(cx, cy), transform: `translate(-50%,-50%) scale(${0.6 + 0.4 * P(t, c.cau, 0.5)})`, opacity: P(t, c.as + 1.0, 0.4) }}>
+        <div style={{ width: v ? 200 : 210, height: v ? 200 : 210, borderRadius: '50%', background: 'radial-gradient(circle, rgba(45,212,191,.35), rgba(45,212,191,0) 70%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ borderRadius: 30, boxShadow: '0 0 60px rgba(45,212,191,.6)' }}><LdMark s={v ? 110 : 116} /></div></div>
       </div>
     </>
   );
 };
 
-const DRIVE_FILES = [['Bài 1 · Vì sao khách từ chối.mp4', 'v'], ['Bài 2 · Lắng nghe và xác nhận.mp4', 'v'], ['Bài 3 · Mô hình LAER.mp4', 'v'], ['Tài liệu · Mô hình LAER.pdf', 'p'], ['Bài 4 · 5 câu từ chối.mp4', 'v'], ['Bảng câu hỏi mẫu.pdf', 'p']];
-const S2TAB = {
-  khoahoc: { cols: ['Mã', 'Tên khoá', 'Nhóm', 'Số bài'], rows: [['KN01', 'Xử lý từ chối khi bán hàng', 'Kỹ năng', '6'], ['SP03', 'Dòng máy mới 2026', 'Sản phẩm', '8'], ['QT02', 'Quy trình xử lý đơn hàng', 'Quy trình', '5'], ['HN01', 'Hội nhập nhân viên mới', 'Hội nhập', '4']] },
-  cauhoi: { cols: ['Khoá', 'Câu hỏi', 'Đáp án', 'Điểm'], rows: [['KN01', 'Bước đầu của mô hình LAER?', 'B', '1'], ['KN01', 'Khách nói “giá cao” thì…', 'C', '1'], ['KN01', 'Khi nào nên chốt đơn?', 'A', '1'], ['SP03', 'Ưu điểm chính của dòng máy?', 'D', '1']] },
-  nguoihoc: { cols: ['Email', 'Họ tên', 'Bộ phận', 'Vai trò'], rows: [['lan.n@congty.vn', 'Nguyễn Thị Lan', 'Kinh doanh', 'Học viên'], ['duc.t@congty.vn', 'Trần Minh Đức', 'Kinh doanh', 'Học viên'], ['ha.p@congty.vn', 'Phạm Thu Hà', 'Kho vận', 'Học viên'], ['chi.d@congty.vn', 'Đặng Mai Chi', 'Đào tạo', 'Quản lý']] },
-  ketqua: { cols: ['Email', 'Khoá', 'Điểm', 'Chứng chỉ'], rows: [['lan.n@congty.vn', 'KN01', '9/10', 'LD-2026-0417'], ['chi.d@congty.vn', 'KN01', '10/10', 'LD-2026-0418'], ['anh.l@congty.vn', 'SP03', '8/10', 'LD-2026-0402'], ['duc.t@congty.vn', 'QT02', '6/10', '—']] },
+const Arch2 = ({ t, v }) => {
+  const c = { ng: W('arch', 'Nguyên'), hoc: W('arch', 'Người'), goi: W('arch', 'gọi'), as1: W('arch', 'Apps'), kt: W('arch', 'kiểm'), lay: W('arch', 'lấy'), gui: W('arch', 'gửi'), diem: W('arch', 'điểm'), tat: W('arch', 'Tất') };
+  const N = v ? { ph: [540, 520], gas: [540, 900], sh: [280, 1220], dr: [800, 1220] } : { ph: [380, 560], gas: [960, 560], sh: [1530, 360], dr: [1530, 760] };
+  const curve = (a, b) => { const [x1, y1] = N[a], [x2, y2] = N[b]; return v ? `M${x1} ${y1} C${x1} ${(y1 + y2) / 2} ${x2} ${(y1 + y2) / 2} ${x2} ${y2}` : `M${x1} ${y1} C${(x1 + x2) / 2} ${y1} ${(x1 + x2) / 2} ${y2} ${x2} ${y2}`; };
+  const bez = (a, b, e) => { const [x1, y1] = N[a], [x2, y2] = N[b]; const [c1x, c1y, c2x, c2y] = v ? [x1, (y1 + y2) / 2, x2, (y1 + y2) / 2] : [(x1 + x2) / 2, y1, (x1 + x2) / 2, y2]; const u = 1 - e; return [u * u * u * x1 + 3 * u * u * e * c1x + 3 * u * e * e * c2x + e * e * e * x2, u * u * u * y1 + 3 * u * u * e * c1y + 3 * u * e * e * c2y + e * e * e * y2]; };
+  const pulse = (a, b, at, label, col, per = 1.6) => {
+    if (t < at) return null; const ph = ((t - at) % per) / per; const e = eio(ph); const [x, y] = bez(a, b, e); const o = P(t, at, 0.3) * cl(Math.min(ph / 0.15, (1 - ph) / 0.15));
+    return <><div style={{ ...abs(x - 14, y - 14, 28, 28), borderRadius: 14, background: col, boxShadow: `0 0 30px 10px ${col}88`, opacity: o }} /><div style={{ ...abs(x, y - 56), transform: 'translateX(-50%)', fontSize: v ? 24 : 22, fontWeight: 700, color: '#fff', padding: '6px 14px', borderRadius: 10, background: 'rgba(0,0,0,.55)', border: `1px solid ${col}`, whiteSpace: 'nowrap', opacity: o }}>{label}</div></>;
+  };
+  const W_ = v ? 1080 : 1920, H_ = v ? 1920 : 1080;
+  const panel = (id, title, k, at, rows) => { const [x, y] = N[id]; const w = v ? 460 : 470, h = v ? 250 : 280; return (
+    <In t={t} at={at - 0.2} y={30} style={{ ...abs(x - w / 2, y - h / 2, w, h) }}>
+      <div style={{ width: '100%', height: '100%', boxSizing: 'border-box', borderRadius: 26, background: 'linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.03))', border: `1.5px solid ${D.gline}`, padding: 20, color: '#fff', backdropFilter: 'blur(8px)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}><Logo2 k={k} s={42} dark /><div style={{ fontSize: 30, fontWeight: 800 }}>{title}</div></div>
+        {rows}
+      </div>
+    </In>); };
+  return (
+    <>
+      <div style={{ ...abs(0, v ? 200 : 100, W_), textAlign: 'center' }}><Kin t={t} at={c.ng - 0.25} text="Cách nó vận hành" size={v ? 70 : 80} align="center" /></div>
+      <svg style={{ ...abs(0, 0, W_, H_), overflow: 'visible' }}>
+        {[['ph', 'gas', c.goi], ['gas', 'sh', c.kt], ['gas', 'dr', c.lay]].map(([a, b, at]) => <path key={a + b} d={curve(a, b)} stroke="rgba(94,234,212,.45)" strokeWidth="3" fill="none" strokeDasharray="2000" strokeDashoffset={2000 * (1 - P(t, at - 0.2, 0.8))} />)}
+      </svg>
+      <Phone3D x={N.ph[0] - (v ? 120 : 130)} y={N.ph[1] - (v ? 252 : 273)} w={v ? 240 : 260} ry={v ? 0 : 14} rx={3} reflect={false} o={P(t, c.hoc - 0.2, 0.5)}><Shot src="ld_m_login" /></Phone3D>
+      <div style={{ ...abs(N.gas[0], N.gas[1]), transform: `translate(-50%,-50%) scale(${0.6 + 0.4 * P(t, c.as1 - 0.2, 0.5)})`, opacity: P(t, c.as1 - 0.2, 0.4) }}>
+        <div style={{ width: 230, height: 230, borderRadius: '50%', background: `radial-gradient(circle, rgba(96,165,250,${0.35 + 0.1 * Math.sin(t * 4)}), transparent 70%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Glass k="gas" s={130} glow="#60A5FA" /></div>
+        <div style={{ textAlign: 'center', color: '#fff', fontSize: 30, fontWeight: 800, marginTop: -10 }}>Apps Script</div>
+      </div>
+      {panel('sh', 'Google Sheet', 'sheets', c.kt, <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>{[['lan.n@congty.vn', 'Học viên'], ['duc.t@congty.vn', 'Học viên'], ['chi.d@congty.vn', 'Quản lý']].map(([a, b], i) => <div key={a} style={{ display: 'flex', fontFamily: MONO, fontSize: 18, padding: '7px 12px', borderRadius: 8, background: i === 0 && t > c.kt + 0.6 ? 'rgba(34,197,94,.25)' : 'rgba(255,255,255,.05)' }}><span>{a}</span><span style={{ marginLeft: 'auto', color: D.mute }}>{b}</span></div>)}</div>)}
+      {panel('dr', 'Google Drive', 'drive', c.lay, <div style={{ marginTop: 16, display: 'flex', gap: 10 }}>{['dental', 'tooth', 'whitening'].map((p, i) => <div key={p} style={{ flex: 1, height: v ? 130 : 150, borderRadius: 12, overflow: 'hidden', position: 'relative', outline: i === 0 && t > c.lay + 0.6 ? `3px solid ${D.teal}` : 'none' }}><Img src={staticFile(`media/p_${p}.jpg`)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /><div style={{ position: 'absolute', left: 6, bottom: 6, fontSize: 14, fontWeight: 800, background: 'rgba(0,0,0,.6)', color: '#fff', padding: '2px 6px', borderRadius: 5 }}>MP4</div></div>)}</div>)}
+      {pulse('ph', 'gas', c.goi, 'đăng nhập', D.teal)}
+      {pulse('gas', 'sh', c.kt + 0.15, 'kiểm tra tài khoản', '#22C55E')}
+      {pulse('gas', 'dr', c.lay + 0.15, 'lấy video', '#4285F4')}
+      {pulse('gas', 'ph', c.gui, 'bài học', '#60A5FA')}
+      {pulse('ph', 'sh', c.diem, 'điểm số', D.amber, 2)}
+      <div style={{ ...abs(0, v ? 1450 : 920, W_), display: 'flex', justifyContent: 'center' }}>
+        <Pop t={t} at={c.tat}><div style={{ display: 'flex', alignItems: 'baseline', gap: 18, color: '#fff' }}><span style={{ fontSize: v ? 84 : 96, fontWeight: 800, letterSpacing: -3, backgroundImage: GRAD, WebkitBackgroundClip: 'text', color: 'transparent' }}>0 đ</span><span style={{ fontSize: v ? 34 : 38, fontWeight: 700 }}>máy chủ riêng</span></div></Pop>
+      </div>
+    </>
+  );
 };
 
 const Step1b = ({ t, v }) => {
-  const c = { chuan: W('step1', 'chuẩn'), thu: W('step1', 'thư'), file: W('step1', 'file'), kh: W('step1', 'khoá'), ch: W('step1', 'câu'), nh: W('step1', 'người'), kq: W('step1', 'kết') };
-  const items = [['Thư mục Drive: video, PDF', c.thu], ['File Sheet: 4 trang dữ liệu', c.file]];
-  const B = c.file - 0.25;
+  const c = { bt: W('step1', 'Bắt'), chuan: W('step1', 'chuẩn'), thu: W('step1', 'thư'), file: W('step1', 'file'), kh: W('step1', 'khoá'), ch: W('step1', 'câu'), nh: W('step1', 'người'), kq: W('step1', 'kết') };
+  const files = [['dental', 'Bài 1 · Vì sao khách từ chối.mp4'], ['care', 'Bài 2 · Lắng nghe bác sĩ.mp4'], ['tooth', 'Bài 3 · Vật liệu trám.mp4'], [null, 'Tài liệu · Mô hình LAER.pdf'], ['whitening', 'Bài 4 · Tư vấn tẩy trắng.mp4'], ['inspect', 'Bài 5 · Kiểm soát chất lượng.mp4']];
+  const B = c.file - 0.2; const sk = eio((t - B) / 0.8);
+  const tabs = [['Khoá học', c.kh, [['KN01', 'Tư vấn bán hàng phòng khám'], ['SP03', 'Vật liệu trám composite'], ['QT02', 'Kiểm soát chất lượng']]], ['Câu hỏi', c.ch, [['KN01', 'Bước đầu của mô hình LAER?'], ['KN01', 'Bác sĩ nói “giá cao” thì…'], ['SP03', 'Ưu điểm composite nano?']]], ['Người học', c.nh, [['lan.n', 'Nguyễn Thị Lan · Kinh doanh'], ['duc.t', 'Trần Minh Đức · Kinh doanh'], ['chi.d', 'Đặng Mai Chi · Đào tạo']]], ['Kết quả', c.kq, [['lan.n', 'KN01 · 9/10 · LD-2026-0417'], ['chi.d', 'KN01 · 10/10 · LD-2026-0418'], ['anh.l', 'SP03 · 8/10 · LD-2026-0402']]]];
+  const act = tabs.reduce((a, x, i) => (t >= x[1] - 0.15 ? i : a), 0);
+  const cols = v ? 2 : 3, cw = v ? 420 : 400, chh = v ? 300 : 260, gx = v ? 40 : 40;
+  const gw = cols * cw + (cols - 1) * gx, x0 = ((v ? 1080 : 1920) - gw) / 2, y0 = v ? 470 : 300;
   return (
-    <StepFrame t={t} v={v} id="step1" n={1} title="Kho dữ liệu" logos={['drive', 'sheets'].map((x) => x)} items={items} url={t < B ? 'drive.google.com/drive/folders/learndesk' : 'docs.google.com/spreadsheets'}>
-      {(CW, CH) => {
-        if (t < B) {
-          const cols = v ? 2 : 3, gw = (CW - 60 - (cols - 1) * 20) / cols, gh = v ? 250 : 220;
-          return (
-            <>
-              <div style={{ ...abs(0, 0, CW, 70), display: 'flex', alignItems: 'center', gap: 14, padding: '0 26px', borderBottom: '1px solid #EEE' }}><Logo2 k="drive" s={40} /><div style={{ fontSize: 25, fontWeight: 500 }}>Drive</div><div style={{ marginLeft: 30, flex: 1, height: 44, borderRadius: 22, background: '#EEF2F7', display: 'flex', alignItems: 'center', padding: '0 20px', fontSize: 19, color: C.mute }}>Tìm trong Drive</div></div>
-              <div style={{ ...abs(30, 90), fontSize: 22, color: C.mute }}>Drive của tôi  ›  LearnDesk  ›  <b style={{ color: C.ink }}>Bài giảng</b></div>
-              {DRIVE_FILES.map(([n, ty], i) => {
-                const x = 30 + (i % cols) * (gw + 20), y = 140 + Math.floor(i / cols) * (gh + 20);
-                return (
-                  <In key={n} t={t} at={c.thu - 0.2 + i * 0.12} y={16} style={{ ...abs(x, y, gw, gh) }}>
-                    <div style={{ width: '100%', height: '100%', borderRadius: 16, background: '#F2F5F9', overflow: 'hidden', boxSizing: 'border-box', border: '1px solid #E3E8EF' }}>
-                      <div style={{ height: gh - 62, background: ty === 'v' ? `linear-gradient(135deg, ${['#F59E0B', '#14B8A6', '#6366F1', '', '#EF4444'][i] || '#94A3B8'}, #1E293B)` : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {ty === 'v' ? <div style={{ width: 56, height: 56, borderRadius: 28, background: 'rgba(255,255,255,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>▶</div> : <Img src={staticFile('media/ft_pdf2.svg')} style={{ width: 70, height: 70 }} />}
-                      </div>
-                      <div style={{ height: 62, display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px', fontSize: v ? 20 : 18, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden' }}>{ty === 'v' ? <span style={{ color: '#EA4335' }}>▶</span> : <span style={{ color: '#EA4335' }}>PDF</span>}<span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{n}</span></div>
-                    </div>
-                  </In>
-                );
-              })}
-            </>
-          );
-        }
-        const tab = t < c.ch - 0.1 ? 'khoahoc' : t < c.nh - 0.1 ? 'cauhoi' : t < c.kq - 0.1 ? 'nguoihoc' : 'ketqua';
-        const T = S2TAB[tab]; const at0 = { khoahoc: B + 0.2, cauhoi: c.ch - 0.1, nguoihoc: c.nh - 0.1, ketqua: c.kq - 0.1 }[tab];
-        return (
-          <>
-            <SheetTop v={v} CW={CW} title="LearnDesk · Dữ liệu" />
-            <SheetGrid key={tab} t={t} CW={CW} top={166} bottom={CH - 52} v={v} cols={T.cols} rows={T.rows} rowAt={(i) => at0 + i * 0.08} fs={v ? 22 : 21} />
-            <SheetTabs CW={CW} CH={CH} active={tab} tabs={['khoahoc', 'cauhoi', 'nguoihoc', 'ketqua']} />
-          </>
-        );
-      }}
-    </StepFrame>
+    <>
+      <Numeral t={t} at={c.bt} n="01" v={v} />
+      <div style={{ ...abs(v ? 60 : 120, v ? 220 : 90) }}><Label t={t} at={c.bt} text="BƯỚC MỘT" /><div style={{ marginTop: 10 }}><Kin t={t} at={c.chuan - 0.1} text="Chuẩn bị kho dữ liệu" size={v ? 64 : 72} /></div></div>
+      {t < B + 0.8 && <div style={{ position: 'absolute', inset: 0, opacity: 1 - sk, perspective: 2000 }}>
+        <div style={{ ...abs(x0, y0 - 60), display: 'flex', alignItems: 'center', gap: 14, color: '#fff', fontSize: 30, fontWeight: 700, opacity: P(t, c.thu - 0.2, 0.4) }}><Logo2 k="drive" s={44} />Drive › LearnDesk › Bài giảng</div>
+        <div style={{ position: 'absolute', inset: 0, transform: `rotateX(${18 - 18 * P(t, c.thu, 1.2)}deg)`, transformOrigin: '50% 60%' }}>
+          {files.map(([p, n], i) => {
+            const x = x0 + (i % cols) * (cw + gx), y = y0 + Math.floor(i / cols) * (chh + 30); const k = P(t, c.thu - 0.2 + i * 0.12, 0.6);
+            return <div key={n} style={{ ...abs(x, y - (1 - k) * 260, cw, chh), opacity: k, borderRadius: 22, overflow: 'hidden', background: 'rgba(255,255,255,.06)', border: `1px solid ${D.gline}`, boxShadow: '0 30px 60px rgba(0,0,0,.45)', transform: `rotate(${(1 - k) * (i % 2 ? 6 : -6)}deg)` }}>
+              <div style={{ height: chh - 64, position: 'relative', background: '#fff' }}>{p ? <Img src={staticFile(`media/p_${p}.jpg`)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}><Img src={staticFile('media/ft_pdf2.svg')} style={{ width: 90, height: 90 }} /></div>}{p && <div style={{ position: 'absolute', left: '50%', top: '50%', width: 60, height: 60, marginLeft: -30, marginTop: -30, borderRadius: 30, background: 'rgba(255,255,255,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>▶</div>}</div>
+              <div style={{ height: 64, display: 'flex', alignItems: 'center', padding: '0 16px', color: '#fff', fontSize: v ? 22 : 20, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n}</div>
+            </div>;
+          })}
+        </div>
+      </div>}
+      {t > B && <div style={{ position: 'absolute', inset: 0, opacity: sk }}>
+        <div style={{ ...abs(v ? 60 : 120, v ? 430 : 250), display: 'flex', alignItems: 'center', gap: 14, color: '#fff', fontSize: 30, fontWeight: 700 }}><Logo2 k="sheets" s={34} />Google Sheet · LearnDesk</div>
+        {tabs.map(([name, at, rows], i) => {
+          const on = i === act; const depth = i - act; const k = P(t, B + i * 0.12, 0.5);
+          const bx = v ? 90 : 520, by = v ? 560 : 330, bw = v ? 900 : 1000, bh = v ? 420 : 400;
+          return <div key={name} style={{ ...abs(bx + depth * (v ? 0 : 40) + (depth < 0 ? -2000 : 0), by + depth * (v ? 60 : 50), bw, bh), opacity: k * (depth < 0 ? 0 : 1 - Math.min(depth, 3) * 0.22), transform: `scale(${1 - Math.max(0, depth) * 0.05})`, zIndex: 10 - Math.abs(depth), borderRadius: 24, background: on ? 'linear-gradient(160deg,#10231F,#0B1512)' : 'rgba(255,255,255,.05)', border: `1.5px solid ${on ? '#22C55E' : D.gline}`, boxShadow: on ? '0 30px 80px rgba(0,0,0,.6), 0 0 40px rgba(34,197,94,.25)' : 'none', padding: 28, boxSizing: 'border-box', color: '#fff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}><div style={{ padding: '8px 18px', borderRadius: 10, background: on ? '#22C55E' : 'rgba(255,255,255,.1)', color: on ? '#04140B' : '#fff', fontSize: 26, fontWeight: 800 }}>{name}</div><div style={{ color: D.mute, fontSize: 22 }}>trang {i + 1}/4</div></div>
+            <div style={{ marginTop: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>{rows.map(([a, b], j) => <div key={j} style={{ display: 'flex', gap: 20, padding: '14px 18px', borderRadius: 12, background: 'rgba(255,255,255,.06)', fontSize: v ? 25 : 24, opacity: on ? P(t, at + j * 0.1, 0.3) : 0.6 }}><span style={{ fontFamily: MONO, color: '#86EFAC', width: v ? 110 : 120 }}>{a}</span><span>{b}</span></div>)}</div>
+          </div>;
+        })}
+      </div>}
+    </>
   );
 };
 
 const FILES2 = {
-  'quiz.js': ['const qs = shuffle(await api(\'questions\', { course }));  // đảo thứ tự', 'startTimer(10 * 60);                           // 10 phút', '', 'function grade(answers) {', '  const right = answers.filter((a, i) => a === qs[i].key).length;', '  return { score: right, pass: right >= 8 };', '}'],
-  'cert.js': ["const cert = await api('certificate', { course });", 'renderCert({ name: me.name, course: c.title,', '  code: cert.code, date: cert.date });   // mã xác thực', "downloadPDF('#cert');"],
-  'index.html': ['<header class="top">LearnDesk</header>', '<section id="continue"></section>   <!-- bài đang học -->', '<section id="courses"></section>    <!-- khoá theo nhóm -->', '<video id="player" controls></video>', '<script src="app.js"></script>'],
-  'terminal': ['$ git push origin main', '✓ GitHub Pages: you.github.io/learndesk'],
-  'Code.gs': ['function doGet(e) {', '  const user = checkUser(e.parameter.token);  // Sheet: nguoihoc', "  if (e.parameter.action === 'courses')", '    return out(listCourses(user));        // Sheet + Drive', '}', 'function doPost(e) {', '  const r = JSON.parse(e.postData.contents);', "  SS.getSheetByName('ketqua')", '    .appendRow([r.email, r.course, r.score, new Date()]);', '  return out({ ok: true, cert: makeCert(r) });', '}'],
+  'quiz.js': ["const qs = shuffle(await api('questions', { course }));", 'startTimer(10 * 60);                  // 10 phút', 'function grade(answers) {', '  const right = answers.filter((a, i) => a === qs[i].key).length;', '  return { score: right, pass: right >= 8 };', '}'],
+  'Code.gs': ['function doGet(e) {', '  const user = checkUser(e.parameter.token);  // Sheet', "  return out(listCourses(user));             // Sheet + Drive", '}', 'function doPost(e) {', '  const r = JSON.parse(e.postData.contents);', "  SS.getSheetByName('ketqua').appendRow([r.email, r.score]);", '  return out({ ok: true, cert: makeCert(r) });', '}'],
 };
 const Step2b = ({ t, v }) => {
-  const c = { nho: W('step2', 'nhờ'), gd: W('step2', 'Giao'), lam: W('step2', 'làm'), cc: W('step2', 'chứng'), day: W('step2', 'đẩy'), as: W('step2', 'Apps'), tk: W('step2', 'triển'), link: W('step2', 'link') };
-  const items = [['Giao diện: học, làm bài, chứng chỉ', c.gd], ['Đẩy lên GitHub', c.day], ['Apps Script → link API', c.as]];
-  const todo = [['Trang học · index.html', c.gd, 'index.html'], ['Bài kiểm tra · quiz.js', c.lam, 'quiz.js'], ['Chứng chỉ · cert.js', c.cc, 'cert.js'], ['git push → GitHub Pages', c.day, 'terminal'], ['Apps Script · Code.gs', c.as, 'Code.gs'], ['Triển khai → link …/exec', c.tk, null]];
+  const c = { b2: W('step2', 'Bước'), nho: W('step2', 'nhờ'), gd: W('step2', 'Giao'), lam: W('step2', 'làm'), cc: W('step2', 'chứng'), day: W('step2', 'đẩy'), as: W('step2', 'Apps'), tk: W('step2', 'triển'), link: W('step2', 'link') };
+  const chips = [['index.html', c.gd, 'gh'], ['quiz.js', c.lam, 'gh'], ['cert.js', c.cc, 'gh'], ['Code.gs', c.as, 'gas']];
+  const tw = v ? 960 : 980, th = v ? 520 : 520, tx = v ? 60 : 120, ty = v ? 560 : 330;
+  const ghP = v ? [300, 1290] : [1420, 330], gasP = v ? [780, 1290] : [1420, 700];
+  const file = t < c.as - 0.1 ? 'quiz.js' : 'Code.gs'; const fAt = file === 'quiz.js' ? c.gd : c.as;
   return (
-    <StepFrame t={t} v={v} id="step2" n={2} title="Claude Code viết code" logos={['claude', 'github', 'gas']} items={items} url="claude.ai/code/session">
-      {(CW, CH) => {
-        const curI = todo.reduce((a, it, i) => (t >= it[1] - 0.1 ? i : a), 0); const allDone = t > c.link + 0.4;
-        const fi = todo.reduce((a, it, i) => (it[2] && t >= it[1] - 0.1 ? i : a), 0); const file = todo[fi][2], fAt = todo[fi][1];
-        const L = v ? { x: 24, y: 86, w: CW - 48 } : { x: 24, y: 86, w: 430 }; const ih = v ? 54 : 60;
-        const R = v ? { x: 24, y: 86 + 6 * 54 + 20, w: CW - 48, h: CH - (86 + 6 * 54 + 20) - 24 } : { x: 474, y: 86, w: CW - 498, h: CH - 110 };
-        return (
-          <AbsoluteFill style={{ background: C.cream }}>
-            <ClaudeTop CW={CW} repo="you/learndesk" t={t} status={allDone ? { done: true, label: 'Hoàn tất' } : { done: false, label: 'Claude đang làm…' }} />
-            {todo.map(([lab, at], i) => {
-              const done = i < curI || allDone, on = i === curI && !allDone, k = P(t, at - 0.2, 0.35);
-              return (
-                <div key={i} style={{ ...abs(L.x, L.y + i * ih, L.w, ih - 8), display: 'flex', alignItems: 'center', gap: 14, opacity: 0.35 + 0.65 * k, background: on ? '#fff' : 'transparent', borderRadius: 12, padding: '0 12px', boxSizing: 'border-box', boxShadow: on ? '0 8px 20px rgba(60,50,30,.08)' : 'none' }}>
-                  {done ? <Check s={28} bg={C.claude} /> : on ? <div style={{ width: 24, height: 24, borderRadius: 12, border: `4px solid ${C.claudeL}`, borderTopColor: C.claude, transform: `rotate(${t * 420}deg)` }} /> : <div style={{ width: 24, height: 24, borderRadius: 12, border: '3px solid #CFCBC0' }} />}
-                  <div style={{ fontSize: v ? 24 : 21, fontWeight: on ? 700 : 500 }}>{lab}</div>
-                </div>
-              );
-            })}
-            <div style={{ ...abs(R.x, R.y, R.w, R.h), background: '#1C1C22', borderRadius: 16, overflow: 'hidden' }}>
-              <div style={{ height: 46, background: '#25252D', display: 'flex', alignItems: 'center', padding: '0 18px', gap: 10, color: '#C9C9D2', fontFamily: MONO, fontSize: 17 }}><div style={{ width: 10, height: 10, borderRadius: 5, background: C.claude }} />{file}</div>
-              <div style={{ padding: '14px 8px' }}><Code key={file} lines={FILES2[file]} t={t} at={fAt + 0.1} mode="type" cps={file === 'terminal' ? 60 : 170} fs={v ? 19 : 17} theme="dark" /></div>
-            </div>
-            {t > c.tk && <div style={{ ...abs(v ? 60 : 500, CH - 110, v ? CW - 120 : CW - 560, 74), background: '#fff', borderRadius: 16, border: `2px solid ${C.gas}`, display: 'flex', alignItems: 'center', gap: 14, padding: '0 20px', boxSizing: 'border-box', boxShadow: '0 20px 50px rgba(0,0,0,.2)', opacity: P(t, c.tk, 0.3) }}><Logo2 k="gas" s={34} /><div style={{ fontFamily: MONO, fontSize: v ? 20 : 19 }}>script.google.com/macros/s/AKfy…/exec</div><div style={{ marginLeft: 'auto' }}><Check s={30} bg={C.sheet} /></div></div>}
-          </AbsoluteFill>
-        );
-      }}
-    </StepFrame>
+    <>
+      <Numeral t={t} at={c.b2} n="02" v={v} />
+      <div style={{ ...abs(v ? 60 : 120, v ? 220 : 90) }}><Label t={t} at={c.b2} text="BƯỚC HAI" color={C.claude} /><div style={{ marginTop: 10 }}><Kin t={t} at={c.nho - 0.1} text="Claude Code viết code" size={v ? 64 : 72} /></div></div>
+      <In t={t} at={c.nho - 0.2} y={40} style={{ ...abs(tx, ty, tw, th), perspective: 2000 }}>
+        <div style={{ width: '100%', height: '100%', transform: v ? 'none' : 'rotateY(8deg)', borderRadius: 22, background: 'rgba(12,14,18,.92)', border: `1px solid ${D.gline}`, boxShadow: '0 40px 100px rgba(0,0,0,.6), 0 0 60px rgba(217,119,87,.18)', overflow: 'hidden' }}>
+          <div style={{ height: 56, display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px', borderBottom: `1px solid ${D.gline}`, color: '#E5E7EB', fontSize: 21, fontWeight: 700 }}><ClaudeMark s={30} spin={t * 30} />Claude Code<span style={{ marginLeft: 'auto', fontFamily: MONO, fontSize: 17, color: D.mute }}>{file}</span></div>
+          <div style={{ padding: '18px 10px' }}><Code key={file} lines={FILES2[file]} t={t} at={fAt + 0.1} cps={160} fs={v ? 21 : 20} theme="dark" /></div>
+        </div>
+      </In>
+      {[['github', ghP, c.day, 'GitHub Pages'], ['gas', gasP, c.as, 'Apps Script']].map(([k, [x, y], at, n]) => (
+        <div key={k} style={{ ...abs(x - 80, y - 80), opacity: P(t, at - 0.6, 0.4), display: 'flex', flexDirection: 'column', alignItems: 'center', width: 160 }}>
+          <Glass k={k} s={140} glow={k === 'gas' ? '#60A5FA' : '#E5E7EB'} on={t > at} /><div style={{ color: '#fff', fontSize: 24, fontWeight: 700, marginTop: 12, whiteSpace: 'nowrap' }}>{n}</div>
+        </div>
+      ))}
+      {chips.map(([n, at, dest], i) => {
+        const [dx, dy] = dest === 'gas' ? gasP : ghP; const sx = v ? tx + tw * (0.2 + i * 0.2) : tx + tw + 110, sy = v ? ty + th + 40 : ty + 60 + i * 110;
+        const go = dest === 'gas' ? c.tk : c.day; const e = eio((t - go - i * 0.08) / 0.7);
+        const x = lerp(sx, dx, cl(e)), y = lerp(sy, dy, cl(e)); const k = P(t, at, 0.35);
+        if (k <= 0 || e >= 1) return null;
+        return <div key={n} style={{ ...abs(x, y), transform: `translate(-50%,-50%) scale(${1 - 0.5 * cl(e)})`, opacity: k * (1 - Math.max(0, e - 0.8) * 5), padding: '12px 20px', borderRadius: 14, background: 'rgba(217,119,87,.18)', border: `1.5px solid ${C.claude}`, color: '#fff', fontFamily: MONO, fontSize: 24, fontWeight: 600, whiteSpace: 'nowrap', boxShadow: '0 0 30px rgba(217,119,87,.35)' }}>{n}</div>;
+      })}
+      <div style={{ ...abs(0, v ? 1460 : 940, v ? 1080 : 1920), display: 'flex', justifyContent: 'center' }}>
+        <Pop t={t} at={c.link - 0.1}><div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 26px', borderRadius: 999, background: 'rgba(96,165,250,.14)', border: '1.5px solid #60A5FA', color: '#fff', fontFamily: MONO, fontSize: v ? 24 : 26, boxShadow: '0 0 40px rgba(96,165,250,.35)' }}><Check s={30} bg="#22C55E" />script.google.com/…/exec</div></Pop>
+      </div>
+    </>
   );
 };
 
-// điện thoại + chú thích bên cạnh (dùng cho các cảnh người học)
-const SideList = ({ t, v, title, items, cur }) => v ? (
-  <>
-    <In t={t} at={items[0][1] - 0.6}><div style={{ ...abs(0, 215, 1080), textAlign: 'center', fontSize: 52, fontWeight: 800, letterSpacing: -1.3 }}>{title}</div></In>
-    <div style={{ ...abs(0, 1245, 1080), display: 'flex', justifyContent: 'center' }}>{items.map(([l, at], i) => i === cur && <Pop key={i} t={t} at={at - 0.15}><div style={{ padding: '14px 28px', borderRadius: 999, background: C.ink, color: '#fff', fontSize: 32, fontWeight: 700, boxShadow: '0 12px 30px rgba(22,22,27,.14)' }}>{l}</div></Pop>)}</div>
-  </>
-) : (
-  <div style={{ ...abs(860, 170, 960) }}>
-    <In t={t} at={items[0][1] - 0.6}><div style={{ fontSize: 62, fontWeight: 800, letterSpacing: -1.8, lineHeight: 1.06 }}>{title}</div></In>
-    <div style={{ marginTop: 40 }}>{items.map(([l, at], i) => <In key={i} t={t} at={at - 0.2} x={-30} y={0}><div style={{ display: 'flex', alignItems: 'center', gap: 18, minHeight: 78, opacity: cur === i ? 1 : 0.5 }}><div style={{ width: 48, height: 48, borderRadius: 24, background: cur === i ? C.claude : C.ink, color: '#fff', fontWeight: 800, fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{i + 1}</div><div style={{ fontSize: 33, fontWeight: cur === i ? 800 : 600 }}>{l}</div></div></In>)}</div>
-  </div>
-);
-const PH = (v) => (v ? { x: 330, y: 330, w: 420 } : { x: 300, y: 95, w: 425 });
-const scrW = (ph) => ph.w * 0.93;
-
 const Learner = ({ t, v }) => {
   const c = { gio: W('learner', 'Giờ'), dn: W('learner', 'Đăng'), tc: W('learner', 'trang'), kh: W('learner', 'khoá'), sp: W('learner', 'kiến'), qt: W('learner', 'quy'), kn: W('learner', 'kỹ') };
-  const ph = PH(v), sw = scrW(ph), u = sw / 400;
-  const items = [['Đăng nhập bằng tài khoản được cấp', c.dn], ['Bài đang học dở', c.tc], ['Khoá học theo nhóm', c.kh]];
-  const cur = items.reduce((a, x, i) => (t >= x[1] - 0.2 ? i : a), 0);
-  const home = t > c.tc - 0.3;
+  const pw = v ? 470 : 430, px = (v ? 540 : 960) - pw / 2, py = v ? 420 : 70; const u = pw * 0.93 / 400;
+  const home = t > c.tc - 0.3; const ry = Math.sin(t * 0.6) * 6 - 4;
   return (
     <>
-      <In t={t} at={SB.learner[0] + 0.1} y={70} s={0.95}>
-        <Phone x={ph.x} y={ph.y} w={ph.w}>
-          <Shot src="ld_m_login" o={1 - P(t, c.tc - 0.3, 0.3)} />
-          {home && <AbsoluteFill style={{ opacity: P(t, c.tc - 0.3, 0.3), transform: `translateY(${(1 - P(t, c.tc - 0.3, 0.4)) * 40}px)` }}><Shot src="ld_m_home" /></AbsoluteFill>}
-          {home && <div style={{ ...abs(16 * u, 146 * u, 368 * u, 106 * u), borderRadius: 20 * u, border: `${4 * u}px solid ${C.claude}`, opacity: P(t, c.tc, 0.3) * (1 - P(t, c.kh - 0.2, 0.3)) }} />}
-          {[['sp', 492, 150], ['qt', 650, 115], ['kn', 770, 160]].map(([k, x, w]) => null)}
-          {t > c.kh - 0.2 && <div style={{ ...abs(14 * u, 304 * u, 372 * u, 44 * u), borderRadius: 22 * u, border: `${4 * u}px solid ${C.claude}`, opacity: P(t, c.kh - 0.2, 0.3) }} />}
-          <Tap t={t} at={c.dn + 0.25} x={200 * u} y={610 * u} s={0.8} />
-        </Phone>
-      </In>
-      <SideList t={t} v={v} title={<>Người học <span style={{ color: C.claude }}>dùng thế nào?</span></>} items={items} cur={cur} />
-      {!v && <div style={{ ...abs(860, 600), display: 'flex', gap: 14, flexWrap: 'wrap', width: 960 }}>{[['Kiến thức sản phẩm', c.sp, '#3B82F6'], ['Quy trình', c.qt, '#10B981'], ['Kỹ năng bán hàng', c.kn, '#F59E0B']].map(([l, at, col]) => <Pop key={l} t={t} at={at - 0.1}><div style={{ padding: '14px 24px', borderRadius: 16, background: '#fff', borderLeft: `8px solid ${col}`, fontSize: 28, fontWeight: 700, boxShadow: '0 10px 24px rgba(22,22,27,.08)' }}>{l}</div></Pop>)}</div>}
+      <div style={{ ...abs(v ? 0 : 110, v ? 210 : 120, v ? 1080 : 560), textAlign: v ? 'center' : 'left' }}><Label t={t} at={c.gio} text="NGƯỜI HỌC" /><div style={{ marginTop: 10 }}><Kin t={t} at={c.gio} text={v ? 'Mở app là học' : 'Mở app là học ngay'} size={v ? 64 : 76} align={v ? 'center' : 'left'} /></div></div>
+      <Phone3D x={px} y={py} w={pw} ry={ry} rx={3} reflect={!v}>
+        <Shot src="ld_m_login" o={1 - P(t, c.tc - 0.3, 0.35)} />
+        {home && <AbsoluteFill style={{ opacity: P(t, c.tc - 0.3, 0.35), transform: `scale(${1.08 - 0.08 * P(t, c.tc - 0.3, 0.6)})` }}><Shot src="ld_m_home" /></AbsoluteFill>}
+        <Tap t={t} at={c.dn + 0.3} x={200 * u} y={770 * u} s={0.9} />
+      </Phone3D>
+      <Callout t={t} at={c.dn} x={v ? px + 40 : px - 20} y={v ? py - 50 : py + 640} side={v ? 'right' : 'left'} len={v ? 40 : 90} text="Tài khoản được cấp sẵn" out={c.tc - 0.2} />
+      <Callout t={t} at={c.tc} x={v ? px + pw - 40 : px + pw + 20} y={v ? py + 180 * u + 60 : py + 220} side={v ? 'left' : 'right'} len={v ? 40 : 100} text="Bài đang học dở · 62%" />
+      <Callout t={t} at={c.kh} x={v ? px + 40 : px - 20} y={v ? py + pw * 2.1 + 40 : py + 600} side={v ? 'right' : 'left'} len={v ? 40 : 100} text="Khoá theo nhóm" />
+      <div style={{ ...abs(v ? 0 : 1420, v ? 1520 : 640, v ? 1080 : 440), display: 'flex', flexDirection: v ? 'row' : 'column', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+        {[['Kiến thức sản phẩm', c.sp, 'tooth'], ['Quy trình', c.qt, 'inspect'], ['Kỹ năng bán hàng', c.kn, 'care']].map(([l, at, p]) => <Pop key={l} t={t} at={at - 0.1}><div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '8px 20px 8px 8px', borderRadius: 999, background: D.glass, border: `1px solid ${D.gline}`, color: '#fff', fontSize: v ? 24 : 26, fontWeight: 700 }}><Img src={staticFile(`media/p_${p}.jpg`)} style={{ width: 44, height: 44, borderRadius: 22, objectFit: 'cover' }} />{l}</div></Pop>)}
+      </div>
     </>
   );
 };
 
 const Lesson = ({ t, v }) => {
   const c = { bam: W('lesson', 'Bấm'), vid: W('lesson', 'video'), dr: W('lesson', 'Drive'), tl: W('lesson', 'tài'), ch: W('lesson', 'chương'), hoc: W('lesson', 'Học'), luu: W('lesson', 'lưu') };
+  const push = P(t, SB.lesson[0], 6);
   if (v) {
-    const ph = { x: 330, y: 330, w: 420 }, sw = scrW(ph), u = sw / 400;
+    const lw = 980, lx = 50, ly = 470, sc = lw * 0.976 / 1440;
     return (
       <>
-        <In t={t} at={SB.lesson[0] + 0.1}><div style={{ ...abs(0, 215, 1080), textAlign: 'center', fontSize: 52, fontWeight: 800, letterSpacing: -1.3 }}>Video phát <span style={{ color: C.claude }}>ngay từ Drive</span></div></In>
-        <In t={t} at={SB.lesson[0] + 0.1} y={60} s={0.95}>
-          <Phone x={ph.x} y={ph.y} w={ph.w}>
-            <Shot src="ld_m_lesson" />
-            <div style={{ ...abs(18 * u, 80 * u, 364 * u, 205 * u), overflow: 'hidden', borderRadius: 16 * u }}><LessonPlayer t={t} at={c.vid} w={364 * u} h={205 * u} /></div>
-            {t > c.dr - 0.1 && <div style={{ ...abs(14 * u, 362 * u, 200 * u, 36 * u), borderRadius: 11 * u, border: `${3.5 * u}px solid ${C.claude}`, opacity: P(t, c.dr - 0.1, 0.3) * (1 - P(t, c.ch - 0.1, 0.3)) }} />}
-            {t > c.ch - 0.1 && <div style={{ ...abs(16 * u, 445 * u, 368 * u, 286 * u), borderRadius: 16 * u, border: `${3.5 * u}px solid ${C.claude}`, opacity: P(t, c.ch - 0.1, 0.3) * (1 - P(t, c.hoc - 0.1, 0.3)) }} />}
-          </Phone>
-        </In>
-        <div style={{ ...abs(0, 1245, 1080), display: 'flex', justifyContent: 'center' }}>{t > c.luu - 0.2 && <Pop t={t} at={c.luu - 0.2}><div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 28px', borderRadius: 999, background: C.ink, color: '#fff', fontSize: 32, fontWeight: 700 }}><Check s={32} bg="#2DD4BF" />Đã lưu tiến độ · 62%</div></Pop>}</div>
+        <div style={{ ...abs(0, 210, 1080), textAlign: 'center' }}><Kin t={t} at={c.bam - 0.1} text="Bấm là học" size={66} align="center" /></div>
+        <Laptop x={lx} y={ly} w={lw} rx={8} s={0.98 + push * 0.04}>
+          <Img src={staticFile('media/ld_d_lesson.jpg')} style={{ width: '100%', display: 'block' }} />
+          <div style={{ ...abs(272 * sc, 26 * sc, 732 * sc, 412 * sc), borderRadius: 22 * sc, overflow: 'hidden' }}><LessonPlayer t={t} at={c.vid} w={732 * sc} h={412 * sc} /></div>
+        </Laptop>
+        <div style={{ ...abs(0, 1150, 1080), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          {[['Video phát ngay từ Drive', c.dr], ['Tài liệu PDF · danh sách chương', c.tl], ['Tự lưu tiến độ', c.luu]].map(([l, at]) => <In key={l} t={t} at={at - 0.2} y={16}><div style={{ display: 'flex', alignItems: 'center', gap: 14, color: '#fff', fontSize: 34, fontWeight: 700 }}><Check s={36} bg={D.teal2} />{l}</div></In>)}
+        </div>
       </>
     );
   }
-  const sc = 0.86, box = { x: (1920 - 1440 * sc) / 2, y: 120, w: 1440 * sc, h: 900 * sc + 52 };
+  const lw = 1240, lx = 340, ly = 170, sc = lw * 0.976 / 1440;
   return (
     <>
-      <In t={t} at={SB.lesson[0] + 0.1} y={50} s={0.97}>
-        <Win box={box} url="you.github.io/learndesk/#khoa/KN01/bai-4">
-          <Img src={staticFile('media/ld_d_lesson.jpg')} style={{ width: box.w, display: 'block' }} />
-          <div style={{ ...abs(32 * sc, 88 * sc, 972 * sc, 547 * sc), overflow: 'hidden', borderRadius: 16 * sc }}><LessonPlayer t={t} at={c.vid} w={972 * sc} h={547 * sc} /></div>
-          {t > c.dr - 0.1 && <div style={{ ...abs(28 * sc, 718 * sc, 200 * sc, 40 * sc), borderRadius: 10, border: `4px solid ${C.claude}`, opacity: P(t, c.dr - 0.1, 0.3) * (1 - P(t, c.ch - 0.1, 0.3)) }} />}
-          {t > c.ch - 0.1 && <div style={{ ...abs(1024 * sc, 118 * sc, 392 * sc, 380 * sc), borderRadius: 16, border: `4px solid ${C.claude}`, opacity: P(t, c.ch - 0.1, 0.3) * (1 - P(t, c.hoc - 0.1, 0.3)) }} />}
-        </Win>
-      </In>
-      {t > c.luu - 0.2 && <div style={{ ...abs(0, 1000, 1920), display: 'flex', justifyContent: 'center' }}><Pop t={t} at={c.luu - 0.2}><div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 26px', borderRadius: 999, background: C.ink, color: '#fff', fontSize: 28, fontWeight: 700 }}><Check s={30} bg="#2DD4BF" />Đã lưu tiến độ · 62%</div></Pop></div>}
+      <Laptop x={lx} y={ly} w={lw} ry={-6 + push * 4} rx={6} s={0.96 + push * 0.06}>
+        <Img src={staticFile('media/ld_d_lesson.jpg')} style={{ width: '100%', display: 'block' }} />
+        <div style={{ ...abs(272 * sc, 26 * sc, 732 * sc, 412 * sc), borderRadius: 22 * sc, overflow: 'hidden' }}><LessonPlayer t={t} at={c.vid} w={732 * sc} h={412 * sc} /></div>
+        <Sweep t={t} at={c.vid + 0.2} />
+      </Laptop>
+      <Callout t={t} at={c.dr - 0.1} x={lx + 260} y={ly + 520} side="left" len={110} text="Video phát ngay từ Drive" />
+      <Callout t={t} at={c.ch - 0.2} x={lx + lw - 150} y={ly + 140} side="right" len={80} text="Tài liệu · danh sách chương" />
+      <Callout t={t} at={c.luu - 0.2} x={lx + 320} y={ly + 120} side="left" len={140} text="Tự lưu tiến độ" />
     </>
   );
 };
 
-const QUIZ_OPTS = [['Giảm giá ngay để chốt đơn'], ['Lắng nghe, ghi nhận băn khoăn của khách'], ['Gửi thêm catalogue qua email'], ['Hẹn gọi lại vào tuần sau']];
+const QUIZ_OPTS = ['Giảm giá ngay để chốt đơn', 'Lắng nghe, ghi nhận băn khoăn', 'Gửi thêm catalogue qua email', 'Hẹn gọi lại vào tuần sau'];
 const Quiz = ({ t, v }) => {
   const c = { hx: W('quiz', 'Học'), kt: W('quiz', 'kiểm'), dao: W('quiz', 'đảo'), gh: W('quiz', 'giới'), cham: W('quiz', 'chấm') };
-  const ph = PH(v), sw = scrW(ph), u = sw / 400;
-  const items = [['Đảo thứ tự câu hỏi', c.dao], ['Giới hạn thời gian', c.gh], ['Chấm điểm tự động', c.cham]];
-  const cur = items.reduce((a, x, i) => (t >= x[1] - 0.2 ? i : a), 0);
-  const order0 = [0, 1, 2, 3], order1 = [2, 0, 3, 1]; const sh = eio((t - c.dao) / 0.7);
-  const pick = t > c.gh + 0.6; const graded = t > c.cham;
-  const secs = 462 - Math.max(0, Math.floor((t - c.gh) * 3));
+  const sh = eio((t - c.dao) / 0.9); const ord0 = [0, 1, 2, 3], ord1 = [2, 0, 3, 1];
+  const pos = (slot) => v ? [90, 760 + slot * 150] : [(slot % 2) * 820 + 140, 560 + Math.floor(slot / 2) * 170];
+  const ow = v ? 900 : 780, oh = v ? 124 : 140;
+  const secs = 600 - Math.max(0, Math.floor((t - c.gh) * 9)); const ringK = cl((t - c.gh) / 4);
+  const graded = t > c.cham; const pick = t > c.gh + 0.8;
   return (
     <>
-      <In t={t} at={SB.quiz[0] + 0.1} y={70} s={0.95}>
-        <Phone x={ph.x} y={ph.y} w={ph.w}>
-          <Shot src="ld_m_quiz" />
-          <div style={{ ...abs(0, 208 * u, sw, 300 * u), background: '#F6F7FB' }} />
-          {QUIZ_OPTS.map(([l], i) => {
-            const y0 = order0.indexOf(i), y1 = order1.indexOf(i); const y = lerp(y0, y1, cl(sh)); const sel = pick && i === 1;
-            const ok = graded && i === 1;
-            return <div key={i} style={{ ...abs(18 * u, (216 + y * 70) * u, 364 * u, 60 * u), display: 'flex', alignItems: 'center', gap: 12 * u, padding: `0 ${14 * u}px`, borderRadius: 14 * u, background: ok ? '#DCFCE7' : sel ? '#E6F4F1' : '#fff', border: `${1.5 * u}px solid ${ok ? '#16A34A' : sel ? TEAL : '#E6E8EE'}`, fontSize: 14 * u, fontWeight: 500, boxSizing: 'border-box' }}><b style={{ width: 28 * u, height: 28 * u, borderRadius: 8 * u, background: sel || ok ? (ok ? '#16A34A' : TEAL) : '#F2F4F7', color: sel || ok ? '#fff' : C.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 * u, flexShrink: 0 }}>{'ABCD'[Math.round(y)]}</b>{l}</div>;
-          })}
-          {t > c.gh - 0.1 && <div style={{ ...abs(sw - 118 * u, 80 * u, 100 * u, 32 * u), borderRadius: 9 * u, background: '#FEF3C7', color: '#92400E', fontSize: 13 * u, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 0 ${6 * u * Math.max(0, Math.sin((t - c.gh) * 6))}px rgba(245,158,11,.25)` }}>{`Còn ${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`}</div>}
-          {graded && <div style={{ ...abs(sw * 0.1, 560 * u, sw * 0.8), borderRadius: 18 * u, background: C.ink, color: '#fff', padding: `${16 * u}px`, textAlign: 'center', opacity: P(t, c.cham, 0.3), transform: `scale(${0.85 + 0.15 * SPR(t, c.cham, 0.6)})` }}><div style={{ fontSize: 14 * u, opacity: 0.7 }}>Chấm tự động</div><div style={{ fontSize: 34 * u, fontWeight: 800 }}>9 / 10 câu đúng</div></div>}
-          <Tap t={t} at={c.gh + 0.55} x={200 * u} y={(216 + order1.indexOf(1) * 70 + 30) * u} s={0.8} />
-        </Phone>
-      </In>
-      <SideList t={t} v={v} title={<>Bài kiểm tra <span style={{ color: C.claude }}>tự chấm</span></>} items={items} cur={cur} />
+      <div style={{ ...abs(v ? 60 : 140, v ? 230 : 110, v ? 960 : 1300) }}>
+        <Label t={t} at={c.hx} text="CÂU 3 / 10" />
+        <div style={{ marginTop: 14 }}><Kin t={t} at={c.kt - 0.3} text="Bác sĩ nói “Để tôi suy nghĩ thêm”. Bạn làm gì trước tiên?" size={v ? 56 : 62} stagger={0.04} lh={1.15} /></div>
+      </div>
+      <div style={{ ...abs(v ? 800 : 1600, v ? 120 : 120, 170, 170), opacity: P(t, c.gh - 0.2, 0.4) }}>
+        <svg width="170" height="170" viewBox="0 0 170 170"><circle cx="85" cy="85" r="74" stroke="rgba(255,255,255,.12)" strokeWidth="10" fill="none" /><circle cx="85" cy="85" r="74" stroke={D.amber} strokeWidth="10" fill="none" strokeLinecap="round" strokeDasharray={465} strokeDashoffset={465 * ringK * 0.25} transform="rotate(-90 85 85)" /></svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 36, fontWeight: 800, fontFamily: MONO }}>{`${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`}</div>
+      </div>
+      {QUIZ_OPTS.map((l, i) => {
+        const a = pos(ord0.indexOf(i)), b = pos(ord1.indexOf(i)); const e = cl(sh); const arc = Math.sin(e * Math.PI) * (i % 2 ? 60 : -60);
+        const x = lerp(a[0], b[0], e) + (v ? arc : 0), y = lerp(a[1], b[1], e) + (v ? 0 : arc); const k = P(t, c.kt + i * 0.1, 0.4);
+        const sel = pick && i === 1, ok = graded && i === 1; const slotNow = Math.round(lerp(ord0.indexOf(i), ord1.indexOf(i), e));
+        return <div key={i} style={{ ...abs(x, y, ow, oh), opacity: k * (graded && !ok ? 0.45 : 1), display: 'flex', alignItems: 'center', gap: 22, padding: '0 28px', boxSizing: 'border-box', borderRadius: 26, background: ok ? 'rgba(34,197,94,.2)' : sel ? 'rgba(45,212,191,.16)' : 'rgba(255,255,255,.06)', border: `2px solid ${ok ? '#22C55E' : sel ? D.teal : D.gline}`, color: '#fff', fontSize: v ? 34 : 34, fontWeight: 700, boxShadow: ok ? '0 0 50px rgba(34,197,94,.35)' : 'none', transform: `scale(${ok ? 1 + 0.04 * SPR(t, c.cham, 0.6) : 1})` }}>
+          <div style={{ width: 58, height: 58, borderRadius: 16, background: ok ? '#22C55E' : sel ? D.teal : 'rgba(255,255,255,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, color: ok || sel ? '#04140B' : '#fff', flexShrink: 0 }}>{'ABCD'[slotNow]}</div>{l}
+        </div>;
+      })}
+      <Label t={t} at={c.dao} text="↻ ĐẢO THỨ TỰ" style={{ ...abs(v ? 90 : 140, v ? 690 : 500), fontSize: 22 }} color={D.amber} />
+      {graded && <div style={{ ...abs(0, v ? 1390 : 920, v ? 1080 : 1920), display: 'flex', justifyContent: 'center' }}><Pop t={t} at={c.cham}><div style={{ display: 'flex', alignItems: 'baseline', gap: 20 }}><span style={{ fontSize: v ? 110 : 120, fontWeight: 800, letterSpacing: -4, backgroundImage: GRAD, WebkitBackgroundClip: 'text', color: 'transparent' }}>9/10</span><span style={{ color: '#fff', fontSize: 36, fontWeight: 700 }}>chấm tự động</span></div></Pop></div>}
     </>
   );
 };
 
 const Cert = ({ t, v }) => {
   const c = { dat: W('cert', 'Đạt'), cc: W('cert', 'chứng'), ma: W('cert', 'mã'), tai: W('cert', 'tải'), con: W('cert', 'Còn'), ql: W('cert', 'quản'), bang: W('cert', 'bảng') };
-  const ph = v ? { x: 330, y: 330, w: 420 } : { x: 300, y: 95, w: 425 }; const sw = scrW(ph), u = sw / 400;
-  const adm = t > c.con - 0.3; const ak = P(t, c.con - 0.3, 0.6);
-  const sc = v ? 980 / 1440 : 1180 / 1440; const box = v ? { x: 50, y: 330, w: 980, h: 900 * sc + 52 } : { x: 680, y: 150, w: 1180, h: 900 * sc + 52 };
+  const flip = eio((t - (c.dat - 0.2)) / 1.0); const adm = P(t, c.con - 0.3, 0.8);
+  const cw = v ? 900 : 980, ch = cw * 0.62; const cx = v ? 90 : 470 - adm * 330, cy = v ? 470 - adm * 140 : 250;
+  const sh = ((t - c.cc) % 2.4) / 2.4;
+  const q = [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1];
+  const lw = v ? 980 : 1100, sc = lw * 0.976 / 1440;
   return (
     <>
-      <div style={{ opacity: v ? 1 - ak : 1, transform: `translateX(${v ? 0 : -ak * 120}px)` }}>
-        <In t={t} at={SB.cert[0] + 0.1} y={70} s={0.95}>
-          <Phone x={ph.x} y={ph.y} w={ph.w}>
-            <Shot src="ld_m_result" />
-            {t > c.ma - 0.1 && <div style={{ ...abs(80 * u, 432 * u, 240 * u, 56 * u), borderRadius: 10 * u, border: `${3.5 * u}px solid ${C.claude}`, opacity: P(t, c.ma - 0.1, 0.3) }} />}
-            <Tap t={t} at={c.tai} x={200 * u} y={536 * u} s={0.8} />
-          </Phone>
-        </In>
-      </div>
-      {!adm && (v ? (
-        <In t={t} at={SB.cert[0] + 0.2}><div style={{ ...abs(0, 215, 1080), textAlign: 'center', fontSize: 52, fontWeight: 800, letterSpacing: -1.3 }}>Đạt là có <span style={{ color: C.claude }}>chứng chỉ</span></div></In>
-      ) : (
-        <div style={{ ...abs(860, 200, 960) }}>
-          <In t={t} at={SB.cert[0] + 0.2}><div style={{ fontSize: 64, fontWeight: 800, letterSpacing: -1.8, lineHeight: 1.06 }}>Đạt là có ngay<br /><span style={{ color: C.claude }}>chứng chỉ</span></div></In>
-          <div style={{ marginTop: 36, display: 'flex', flexDirection: 'column', gap: 16 }}>{[['Mã xác thực riêng', c.ma], ['Tải về file PDF', c.tai]].map(([l, at]) => <In key={l} t={t} at={at - 0.2} x={-30} y={0}><div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 34, fontWeight: 700 }}><Check s={40} bg={TEAL} />{l}</div></In>)}</div>
+      <div style={{ ...abs(cx, cy, cw, ch), perspective: 2000, opacity: 1 - adm * (v ? 0.65 : 0.35) }}>
+        <div style={{ width: '100%', height: '100%', transform: `rotateY(${(1 - flip) * 80 - (v ? 0 : adm * 18)}deg) rotateX(${4 - adm * 4}deg) scale(${1 - adm * 0.25})`, transformOrigin: v ? '50% 0%' : '0% 50%', borderRadius: 34, background: 'linear-gradient(135deg,#0E1622,#1B2533)', border: '2px solid rgba(248,227,163,.55)', boxShadow: '0 50px 120px rgba(0,0,0,.6), 0 0 80px rgba(201,154,46,.18)', padding: cw * 0.06, boxSizing: 'border-box', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 14, border: '1.5px solid rgba(248,227,163,.3)', borderRadius: 26 }} />
+          <div style={{ fontSize: cw * 0.024, letterSpacing: cw * 0.006, fontWeight: 800, backgroundImage: 'linear-gradient(90deg,#F8E3A3,#C99A2E)', WebkitBackgroundClip: 'text', color: 'transparent' }}>CHỨNG CHỈ HOÀN THÀNH</div>
+          <div style={{ fontSize: cw * 0.07, fontWeight: 800, marginTop: cw * 0.03, letterSpacing: -2 }}>Nguyễn Thị Lan</div>
+          <div style={{ fontSize: cw * 0.026, color: '#CBD5E1', marginTop: 8, maxWidth: '70%' }}>đã hoàn thành khoá “Tư vấn bán hàng cho phòng khám nha khoa” · 9/10</div>
+          <div style={{ position: 'absolute', right: cw * 0.06, top: cw * 0.06, width: cw * 0.16, height: cw * 0.16, borderRadius: '50%', background: 'conic-gradient(from 30deg,#F8E3A3,#C99A2E,#F8E3A3,#B7862A,#F8E3A3)', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `rotate(${t * 20}deg)`, boxShadow: '0 0 40px rgba(201,154,46,.5)' }}><div style={{ width: '78%', height: '78%', borderRadius: '50%', background: 'linear-gradient(135deg,#FCE9B2,#D9A93F)' }} /></div>
+          <div style={{ position: 'absolute', left: cw * 0.06, bottom: cw * 0.06, display: 'flex', alignItems: 'center', gap: 20 }}>
+            <div style={{ width: cw * 0.11, height: cw * 0.11, background: '#fff', display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2, padding: 5, borderRadius: 8, boxSizing: 'border-box' }}>{q.map((b, i) => <i key={i} style={{ background: b ? '#0B1324' : 'transparent' }} />)}</div>
+            <div style={{ fontSize: cw * 0.024, color: '#94A3B8' }}>Mã xác thực<br /><b style={{ color: '#fff', fontSize: cw * 0.032, fontFamily: MONO, boxShadow: t > c.ma ? `0 3px 0 ${D.amber}` : 'none' }}>LD-2026-0417</b></div>
+          </div>
+          {t > c.cc && <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(110deg, transparent ${sh * 160 - 50}%, rgba(255,240,200,.18) ${sh * 160 - 35}%, transparent ${sh * 160 - 20}%)` }} />}
         </div>
-      ))}
-      {adm && (
-        <>
-          {v && <In t={t} at={c.con - 0.2}><div style={{ ...abs(0, 215, 1080), textAlign: 'center', fontSize: 52, fontWeight: 800, letterSpacing: -1.3 }}>Bảng <span style={{ color: C.claude }}>cho người quản lý</span></div></In>}
-          <In t={t} at={c.con - 0.2} x={v ? 0 : 80} y={v ? 40 : 0}>
-            <Win box={box} url="you.github.io/learndesk/#quan-ly"><Img src={staticFile('media/ld_d_admin.jpg')} style={{ width: box.w, display: 'block' }} />
-              {t > c.bang - 0.2 && <div style={{ ...abs(28 * sc, 236 * sc, 1384 * sc, 380 * sc), borderRadius: 16, border: `4px solid ${C.claude}`, opacity: P(t, c.bang - 0.2, 0.3) }} />}
-            </Win>
-          </In>
-        </>
-      )}
+      </div>
+      {!v && t < c.con && <div style={{ ...abs(1500, 330), display: 'flex', flexDirection: 'column', gap: 18 }}>{[['Mã xác thực riêng', c.ma], ['Tải về PDF', c.tai]].map(([l, at]) => <In key={l} t={t} at={at - 0.2} x={30} y={0}><div style={{ display: 'flex', alignItems: 'center', gap: 14, color: '#fff', fontSize: 32, fontWeight: 700 }}><Check s={36} bg={D.teal2} />{l}</div></In>)}</div>}
+      {v && <div style={{ ...abs(0, 210, 1080), textAlign: 'center' }}>{t < c.con - 0.3 ? <Kin t={t} at={c.dat - 0.2} text="Đạt là có chứng chỉ" size={62} align="center" /> : <Kin t={t} at={c.con - 0.3} text="Bảng cho quản lý" size={62} align="center" />}</div>}
+      {!v && <div style={{ ...abs(110, 90) }}>{t < c.con - 0.3 ? <Kin t={t} at={c.dat - 0.2} text="Đạt là có chứng chỉ" size={66} /> : <Kin t={t} at={c.con - 0.3} text="Người quản lý thấy hết" size={66} />}</div>}
+      {adm > 0 && <div style={{ opacity: adm, transform: `translateX(${(1 - adm) * 200}px)` }}>
+        <Laptop x={v ? 50 : 720} y={v ? 900 : 260} w={lw} ry={v ? 0 : -10} rx={6}><Img src={staticFile('media/ld_d_admin.jpg')} style={{ width: '100%', display: 'block' }} />{t > c.bang - 0.2 && <div style={{ ...abs(250 * sc, 140 * sc, 1160 * sc, 140 * sc), border: `4px solid ${D.amber}`, borderRadius: 16, opacity: P(t, c.bang - 0.2, 0.3) }} />}</Laptop>
+      </div>}
     </>
   );
 };
 
 const VideoScene = ({ t, v }) => {
   const c = { vay: W('video', 'Vậy'), cl: W('video', 'Claude'), dua: W('video', 'đưa'), kb: W('video', 'kịch'), rm: W('video', 'Remotion'), chu: W('video', 'chữ'), bd: W('video', 'biểu'), hm: W('video', 'hình'), lt: W('video', 'lồng'), xuat: W('video', 'Xuất'), tha: W('video', 'thả'), moi: W('video', 'mới') };
-  const box = v ? { x: 50, y: 300, w: 980, h: 1080 } : { x: 150, y: 120, w: 1620, h: 860 };
-  const CW = box.w, CH = box.h - 52; const studio = t > c.rm - 0.4;
-  const pv = v ? { x: 20, y: 70, w: CW - 40 } : { x: 350, y: 60, w: 900 }; pv.h = pv.w * 9 / 16;
-  const tl0 = pv.y + pv.h + 24; const tracks = [['Tiêu đề', c.chu, '#F59E0B'], ['Biểu đồ', c.bd, '#14B8A6'], ['Minh hoạ', c.hm, '#8B5CF6'], ['Lồng tiếng · ElevenLabs', c.lt, '#111']];
-  const playX = cl((t - c.rm) / 9);
-  const exp = t > c.xuat - 0.1; const ep = cl((t - c.xuat) / 1.0);
+  const studio = t > c.rm - 0.4;
+  const box = v ? { x: 50, y: 470, w: 980, h: 900 } : { x: 170, y: 190, w: 1580, h: 780 }; const CW = box.w, CH = box.h - 52;
+  const pv = v ? { x: 20, y: 70, w: CW - 40 } : { x: 510, y: 70, w: 840 }; pv.h = pv.w * 9 / 16;
+  const tl0 = 52 + pv.y + pv.h + 10; const tracks = [['Chữ chuyển động', c.chu, '#F59E0B'], ['Biểu đồ', c.bd, '#2DD4BF'], ['Hình minh hoạ', c.hm, '#A78BFA'], ['Lồng tiếng · ElevenLabs', c.lt, '#E5E7EB']];
+  const playX = cl((t - c.rm) / 9); const exp = t > c.xuat - 0.1; const ep = cl((t - c.xuat) / 1.0);
   return (
     <>
+      <div style={{ ...abs(v ? 0 : 110, v ? 210 : 70, v ? 1080 : 1700), textAlign: v ? 'center' : 'left' }}>{!studio ? <Kin t={t} at={c.vay - 0.2} text="Video bài giảng ở đâu ra?" size={v ? 60 : 70} align={v ? 'center' : 'left'} /> : <Kin t={t} at={c.rm - 0.4} text="Claude Code dựng bằng Remotion" size={v ? 54 : 64} align={v ? 'center' : 'left'} />}</div>
       {!studio ? (
-        <In t={t} at={SB.video[0] + 0.1} y={40}>
-          <Win box={box} url="claude.ai/code" bg={C.cream}>
-            <ClaudeTop CW={CW} repo="you/learndesk" />
-            <div style={{ ...abs(0, v ? 110 : 110, CW), textAlign: 'center', fontSize: 40, fontFamily: 'Georgia, serif', color: '#3D3929' }}>Bạn muốn xây gì hôm nay?</div>
-            <div style={{ ...abs(CW * 0.08, v ? 220 : 200, CW * 0.84, v ? 420 : 360), background: '#fff', border: `2px solid ${C.claude}`, borderRadius: 24, padding: 30, boxSizing: 'border-box' }}>
-              <In t={t} at={c.dua - 0.1}><div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderRadius: 12, background: '#F0EEE6', fontSize: 22, fontWeight: 600 }}><Img src={staticFile('media/ft_pdf2.svg')} style={{ width: 30, height: 30 }} />Tai-lieu-LAER.pdf</div></In>
-              <div style={{ marginTop: 20, fontSize: v ? 38 : 36, lineHeight: 1.45, fontWeight: 500 }}>{typed('Từ tài liệu này, viết kịch bản và dựng video bài giảng 2 phút bằng Remotion, lồng tiếng ElevenLabs giọng nam.', t, c.cl, 28)}<Caret t={t} h={42} /></div>
-            </div>
-          </Win>
+        <In t={t} at={c.cl - 0.2} y={40} style={{ ...abs(v ? 60 : 360, v ? 560 : 330, v ? 960 : 1200, v ? 560 : 440) }}>
+          <div style={{ width: '100%', height: '100%', boxSizing: 'border-box', borderRadius: 30, background: 'linear-gradient(160deg, rgba(255,255,255,.09), rgba(255,255,255,.03))', border: `1.5px solid ${C.claude}`, boxShadow: '0 0 60px rgba(217,119,87,.2)', padding: 36, color: '#fff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 26, fontWeight: 700 }}><ClaudeMark s={40} spin={t * 30} />Claude Code</div>
+            <In t={t} at={c.dua - 0.1}><div style={{ marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 12, padding: '12px 18px', borderRadius: 14, background: 'rgba(255,255,255,.08)', fontSize: 24, fontWeight: 600 }}><Img src={staticFile('media/ft_pdf2.svg')} style={{ width: 34, height: 34 }} />Tai-lieu-LAER.pdf</div></In>
+            <div style={{ marginTop: 22, fontSize: v ? 36 : 36, lineHeight: 1.45, fontWeight: 500 }}>{typed('Từ tài liệu này, viết kịch bản và dựng video bài giảng 2 phút bằng Remotion, lồng tiếng ElevenLabs.', t, c.dua, 30)}<Caret t={t} h={40} /></div>
+          </div>
         </In>
       ) : (
-        <In t={t} at={c.rm - 0.4} y={0} s={0.96}>
-          <div style={{ ...abs(box.x, box.y, box.w, box.h), background: '#0F1115', borderRadius: 20, overflow: 'hidden', boxShadow: '0 40px 90px rgba(0,0,0,.35)', border: '1px solid #2A2D35' }}>
-            <div style={{ height: 52, display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px', background: '#16181D', borderBottom: '1px solid #262A31', color: '#E5E7EB', fontSize: 20, fontWeight: 600 }}><RemotionMark s={30} />Remotion Studio<span style={{ marginLeft: 'auto', color: '#9CA3AF', fontSize: 17, fontWeight: 500 }}>Bai-4-Tu-choi · 1920×1080 · 30 fps</span>
-              <div style={{ marginLeft: 16, padding: '8px 16px', borderRadius: 8, background: exp ? C.sheet : '#0B5FFF', color: '#fff', fontSize: 17 }}>{exp ? (ep < 1 ? `Đang xuất MP4 ${Math.round(ep * 100)}%` : 'Đã xuất MP4 ✓') : 'Xuất video'}</div></div>
-            {!v && <div style={{ ...abs(0, 52, 240, CH), borderRight: '1px solid #262A31', padding: 18, boxSizing: 'border-box', color: '#9CA3AF', fontSize: 17 }}><div style={{ fontWeight: 700, color: '#E5E7EB', marginBottom: 12 }}>Compositions</div>{['Bai-1-Vi-sao', 'Bai-2-Lang-nghe', 'Bai-3-LAER', 'Bai-4-Tu-choi'].map((x, i) => <div key={x} style={{ padding: '8px 10px', borderRadius: 8, background: i === 3 ? '#1F2A44' : 'transparent', color: i === 3 ? '#fff' : '#9CA3AF', marginBottom: 4 }}>{x}</div>)}</div>}
-            {!v && <div style={{ ...abs(CW - 260, 52, 260, CH), borderLeft: '1px solid #262A31', padding: 18, boxSizing: 'border-box', color: '#9CA3AF', fontSize: 16 }}><div style={{ fontWeight: 700, color: '#E5E7EB', marginBottom: 12 }}>Props</div>{[['title', '5 câu từ chối'], ['voice', 'ElevenLabs · nam'], ['brand', '#0F766E'], ['music', 'calm.mp3']].map(([a, b]) => <div key={a} style={{ marginBottom: 12 }}><div>{a}</div><div style={{ color: '#E5E7EB', fontFamily: MONO, fontSize: 15, background: '#1A1D23', borderRadius: 6, padding: '6px 8px', marginTop: 4 }}>{b}</div></div>)}</div>}
-            <div style={{ ...abs(pv.x, 52 + pv.y - 52 + 20, pv.w, pv.h), borderRadius: 10, overflow: 'hidden', background: '#000' }}><LessonPlayer t={t} at={c.chu - 0.3} w={pv.w} h={pv.h} /></div>
-            <div style={{ ...abs(pv.x, tl0 + 20, pv.w, CH - tl0 - 20) }}>
+        <In t={t} at={c.rm - 0.4} y={30} s={0.96} style={{ ...abs(box.x, box.y, box.w, box.h), perspective: 2400 }}>
+          <div style={{ width: '100%', height: '100%', transform: v ? 'none' : 'rotateX(6deg)', background: '#0E1014', borderRadius: 22, overflow: 'hidden', boxShadow: '0 50px 120px rgba(0,0,0,.7), 0 0 0 1px #2A2D35', position: 'relative' }}>
+            <div style={{ height: 52, display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px', background: '#16181D', borderBottom: '1px solid #262A31', color: '#E5E7EB', fontSize: 20, fontWeight: 600 }}><RemotionMark s={30} />Remotion Studio<span style={{ marginLeft: 'auto', color: '#9CA3AF', fontSize: 17 }}>{v ? '' : 'Bai-4-Tu-choi · 1920×1080'}</span>
+              <div style={{ marginLeft: 16, padding: '8px 16px', borderRadius: 8, background: exp ? '#16A34A' : '#0B5FFF', color: '#fff', fontSize: 17 }}>{exp ? (ep < 1 ? `Đang xuất MP4 ${Math.round(ep * 100)}%` : 'Đã xuất MP4 ✓') : 'Xuất video'}</div></div>
+            {!v && <div style={{ ...abs(0, 52, 280, CH), borderRight: '1px solid #262A31', padding: 18, boxSizing: 'border-box', color: '#9CA3AF', fontSize: 17 }}><div style={{ fontWeight: 700, color: '#E5E7EB', marginBottom: 12 }}>Compositions</div>{['Bai-1-Vi-sao', 'Bai-2-Lang-nghe', 'Bai-3-Vat-lieu', 'Bai-4-Tu-choi'].map((x, i) => <div key={x} style={{ padding: '8px 10px', borderRadius: 8, background: i === 3 ? '#1F2A44' : 'transparent', color: i === 3 ? '#fff' : '#9CA3AF', marginBottom: 4 }}>{x}</div>)}</div>}
+            <div style={{ ...abs(pv.x, 52 + pv.y - 52 + 14, pv.w, pv.h), borderRadius: 10, overflow: 'hidden' }}><LessonPlayer t={t} at={c.chu - 0.3} w={pv.w} h={pv.h} /></div>
+            <div style={{ ...abs(pv.x, tl0, pv.w, CH - tl0 + 52) }}>
               {tracks.map(([l, at, col], i) => (
-                <div key={l} style={{ display: 'flex', alignItems: 'center', height: v ? 52 : 44, gap: 12 }}>
-                  <div style={{ width: v ? 290 : 250, color: t > at - 0.1 ? '#fff' : '#6B7280', fontSize: v ? 20 : 17, fontWeight: 600, whiteSpace: 'nowrap' }}>{l}</div>
-                  <div style={{ flex: 1, height: v ? 34 : 28, borderRadius: 6, background: '#1A1D23', position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', left: `${i * 8}%`, top: 0, bottom: 0, width: `${(i === 3 ? 92 : 50 + i * 10) * P(t, at - 0.1, 0.5)}%`, background: col, opacity: i === 3 ? 1 : 0.85, borderRadius: 6, display: 'flex', alignItems: 'center', gap: 2, paddingLeft: 6, overflow: 'hidden' }}>{i === 3 && Array.from({ length: 60 }).map((_, j) => <div key={j} style={{ width: 3, height: `${30 + 60 * Math.abs(Math.sin(j * 1.3))}%`, background: '#fff', opacity: 0.8, flexShrink: 0 }} />)}</div>
+                <div key={l} style={{ display: 'flex', alignItems: 'center', height: v ? 54 : 40, gap: 12 }}>
+                  <div style={{ width: v ? 300 : 240, color: t > at - 0.1 ? '#fff' : '#6B7280', fontSize: v ? 21 : 17, fontWeight: 600, whiteSpace: 'nowrap' }}>{l}</div>
+                  <div style={{ flex: 1, height: v ? 34 : 26, borderRadius: 6, background: '#1A1D23', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', left: `${i * 8}%`, top: 0, bottom: 0, width: `${(i === 3 ? 90 : 50 + i * 10) * P(t, at - 0.1, 0.5)}%`, background: col, borderRadius: 6, display: 'flex', alignItems: 'center', gap: 2, paddingLeft: 6, overflow: 'hidden', boxShadow: t > at - 0.1 && t < at + 0.8 ? `0 0 20px ${col}` : 'none' }}>{i === 3 && Array.from({ length: 70 }).map((_, j) => <div key={j} style={{ width: 3, height: `${30 + 60 * Math.abs(Math.sin(j * 1.3 + t * 3))}%`, background: '#111', opacity: 0.7, flexShrink: 0 }} />)}</div>
                   </div>
                 </div>
               ))}
-              <div style={{ position: 'absolute', left: `calc(${v ? 302 : 262}px + (100% - ${v ? 302 : 262}px) * ${playX})`, top: -6, bottom: 0, width: 3, background: '#EF4444' }} />
+              <div style={{ position: 'absolute', left: `calc(${v ? 312 : 252}px + (100% - ${v ? 312 : 252}px) * ${playX})`, top: -4, bottom: 0, width: 3, background: '#EF4444', boxShadow: '0 0 10px #EF4444' }} />
             </div>
-            {exp && ep >= 1 && t < c.tha + 0.6 && <div style={{ ...abs(pv.x + pv.w / 2 - 170 + (t > c.tha ? (v ? 0 : 400) * eio((t - c.tha) / 0.6) : 0), 52 + pv.y + pv.h / 2 - 50 + (t > c.tha ? 300 * eio((t - c.tha) / 0.6) : 0), 340, 100), borderRadius: 16, background: '#fff', display: 'flex', alignItems: 'center', gap: 14, padding: '0 20px', boxSizing: 'border-box', fontSize: 24, fontWeight: 700, boxShadow: '0 20px 50px rgba(0,0,0,.4)', opacity: 1 - P(t, c.tha + 0.4, 0.2) }}><div style={{ width: 52, height: 52, borderRadius: 12, background: '#1E293B', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>▶</div>bai-4.mp4</div>}
           </div>
         </In>
       )}
-      {t > c.tha - 0.1 && (
-        <div style={{ ...abs(v ? 290 : 1420, v ? 1180 : 860, 500) }}>
-          <Pop t={t} at={c.tha - 0.1}><div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 24px', borderRadius: 20, background: '#fff', boxShadow: '0 20px 50px rgba(22,22,27,.18)', border: `2px solid ${TEAL}` }}><Logo2 k="drive" s={46} /><div><div style={{ fontSize: 24, fontWeight: 800 }}>Drive › Bài giảng</div><div style={{ fontSize: 20, color: TEAL, fontWeight: 700, opacity: P(t, c.moi - 0.2, 0.3) }}>+ Bài mới trong khoá học</div></div></div></Pop>
-        </div>
-      )}
+      {exp && ep >= 1 && t < c.tha + 0.7 && (() => { const e = eio(cl((t - c.tha) / 0.7)); const sx = box.x + box.w / 2, sy = box.y + box.h / 2, dx = v ? 540 : 1700, dy = v ? 1500 : 880; return <div style={{ ...abs(lerp(sx, dx, e), lerp(sy, dy, e)), transform: `translate(-50%,-50%) scale(${1 - 0.6 * e})`, display: 'flex', alignItems: 'center', gap: 14, padding: '16px 26px', borderRadius: 18, background: '#fff', fontSize: 28, fontWeight: 800, boxShadow: '0 20px 60px rgba(0,0,0,.6)', opacity: 1 - Math.max(0, e - 0.85) * 6 }}><div style={{ width: 54, height: 54, borderRadius: 12, overflow: 'hidden' }}><Img src={staticFile('media/p_dental.jpg')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>bai-4.mp4</div>; })()}
+      {t > c.tha - 0.1 && <div style={{ ...abs(v ? 270 : 1480, v ? 1440 : 820) }}><Pop t={t} at={c.tha - 0.1}><div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 26px', borderRadius: 22, background: 'rgba(255,255,255,.08)', border: `1.5px solid ${D.teal}`, boxShadow: '0 0 50px rgba(45,212,191,.3)', color: '#fff' }}><Logo2 k="drive" s={48} /><div><div style={{ fontSize: 26, fontWeight: 800 }}>Drive › Bài giảng</div><div style={{ fontSize: 22, color: D.teal, fontWeight: 700, opacity: P(t, c.moi - 0.2, 0.3) }}>+ 1 bài mới trong khoá học</div></div></div></Pop></div>}
     </>
   );
 };
 
-const UseIcon = ({ k, s }) => {
-  const p = { stroke: '#fff', strokeWidth: 7, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' };
-  return (
-    <svg width={s} height={s} viewBox="0 0 100 100">
-      {k === 'hn' && <><circle cx="50" cy="36" r="14" {...p} /><path d="M24 80c3-16 14-24 26-24s23 8 26 24" {...p} /></>}
-      {k === 'sp' && <><path d="M20 36 L50 22 L80 36 L50 50Z" {...p} /><path d="M20 36 V66 L50 80 L80 66 V36 M50 50 V80" {...p} /></>}
-      {k === 'qt' && <><rect x="16" y="20" width="26" height="20" rx="5" {...p} /><rect x="58" y="44" width="26" height="20" rx="5" {...p} /><rect x="16" y="66" width="26" height="20" rx="5" {...p} /><path d="M42 30h8v24h8M50 54v22h-8" {...p} /></>}
-      {k === 'kn' && <><path d="M18 74 L38 52 L52 62 L80 30" {...p} /><path d="M64 30 H80 V46" {...p} /></>}
-      {k === 'gv' && <><path d="M12 40 L50 22 L88 40 L50 58Z" {...p} /><path d="M28 48 V66 C40 76 60 76 72 66 V48" {...p} /></>}
-    </svg>
-  );
-};
 const Uses = ({ t, v }) => {
   const c = { mot: W('uses', 'Một'), hn: W('uses', 'hội'), sp: W('uses', 'kiến'), qt: W('uses', 'quy'), kn: W('uses', 'kỹ'), lop: W('uses', 'lớp') };
-  const U = [['hn', 'Hội nhập', 'nhân viên mới', c.hn, '#8B5CF6'], ['sp', 'Kiến thức', 'sản phẩm', c.sp, '#3B82F6'], ['qt', 'Quy trình', 'làm việc', c.qt, '#10B981'], ['kn', 'Kỹ năng', 'bán hàng', c.kn, '#F59E0B'], ['gv', 'Lớp học online', 'của riêng bạn', c.lop, C.claude]];
+  const U = [['meeting', 'Hội nhập', 'nhân viên mới', c.hn], ['tooth', 'Kiến thức', 'sản phẩm', c.sp], ['inspect', 'Quy trình', 'làm việc', c.qt], ['care', 'Kỹ năng', 'bán hàng', c.kn], ['smile', 'Lớp học', 'online của bạn', c.lop]];
+  const act = U.reduce((a, u, i) => (t >= u[3] - 0.2 ? i : a), 0);
+  if (v) {
+    return (
+      <>
+        <div style={{ ...abs(0, 210, 1080), textAlign: 'center' }}><Kin t={t} at={c.mot - 0.2} text="Một nền tảng," size={66} align="center" /><Kin t={t} at={c.mot + 0.2} text="nhiều cách dùng" size={66} grad align="center" /></div>
+        {U.map(([p, a, b, at], i) => {
+          const d = i - act; const k = P(t, at - 0.3, 0.5); const x = 540 + d * 560 - 330, y = 470;
+          return <div key={p} style={{ ...abs(x, y, 660, 860), opacity: k * (d === 0 ? 1 : 0.35), transform: `scale(${d === 0 ? 1 : 0.86})`, borderRadius: 40, overflow: 'hidden', boxShadow: d === 0 ? '0 40px 100px rgba(0,0,0,.6)' : 'none' }}>
+            <Img src={staticFile(`media/p_${p}.jpg`)} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${1.15 - 0.1 * P(t, at - 0.3, 3)})` }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 45%, rgba(0,0,0,.85))' }} />
+            <div style={{ position: 'absolute', left: 40, bottom: 40, color: '#fff' }}><div style={{ fontSize: 64, fontWeight: 800, letterSpacing: -2, lineHeight: 1 }}>{a}</div><div style={{ fontSize: 36, color: '#5EEAD4', fontWeight: 700, marginTop: 6 }}>{b}</div></div>
+          </div>;
+        })}
+      </>
+    );
+  }
+  const cw = 330, gap = 22, x0 = (1920 - (5 * cw + 4 * gap)) / 2;
   return (
     <>
-      <In t={t} at={c.mot - 0.3}><div style={{ ...abs(0, v ? 225 : 170, v ? 1080 : 1920), textAlign: 'center', fontSize: v ? 56 : 62, fontWeight: 800, letterSpacing: -1.5 }}>Một nền tảng, <span style={{ color: C.claude }}>nhiều cách dùng</span></div></In>
-      {U.map(([k, a, b, at, col], i) => {
-        const x = v ? 60 : 110 + i * 346, y = v ? 330 + i * 186 : 330, w = v ? 960 : 320, h = v ? 166 : 400;
-        return (
-          <In key={k} t={t} at={at - 0.2} y={40} style={{ ...abs(x, y, w, h) }}>
-            <div style={{ width: '100%', height: '100%', boxSizing: 'border-box', borderRadius: 28, background: '#fff', border: `2px solid ${t > at - 0.1 && (i === 4 || t < U[i + 1]?.[3] - 0.1) ? col : C.line}`, boxShadow: '0 16px 40px rgba(22,22,27,.10)', padding: v ? '0 30px' : 32, display: 'flex', flexDirection: v ? 'row' : 'column', alignItems: v ? 'center' : 'flex-start', gap: v ? 28 : 22 }}>
-              <div style={{ width: v ? 108 : 120, height: v ? 108 : 120, borderRadius: 28, background: col, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><UseIcon k={k} s={v ? 68 : 76} /></div>
-              <div><div style={{ fontSize: v ? 42 : 38, fontWeight: 800, letterSpacing: -0.8, lineHeight: 1.1 }}>{a}</div><div style={{ fontSize: v ? 30 : 28, color: C.mute }}>{b}</div></div>
-            </div>
-          </In>
-        );
+      <div style={{ ...abs(0, 90, 1920), textAlign: 'center', display: 'flex', justifyContent: 'center', gap: 22 }}><Kin t={t} at={c.mot - 0.2} text="Một nền tảng," size={72} /><Kin t={t} at={c.mot + 0.2} text="nhiều cách dùng" size={72} grad /></div>
+      {U.map(([p, a, b, at], i) => {
+        const k = P(t, at - 0.3, 0.6); const on = i === act; const h = on ? 680 : 560;
+        return <div key={p} style={{ ...abs(x0 + i * (cw + gap), 260 + (680 - h) / 2 + (1 - k) * 120, cw, h), opacity: k * (on ? 1 : 0.6), borderRadius: 34, overflow: 'hidden', boxShadow: on ? '0 40px 90px rgba(0,0,0,.6), 0 0 0 2px #2DD4BF' : '0 20px 40px rgba(0,0,0,.4)' }}>
+          <Img src={staticFile(`media/p_${p}.jpg`)} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${1.15 - 0.1 * P(t, at - 0.3, 3)})` }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 45%, rgba(0,0,0,.88))' }} />
+          <div style={{ position: 'absolute', left: 26, bottom: 28, color: '#fff' }}><div style={{ fontSize: 42, fontWeight: 800, letterSpacing: -1, lineHeight: 1.05 }}>{a}</div><div style={{ fontSize: 26, color: '#5EEAD4', fontWeight: 700, marginTop: 4 }}>{b}</div></div>
+        </div>;
       })}
     </>
   );
 };
 
-const CUST = [['Công ty TNHH An Phát', 'Hà Nội · 12 đơn', 'Thân thiết'], ['Cửa hàng Minh Châu', 'Đà Nẵng · 5 đơn', 'Mới'], ['Nhà sách Bình Minh', 'TP.HCM · 8 đơn', 'Tiềm năng']];
+const CUST = [['Nha khoa Minh Châu', 'Hà Nội · 12 đơn', 'Thân thiết', '#FDE68A'], ['Phòng khám An Phát', 'Đà Nẵng · 5 đơn', 'Mới', '#BFDBFE'], ['Bệnh viện Bình Minh', 'TP.HCM · 8 đơn', 'Tiềm năng', '#DDD6FE']];
 const Ep3 = ({ t, v }) => {
   const c = { tap: W('ep3', 'tập'), crm: W('ep3', 'CRM'), tra: W('ep3', 'tra'), ql: W('ep3', 'quản'), dt: W('ep3', 'điện'), hen: W('ep3', 'Hẹn') };
   return (
-    <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ display: 'flex', flexDirection: v ? 'column' : 'row', alignItems: 'center', gap: v ? 50 : 90, marginTop: v ? -40 : 40 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: v ? 'center' : 'flex-start', textAlign: v ? 'center' : 'left', width: v ? 980 : 760 }}>
-          <Pop t={t} at={c.tap - 0.15}><div style={{ padding: '12px 32px', borderRadius: 999, background: C.ink, color: '#fff', fontSize: 32, fontWeight: 800, letterSpacing: 4 }}>TẬP 3 · SẮP RA MẮT</div></Pop>
-          <In t={t} at={c.crm - 0.1}><div style={{ fontSize: v ? 110 : 120, fontWeight: 800, letterSpacing: -4, marginTop: 30, lineHeight: 1 }}>App <span style={{ color: C.claude }}>CRM</span></div></In>
-          <In t={t} at={c.tra - 0.1}><div style={{ fontSize: v ? 40 : 42, fontWeight: 600, marginTop: 20, lineHeight: 1.3 }}>Tra cứu và quản lý <span style={{ color: C.sheet }}>khách hàng</span><br />ngay trên điện thoại</div></In>
-          <div style={{ display: 'flex', gap: 16, marginTop: 34 }}>{['sheets', 'gas', 'github'].map((k, i) => <Pop key={k} t={t} at={c.tra + 0.2 + i * 0.12}><Tile2 k={k} s={96} /></Pop>)}</div>
-        </div>
-        <In t={t} at={c.tra} y={40} style={{ width: v ? 760 : 620 }}>
-          <div style={{ background: '#fff', borderRadius: 30, boxShadow: '0 30px 70px rgba(22,22,27,.16)', padding: 26, border: `1px solid ${C.line}` }}>
-            <div style={{ height: 64, borderRadius: 16, background: '#F3F4F6', display: 'flex', alignItems: 'center', padding: '0 20px', fontSize: 26, color: C.mute, gap: 12 }}><svg width="26" height="26" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="#6B7280" strokeWidth="2.5" fill="none" /><path d="M16 16l5 5" stroke="#6B7280" strokeWidth="2.5" /></svg>{typed('An Phát', t, c.tra + 0.3, 10) || 'Tìm khách hàng…'}</div>
-            {CUST.map(([n, d, tag], i) => <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '18px 4px', borderBottom: i < 2 ? `1px solid ${C.line}` : 'none', opacity: P(t, c.ql - 0.3 + i * 0.15, 0.3), background: i === 0 && t > c.tra + 1.2 ? '#F0FDF4' : 'transparent', borderRadius: 12 }}><div style={{ width: 60, height: 60, borderRadius: 30, background: ['#FDE68A', '#BFDBFE', '#DDD6FE'][i], display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 24 }}>{n.split(' ').slice(-2).map((x) => x[0]).join('')}</div><div><div style={{ fontSize: 28, fontWeight: 700 }}>{n}</div><div style={{ fontSize: 22, color: C.mute }}>{d}</div></div><div style={{ marginLeft: 'auto', padding: '6px 14px', borderRadius: 999, background: '#F1F0EC', fontSize: 20, fontWeight: 700 }}>{tag}</div></div>)}
-          </div>
-        </In>
+    <AbsoluteFill>
+      <div style={{ ...abs(0, v ? 230 : 120, v ? 1080 : 1920), textAlign: 'center', fontSize: v ? 260 : 300, fontWeight: 800, letterSpacing: -12, color: 'transparent', WebkitTextStroke: '2px rgba(255,255,255,.16)', opacity: P(t, c.tap - 0.3, 0.6), lineHeight: 1 }}>TẬP 3</div>
+      <div style={{ ...abs(v ? 0 : 140, v ? 540 : 400, v ? 1080 : 900), textAlign: v ? 'center' : 'left' }}>
+        <Label t={t} at={c.tap - 0.1} text="SẮP RA MẮT" color={D.amber} />
+        <div style={{ marginTop: 10 }}><Kin t={t} at={c.crm - 0.1} text="App CRM" size={v ? 120 : 140} grad align={v ? 'center' : 'left'} /></div>
+        <div style={{ marginTop: 14 }}><Kin t={t} at={c.tra - 0.1} text="Tra cứu và quản lý khách hàng ngay trên điện thoại" size={v ? 40 : 42} weight={600} stagger={0.04} align={v ? 'center' : 'left'} lh={1.3} /></div>
       </div>
-      <div style={{ position: 'absolute', bottom: v ? 470 : 70, left: 0, right: 0, textAlign: 'center' }}><In t={t} at={c.hen - 0.1}><div style={{ fontSize: 34, color: C.claude, fontWeight: 700 }}>Hẹn gặp bạn ở tập sau →</div></In></div>
+      <In t={t} at={c.tra} y={60} style={{ ...abs(v ? 150 : 1120, v ? 900 : 300, v ? 780 : 640) }}>
+        <div style={{ borderRadius: 34, background: 'linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.03))', border: `1.5px solid ${D.gline}`, padding: 26, boxShadow: '0 40px 100px rgba(0,0,0,.6)', color: '#fff' }}>
+          <div style={{ height: 66, borderRadius: 18, background: 'rgba(255,255,255,.08)', display: 'flex', alignItems: 'center', padding: '0 22px', fontSize: 26, color: '#CBD5E1', gap: 12 }}><svg width="26" height="26" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="#CBD5E1" strokeWidth="2.5" fill="none" /><path d="M16 16l5 5" stroke="#CBD5E1" strokeWidth="2.5" /></svg>{typed('Minh Châu', t, c.tra + 0.3, 10) || 'Tìm khách hàng…'}</div>
+          {CUST.map(([n, d, tag, col], i) => <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '18px 8px', borderBottom: i < 2 ? `1px solid ${D.gline}` : 'none', opacity: P(t, c.ql - 0.4 + i * 0.15, 0.3), background: i === 0 && t > c.tra + 1.3 ? 'rgba(45,212,191,.12)' : 'transparent', borderRadius: 14 }}><div style={{ width: 60, height: 60, borderRadius: 30, background: col, color: '#0B1324', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 24 }}>{n.split(' ').slice(-2).map((x) => x[0]).join('')}</div><div><div style={{ fontSize: 28, fontWeight: 700 }}>{n}</div><div style={{ fontSize: 22, color: D.mute }}>{d}</div></div><div style={{ marginLeft: 'auto', padding: '6px 14px', borderRadius: 999, background: 'rgba(255,255,255,.1)', fontSize: 20, fontWeight: 700 }}>{tag}</div></div>)}
+        </div>
+      </In>
+      <div style={{ position: 'absolute', bottom: v ? 330 : 90, left: 0, right: 0, textAlign: 'center' }}><In t={t} at={c.hen - 0.1}><div style={{ fontSize: 36, color: '#fff', fontWeight: 700 }}>Hẹn gặp bạn ở tập sau</div></In></div>
     </AbsoluteFill>
   );
 };
@@ -1604,72 +1625,66 @@ const End2 = ({ t, v }) => {
   const tools = [['claude', 'Claude Code'], ['github', 'GitHub'], ['drive', 'Google Drive'], ['sheets', 'Google Sheets'], ['gas', 'Apps Script'], ['remotion', 'Remotion'], ['el', 'ElevenLabs']];
   return (
     <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: v ? -120 : -40 }}>
-        <Pop t={t} at={a + 0.1}><div style={{ borderRadius: 56, boxShadow: '0 30px 70px rgba(15,118,110,.35)' }}><LdMark s={v ? 240 : 200} /></div></Pop>
-        <In t={t} at={a + 0.4}><div style={{ fontSize: 100, fontWeight: 800, letterSpacing: -3, marginTop: 28 }}>LearnDesk</div></In>
-        <In t={t} at={a + 0.6}><div style={{ fontSize: 36, color: C.mute, fontWeight: 500 }}>Tập 2 · Nền tảng đào tạo online</div></In>
-        <In t={t} at={a + 1.1}><div style={{ fontSize: 24, letterSpacing: 4, fontWeight: 700, color: C.claude, marginTop: v ? 64 : 50 }}>LÀM BẰNG</div></In>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: v ? 18 : 30, marginTop: 22, width: v ? 900 : 1600 }}>
-          {tools.map(([k, n], i) => <Pop key={k} t={t} at={a + 1.3 + i * 0.1}><div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, width: v ? 200 : 180 }}><Tile2 k={k} s={v ? 104 : 96} /><div style={{ fontSize: 23, fontWeight: 700 }}>{n}</div></div></Pop>)}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: v ? -120 : -30 }}>
+        <Pop t={t} at={a + 0.1}><div style={{ borderRadius: 56, boxShadow: '0 0 120px rgba(45,212,191,.55)' }}><LdMark s={v ? 230 : 190} /></div></Pop>
+        <div style={{ marginTop: 26 }}><Kin t={t} at={a + 0.4} text="LearnDesk" size={v ? 100 : 104} align="center" /></div>
+        <In t={t} at={a + 0.7}><div style={{ fontSize: 34, color: D.mute, fontWeight: 500 }}>Tập 2 · Nền tảng đào tạo online</div></In>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: v ? 22 : 30, marginTop: v ? 70 : 54, width: v ? 940 : 1600 }}>
+          {tools.map(([k, n], i) => <Pop key={k} t={t} at={a + 1.2 + i * 0.1}><div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: v ? 200 : 180 }}><Glass k={k} s={v ? 104 : 96} on={false} /><div style={{ fontSize: 22, fontWeight: 700, color: '#E5E7EB' }}>{n}</div></div></Pop>)}
         </div>
       </div>
     </AbsoluteFill>
   );
 };
 
-const CH2 = [['Ý tưởng', 'four'], ['Nguyên lý', 'arch'], ['Bước 1', 'step1'], ['Bước 2', 'step2'], ['Người học', 'learner'], ['Kiểm tra', 'quiz'], ['Video bài giảng', 'video'], ['Ứng dụng', 'uses'], ['Tập 3', 'ep3']];
-const Chapters2 = ({ t, v }) => {
-  if (t < SB.four[0] + 0.2 || t > tl.endcard + 0.3) return null;
-  const o = P(t, SB.four[0] + 0.2, 0.5) * (1 - P(t, tl.endcard - 0.2, 0.4));
-  const cur = CH2.reduce((a, c, i) => (t >= SB[c[1]][0] + 0.2 ? i : a), 0);
-  if (v) return <div style={{ ...abs(0, 120, 1080), display: 'flex', justifyContent: 'center', gap: 10, opacity: o }}>{CH2.map((c, i) => <div key={i} style={{ width: i === cur ? 44 : 14, height: 14, borderRadius: 7, background: i <= cur ? C.claude : '#D8D4CA' }} />)}</div>;
-  return <div style={{ ...abs(0, 40, 1920), display: 'flex', justifyContent: 'center', gap: 10, opacity: o }}>{CH2.map(([lab], i) => <div key={i} style={{ padding: '8px 18px', borderRadius: 999, fontSize: 19, fontWeight: 700, background: i === cur ? C.ink : i < cur ? '#fff' : 'transparent', color: i === cur ? '#fff' : i < cur ? C.ink : '#A9A6AE', border: i < cur ? `1px solid ${C.line}` : '1px solid transparent' }}>{i < cur ? '✓ ' : ''}{lab}</div>)}</div>;
+const Subs2 = ({ t }) => {
+  const s = tl.subs.find((x, i) => t >= x.s - 0.08 && t < (tl.subs[i + 1] ? Math.min(tl.subs[i + 1].s - 0.08, x.e + 0.6) : x.e + 0.6));
+  if (!s) return null;
+  return <div style={{ ...abs(60, 1600, 960), display: 'flex', justifyContent: 'center' }}><div style={{ background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.18)', color: '#fff', borderRadius: 18, padding: '14px 26px', fontSize: 40, fontWeight: 600, fontStyle: 'italic', lineHeight: 1.3, textAlign: 'center', backdropFilter: 'blur(10px)' }}>{s.t}</div></div>;
 };
 
 const SfxTrack2 = () => {
   const L = [];
-  ORDER.slice(1).forEach((id) => L.push([SB[id][0], 'whoosh_soft', 0.22]));
-  L.push([tl.endcard, 'shimmer', 0.32]);
-  ['video', 'kiểm', 'chứng'].forEach((w) => L.push([W('hook', w) - 0.1, 'pop', 0.35]));
-  ['GitHub', 'Drive', 'Sheet', 'Apps'].forEach((w) => L.push([W('four', w) - 0.25, 'pop', 0.3]));
-  L.push([W('arch', 'Tất'), 'stamp', 0.3]);
-  L.push([W('step1', 'file') - 0.25, 'swoosh_short', 0.3]);
-  ['Giao', 'làm', 'chứng', 'đẩy', 'Apps', 'triển'].forEach((w) => L.push([W('step2', w) - 0.1, 'tick', 0.5]));
-  L.push([W('step2', 'link'), 'success', 0.28]);
-  L.push([W('learner', 'Đăng') + 0.25, 'click', 0.45], [W('lesson', 'video'), 'pop', 0.25], [W('lesson', 'lưu') - 0.2, 'success', 0.25]);
-  L.push([W('quiz', 'đảo'), 'swoosh_short', 0.3], [W('quiz', 'giới') + 0.55, 'click', 0.45], [W('quiz', 'chấm'), 'ding', 0.3]);
-  L.push([W('cert', 'Đạt') - 0.1, 'sparkle', 0.3], [W('cert', 'tải'), 'click', 0.45], [W('cert', 'Còn') - 0.3, 'whoosh_soft', 0.22]);
-  L.push([W('video', 'Remotion') - 0.4, 'whoosh', 0.25], [W('video', 'Xuất') - 0.1, 'riser', 0.2], [W('video', 'thả') - 0.1, 'pop', 0.35], [W('video', 'mới') - 0.2, 'success', 0.28]);
-  ['hội', 'kiến', 'quy', 'kỹ', 'lớp'].forEach((w) => L.push([W('uses', w) - 0.2, 'pop', 0.28]));
-  L.push([W('ep3', 'tập') - 0.15, 'impact', 0.25], [W('ep3', 'CRM') - 0.1, 'pop', 0.3]);
-  const typing = [[W('video', 'Claude'), 2.2]];
-  return (<>{L.map(([a, n, vv], i) => <Sfx key={i} at={a} name={n} vol={vv} />)}{typing.map(([a, d], i) => <Sequence key={'ty' + i} from={Math.round(a * 30)} durationInFrames={Math.round(d * 30)}><Audio src={staticFile('sfx/typing.wav')} volume={0.22} loop /></Sequence>)}</>);
+  ORDER.slice(1).forEach((id) => L.push([SB[id][0], 'whoosh', 0.2]));
+  L.push([tl.endcard, 'shimmer', 0.32], [0.2, 'swell', 0.25]);
+  ['video', 'kiểm', 'chứng', 'chủ'].forEach((w) => L.push([W('hook', w) - 0.15, 'boom_soft', 0.22]));
+  ['GitHub', 'Drive', 'Sheet', 'Apps'].forEach((w) => L.push([W('four', w) - 0.15, 'impact', 0.18]));
+  L.push([W('four', 'cầu'), 'shimmer', 0.22], [W('arch', 'Tất'), 'boom_soft', 0.3]);
+  ['gọi', 'kiểm', 'lấy', 'gửi', 'điểm'].forEach((w) => L.push([W('arch', w), 'swoosh_short', 0.22]));
+  L.push([W('step1', 'thư'), 'whoosh_long', 0.2], [W('step1', 'file') - 0.2, 'swoosh_short', 0.3]);
+  ['khoá', 'câu', 'người', 'kết'].forEach((w) => L.push([W('step1', w) - 0.15, 'tick', 0.45]));
+  L.push([W('step2', 'đẩy'), 'whoosh', 0.25], [W('step2', 'triển'), 'whoosh', 0.25], [W('step2', 'link') - 0.1, 'success', 0.28]);
+  L.push([W('learner', 'Đăng') + 0.3, 'click', 0.45], [W('learner', 'trang') - 0.3, 'whoosh_soft', 0.2]);
+  ['kiến', 'quy', 'kỹ'].forEach((w) => L.push([W('learner', w) - 0.1, 'pop', 0.28]));
+  L.push([W('lesson', 'video') + 0.2, 'shimmer', 0.2], [W('quiz', 'đảo'), 'whoosh_long', 0.22], [W('quiz', 'giới') + 0.8, 'click', 0.45], [W('quiz', 'chấm'), 'success', 0.3]);
+  L.push([W('cert', 'Đạt') - 0.2, 'sparkle', 0.3], [W('cert', 'Còn') - 0.3, 'whoosh', 0.22]);
+  L.push([W('video', 'Remotion') - 0.4, 'whoosh', 0.25], [W('video', 'Xuất') - 0.1, 'riser', 0.2], [W('video', 'thả'), 'whoosh_soft', 0.3], [W('video', 'mới') - 0.2, 'ding', 0.28]);
+  ['hội', 'kiến', 'quy', 'kỹ', 'lớp'].forEach((w) => L.push([W('uses', w) - 0.3, 'swoosh_short', 0.25]));
+  L.push([W('ep3', 'tập') - 0.3, 'boom_soft', 0.3], [W('ep3', 'CRM') - 0.1, 'impact', 0.22]);
+  return (<>{L.map(([a, n, vv], i) => <Sfx key={i} at={a} name={n} vol={vv} />)}<Sequence from={Math.round(W('video', 'đưa') * 30)} durationInFrames={75}><Audio src={staticFile('sfx/typing.wav')} volume={0.2} loop /></Sequence></>);
 };
 
 export const Main: React.FC<{ v: boolean }> = ({ v }) => {
   const t = useT();
   return (
-    <AbsoluteFill style={{ fontFamily: FONT, color: C.ink }}>
-      <Bg t={t} />
-      <AbsoluteFill style={{ transform: v ? 'translateY(70px)' : undefined }}>
-        <Scene t={t} id="hook"><Hook2 t={t} v={v} /></Scene>
-        <Scene t={t} id="four" enter="zoom"><Four t={t} v={v} /></Scene>
-        <Scene t={t} id="arch" enter="rise"><Arch2 t={t} v={v} /></Scene>
-        <Scene t={t} id="step1" enter="left"><Step1b t={t} v={v} /></Scene>
-        <Scene t={t} id="step2" enter="left"><Step2b t={t} v={v} /></Scene>
-        <Scene t={t} id="learner" enter="right"><Learner t={t} v={v} /></Scene>
-        <Scene t={t} id="lesson" enter="zoom"><Lesson t={t} v={v} /></Scene>
-        <Scene t={t} id="quiz" enter="right"><Quiz t={t} v={v} /></Scene>
-        <Scene t={t} id="cert" enter="rise"><Cert t={t} v={v} /></Scene>
-        <Scene t={t} id="video" enter="focus"><VideoScene t={t} v={v} /></Scene>
-        <Scene t={t} id="uses" enter="rise"><Uses t={t} v={v} /></Scene>
-        <Scene t={t} id="ep3" enter="zoom"><Ep3 t={t} v={v} /></Scene>
-        <Scene t={t} id="end" enter="focus"><End2 t={t} v={v} /></Scene>
-        <Chapters2 t={t} v={v} />
-      </AbsoluteFill>
-      {v && <Subs t={t} />}
+    <AbsoluteFill style={{ fontFamily: FONT, color: D.ink }}>
+      <DarkBg t={t} />
+      <Scene t={t} id="hook" enter="focus"><Hook2 t={t} v={v} /></Scene>
+      <Scene t={t} id="four" enter="zoom"><Four t={t} v={v} /></Scene>
+      <Scene t={t} id="arch" enter="focus"><Arch2 t={t} v={v} /></Scene>
+      <Scene t={t} id="step1" enter="rise"><Step1b t={t} v={v} /></Scene>
+      <Scene t={t} id="step2" enter="right"><Step2b t={t} v={v} /></Scene>
+      <Scene t={t} id="learner" enter="zoom"><Learner t={t} v={v} /></Scene>
+      <Scene t={t} id="lesson" enter="focus"><Lesson t={t} v={v} /></Scene>
+      <Scene t={t} id="quiz" enter="left"><Quiz t={t} v={v} /></Scene>
+      <Scene t={t} id="cert" enter="zoom"><Cert t={t} v={v} /></Scene>
+      <Scene t={t} id="video" enter="focus"><VideoScene t={t} v={v} /></Scene>
+      <Scene t={t} id="uses" enter="right"><Uses t={t} v={v} /></Scene>
+      <Scene t={t} id="ep3" enter="zoom"><Ep3 t={t} v={v} /></Scene>
+      <Scene t={t} id="end" enter="focus"><End2 t={t} v={v} /></Scene>
+      {v && <Subs2 t={t} />}
       <Audio src={staticFile('narration.wav')} />
-      <Audio src={staticFile('music.wav')} volume={0.16} />
+      <Audio src={staticFile('music.wav')} volume={0.17} />
       <SfxTrack2 />
     </AbsoluteFill>
   );
