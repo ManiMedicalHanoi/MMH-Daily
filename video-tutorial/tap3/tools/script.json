@@ -35,19 +35,19 @@
   },
   {
    "id": "map",
-   "text": "Mọi khách hàng giờ nằm trên một bản đồ làm việc. Mỗi điểm là một khách hàng, màu sắc cho biết trạng thái: đang chăm sóc, cần gặp lại, hay đã chốt đơn. Phóng to một khu vực, thấy ngay ai cần ghé thăm hôm nay."
+   "text": "Mọi khách hàng giờ nằm trên một bản đồ làm việc. Phía trên là lịch của cả đội, phía dưới là bản đồ: chấm xanh lá là việc đã làm, chấm xanh dương là kế hoạch sắp tới. Phóng to một khu vực, thấy ngay khách nào cần ghé thăm."
   },
   {
    "id": "field",
-   "text": "Đi địa bàn xong, Minh ghi nhận ngay trên điện thoại: ảnh chụp tại phòng khám, nội dung trao đổi, hẹn lần gặp tới. Những dòng báo cáo khô khan trong từng ô Sheet được thay bằng một bản ghi gọn gàng, có hệ thống."
+   "text": "Đi địa bàn xong, Minh ghi nhận ngay trên điện thoại: ảnh chụp tại phòng khám, người gặp, nội dung trao đổi, bước tiếp theo. Những dòng báo cáo khô khan trong từng ô Sheet được thay bằng một lịch sử chăm sóc gọn gàng, có hệ thống."
   },
   {
    "id": "manager",
-   "text": "Người quản lý mở bản đồ là thấy lịch làm việc của cả đội, và lịch sử chăm sóc của từng khách hàng, không cần hỏi lại ai."
+   "text": "Người quản lý mở bản đồ là thấy lịch làm việc của cả đội theo tuần, theo tháng, và lịch sử chăm sóc của từng khách hàng, không cần hỏi lại ai."
   },
   {
    "id": "kpi",
-   "text": "Mọi ghi nhận được tính toán tự động: tiến độ, KPI, doanh số ước tính, hiện thành biểu đồ ngay trên bản đồ. Nhân viên bớt hẳn thời gian nhập liệu, để dành thời gian cho khách hàng."
+   "text": "Mọi ghi nhận được tính toán tự động: vòng KPI, doanh số dự kiến, độ phủ từng tỉnh, hiện ngay bên cạnh bản đồ. Nhân viên bớt hẳn thời gian nhập liệu, để dành thời gian cho khách hàng."
   },
   {
    "id": "why",
