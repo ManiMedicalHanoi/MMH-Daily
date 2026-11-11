@@ -1,8 +1,0 @@
-{
- "has_key": false,
- "items": {},
- "sub": 401,
- "sub_err": "{\"detail\":{\"type\":\"authentication_error\",\"code\":\"unauthorized\",\"message\":\"Invalid API key\",\"status\":\"invalid_api_key\",\"request_id\":\"2a166559eba6ec63b76200f81eb5556c\"}}",
- "list_err_vi_male": "{\"detail\":{\"type\":\"authentication_error\",\"code\":\"unauthorized\",\"message\":\"Invalid API key\",\"status\":\"invalid_api_key\",\"request_id\":\"0e24bb9c1dae330f29102694604da725\"}}",
- "list_vi_male": 401
-}
