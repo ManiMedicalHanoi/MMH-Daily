@@ -30,7 +30,7 @@ const W = (id, needle, nth = 0, off = 0) => {
   throw new Error(`Không thấy mốc "${needle}" trong đoạn ${id}`);
 };
 const SEG = (id) => tl.segs[id];
-const ORDER = ['s1', 's2', 's3', 'map', 'field', 'manager', 'kpi', 'why', 'mech', 'change', 'close'];
+const ORDER = ['s1', 's2', 's3', 'map', 'field', 'report', 'manager', 'kpi', 'why', 'mech', 'change', 'close'];
 const SB: any = {};
 ORDER.forEach((id, i) => { SB[id] = [i === 0 ? 0 : SEG(id).start - 0.45, i < ORDER.length - 1 ? SEG(ORDER[i + 1]).start - 0.45 : tl.endcard]; });
 SB.end = [tl.endcard, tl.total + 1];
@@ -1139,14 +1139,14 @@ const useCam = (t, v) => {
 
 // ---------- CẢNH ----------
 const Story1 = ({ t, v }) => {
-  const c = { bay: W('s1', 'Bảy'), minh: W('s1', 'Minh'), ds: W('s1', 'Doanh'), excel: W('s1', 'Excel'), kh: W('s1', 'Thông'), so: W('s1', 'sổ'), zalo: W('s1', 'Zalo'), bc: W('s1', 'báo'), dai: W('s1', 'dài') };
+  const c = { bay: W('s1', 'Tám'), chup: W('s1', 'chụp'), minh: W('s1', 'Minh'), ds: W('s1', 'Doanh'), excel: W('s1', 'Excel'), kh: W('s1', 'Thông'), so: W('s1', 'sổ'), zalo: W('s1', 'Zalo'), bc: W('s1', 'báo'), dai: W('s1', 'dài') };
   const drift = (i) => Math.sin(t * 0.7 + i * 1.7) * 6;
   const L = v ? { clock: [70, 330], id: [560, 300], xl: [60, 560], nb: [560, 820], chat: [80, 1040], sh: [70, 1280], st: [700, 560] } : { clock: [110, 120], id: [1420, 110], xl: [120, 340], nb: [780, 300], chat: [1360, 360], sh: [380, 690], st: [1180, 120] };
   const av = 104;
   return (
     <>
       <div style={{ ...abs(v ? (1080 - av) / 2 : 1920 - 110 - av, v ? 70 : 760, av, av) }}><Pop t={t} at={0.2}><div style={{ width: av, height: av, borderRadius: av, border: '4px solid #fff', boxShadow: '0 10px 26px rgba(29,43,58,.2)', overflow: 'hidden', background: '#F6D7C9' }}><Img src={staticFile('media/me.png')} style={{ width: '112%', height: '112%', marginLeft: '-6%', marginTop: '2%' }} /></div></Pop><In t={t} at={0.4}><div style={{ textAlign: 'center', marginTop: 8, fontSize: 20, fontWeight: 800, letterSpacing: 3, color: K.coral, whiteSpace: 'nowrap', marginLeft: -40, width: av + 80 }}>TẬP 3</div></In></div>
-      <In t={t} at={c.bay - 0.2} y={30} style={{ ...abs(L.clock[0], L.clock[1] + drift(0)) }}><Paper x={0} y={0} w={300} h={150} r={-4} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, background: K.ink, color: '#fff' }}><svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d={`M12 12 L12 7`} stroke={K.amber} /><path d="M12 12 L15 14" /></svg><div style={{ fontSize: 66, fontWeight: 800, fontFamily: MONO }}>07:00</div></Paper></In>
+      <In t={t} at={c.bay - 0.2} y={30} style={{ ...abs(L.clock[0], L.clock[1] + drift(0)) }}><Paper x={0} y={0} w={300} h={150} r={-4} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, background: K.ink, color: '#fff' }}><svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d={`M12 12 L12 7`} stroke={K.amber} /><path d="M12 12 L15 14" /></svg><div style={{ fontSize: 66, fontWeight: 800, fontFamily: MONO }}>08:00</div></Paper></In>
       <In t={t} at={c.minh - 0.1} y={30} style={{ ...abs(L.id[0], L.id[1] + drift(1)) }}><Paper x={0} y={0} w={420} h={130} r={3} style={{ display: 'flex', alignItems: 'center', gap: 18, padding: 20, boxSizing: 'border-box' }}><div style={{ width: 86, height: 86, borderRadius: 43, background: K.coral, color: '#fff', fontSize: 42, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>M</div><div><div style={{ fontSize: 34, fontWeight: 800 }}>Minh</div><div style={{ fontSize: 22, color: K.mute }}>Nhân viên kinh doanh</div></div></Paper></In>
       <In t={t} at={c.ds - 0.1} y={40} style={{ ...abs(L.xl[0], L.xl[1] + drift(2)) }}><Paper x={0} y={0} w={v ? 560 : 600} h={330} r={-2}>
         <div style={{ height: 46, background: '#1D6F42', color: '#fff', display: 'flex', alignItems: 'center', padding: '0 16px', fontSize: 19, fontWeight: 700 }}>DoanhSo_2026_v3_final(2).xlsx</div>
@@ -1266,8 +1266,57 @@ const Field = ({ t, v }) => {
       {t > c.ng - 0.1 && <div style={{ ...abs(18 * u, 628 * u, 354 * u, 140 * u), borderRadius: 14 * u, border: `${4 * u}px solid ${K.coral}`, opacity: P(t, c.ng - 0.1, 0.3) * (1 - P(t, c.nhung - 0.3, 0.3)) }} />}
       {t > c.ls - 0.2 && <div style={{ ...abs(12 * u, 505 * u, 366 * u, 330 * u), borderRadius: 16 * u, border: `${4 * u}px solid ${K.green}`, opacity: P(t, c.ls - 0.2, 0.3) }} />}
     </Phone></In>
-    <div style={{ ...abs(v ? 600 : 1520, v ? 1050 : 520), transform: `rotate(${v ? 5 : 6}deg)` }}><Pop t={t} at={c.anh - 0.1}><div style={{ background: '#fff', padding: '14px 14px 50px', boxShadow: '0 24px 50px rgba(29,43,58,.25)', width: v ? 400 : 340 }}><Img src={staticFile('media/p_dental.jpg')} style={{ width: '100%', height: v ? 290 : 250, objectFit: 'cover', display: 'block' }} /><div style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 22, marginTop: 10, color: K.ink }}>Tại phòng khám · 08:42</div></div></Pop></div>
+    <div style={{ ...abs(v ? 600 : 1520, v ? 1050 : 520), transform: `rotate(${v ? 5 : 6}deg)` }}><Pop t={t} at={c.anh - 0.1}><div style={{ background: '#fff', padding: '14px 14px 50px', boxShadow: '0 24px 50px rgba(29,43,58,.25)', width: v ? 400 : 340 }}><Img src={staticFile('media/p_dental.jpg')} style={{ width: '100%', height: v ? 290 : 250, objectFit: 'cover', display: 'block' }} /><div style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 22, marginTop: 10, color: K.ink }}>Tại phòng khám · 10:15</div></div></Pop></div>
     {rowsO > 0.01 && <div style={{ ...abs(v ? 60 : 100, v ? 1440 : 760, v ? 960 : 860), opacity: rowsO, transform: `scaleY(${1 - crush}) rotate(${crush * -4}deg)`, transformOrigin: '50% 100%', background: '#fff', border: '1px solid #DDD', fontFamily: MONO, fontSize: 19, color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', boxShadow: '0 10px 20px rgba(0,0,0,.08)' }}>{['| 11/11 | Minh | NK Smile | gặp BS, hỏi giá, hẹn demo, chưa chốt, cần gọi lại…', '| 11/11 | Minh | NK Kim | không gặp, để lại catalogue, hẹn tuần sau…', '| 12/11 | Minh | BV Hồng Hà | họp khoa, cần báo giá chi tiết, chờ duyệt…'].map((r, i) => <div key={i} style={{ height: 46, lineHeight: '46px', borderBottom: '1px solid #EEE', padding: '0 12px' }}>{r}</div>)}</div>}
+  </>);
+};
+
+const Report = ({ t, v }) => {
+  const c = { cuoi: W('report', 'Cuối'), mo: W('report', 'mở'), chup: W('report', 'chụp'), go: W('report', 'gõ'), moi: W('report', 'Mọi'), viec: W('report', 'việc'), kh: W('report', 'khách'), kq: W('report', 'kết'), kh2: W('report', 'hoạch'), mot: W('report', 'Chỉ'), gui: W('report', 'gửi'), ql: W('report', 'quản'), lq: W('report', 'liên'), bd: W('report', 'bất') };
+  const st = W('report', 'cáo', 0) + 0.05; const old = t < c.moi + 0.35; const oldO = 1 - P(t, c.moi, 0.35);
+  const sent = t > c.gui - 0.3; const flyK = P(t, c.ql - 0.2, 0.9);
+  const rec = [['Quản lý', '#1D2B3A'], ['Trưởng nhóm', K.blue], ['Kế toán', K.green]];
+  const flash = t > c.chup && t < c.chup + 0.35 ? 1 - (t - c.chup) / 0.35 : 0;
+  const oldCard = (x, y, w, sc = 1) => (
+    <div style={{ ...abs(x, y, w), opacity: oldO * P(t, c.cuoi - 0.1, 0.4) }}>
+      <div style={{ background: '#fff', borderRadius: 30, padding: 34 * sc, boxShadow: '0 24px 60px rgba(29,43,58,.16)' }}>
+        <div style={{ fontSize: 24 * sc, fontWeight: 800, color: K.mute, letterSpacing: 3 }}>CÁCH CŨ, MỖI CUỐI TUẦN</div>
+        <div style={{ display: 'flex', gap: 14 * sc, marginTop: 20 * sc }}>{[['1', 'Mở máy tính', c.mo], ['2', 'Chụp màn hình', c.chup], ['3', 'Gõ tay từng dòng', c.go]].map(([n, l, at]) => <div key={n} style={{ flex: 1, opacity: P(t, at - 0.15, 0.3), transform: `translateY(${(1 - P(t, at - 0.15, 0.3)) * 16}px)`, display: 'flex', alignItems: 'center', gap: 12 * sc, padding: `${14 * sc}px ${16 * sc}px`, borderRadius: 16, background: K.paper, fontSize: 28 * sc, fontWeight: 700, color: K.ink }}><span style={{ width: 40 * sc, height: 40 * sc, borderRadius: 20 * sc, background: K.ink, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 * sc, flexShrink: 0 }}>{n}</span>{l}</div>)}</div>
+        <div style={{ display: 'flex', gap: 22 * sc, marginTop: 24 * sc, alignItems: 'flex-start' }}>
+          <div style={{ width: 300 * sc, height: 188 * sc, borderRadius: 12, overflow: 'hidden', border: '1px solid #DDD', position: 'relative', flexShrink: 0, opacity: P(t, c.chup - 0.1, 0.3) }}><Img src={staticFile('media/crm_d_full.jpg')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /><div style={{ position: 'absolute', left: 8, bottom: 8, fontSize: 18 * sc, fontFamily: MONO, background: 'rgba(0,0,0,.65)', color: '#fff', padding: '3px 8px', borderRadius: 5 }}>chup-man-hinh.png</div></div>
+          <div style={{ flex: 1, minHeight: 188 * sc, fontFamily: MONO, fontSize: 25 * sc, color: '#444', lineHeight: 1.55, background: '#FAFAF7', border: '1px solid #E6E1D6', borderRadius: 12, padding: 16 * sc, whiteSpace: 'pre-wrap' }}>{typed('T2  NK Smile: gặp BS, hỏi giá, hẹn demo\nT3  NK Kim: không gặp, gửi catalogue\nT4  NK Paris: ', t, c.go - 0.1, 30)}<Caret t={t} h={26 * sc} color="#444" /></div>
+        </div>
+      </div>
+      <div style={{ ...abs(w / 2 - 230 * sc, 300 * sc), transform: `rotate(-6deg) scale(${0.8 + 0.2 * SPR(t, st, 0.5)})`, opacity: P(t, st, 0.2), padding: '14px 36px', border: `6px solid ${K.coral}`, color: K.coral, borderRadius: 18, fontSize: 56 * sc, fontWeight: 800, background: 'rgba(255,255,255,.92)', whiteSpace: 'nowrap' }}>KHÔNG CẦN NỮA</div>
+    </div>
+  );
+  const chips = [['Việc đã làm', c.viec], ['Khách đã gặp', c.kh], ['Kết quả', c.kq], ['Kế hoạch tuần sau', c.kh2]];
+  if (v) {
+    const pw = 540, px = 270, py = 310;
+    const src = !sent ? (t < c.viec - 0.2 ? 'm_rp_week' : 'm_rp_prev') : 'm_rp_sent';
+    return (<>
+      <TitleBox t={t} at={c.cuoi - 0.1} v x={540} y={200} align="center">Gửi báo cáo <span style={{ color: K.coral }}>một chạm</span></TitleBox>
+      {old && oldCard(40, 600, 1000, 0.92)}
+      {!old && <In t={t} at={c.moi + 0.3} y={120}><Phone x={px} y={py} w={pw}><Shot src={`crm_${src}`} /></Phone></In>}
+      {!old && t < c.mot && <div style={{ ...abs(40, 1525, 1000), display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10 }}>{chips.map(([l, at]) => <Pop key={l} t={t} at={at - 0.1}><div style={{ padding: '10px 20px', borderRadius: 999, background: K.ink, color: '#fff', fontSize: 26, fontWeight: 700 }}>{l}</div></Pop>)}</div>}
+      {t > c.ql - 0.3 && <div style={{ ...abs(40, 1525, 1000), display: 'flex', justifyContent: 'center', gap: 16 }}>{rec.map(([n, col], i) => <Pop key={n} t={t} at={c.ql - 0.2 + i * 0.15}><div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 18px 10px 10px', borderRadius: 999, background: '#fff', boxShadow: '0 10px 24px rgba(29,43,58,.16)', fontSize: 24, fontWeight: 700 }}><span style={{ width: 40, height: 40, borderRadius: 20, background: col, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{n[0]}</span>{n}{t > c.ql + 0.6 + i * 0.15 && <Check s={26} bg={K.green} />}</div></Pop>)}</div>}
+    </>);
+  }
+  const box = [40, 40, 1840, 1000];
+  const vw = camV(t, [[0, V_ALL], [c.viec + 0.3, [240, 60, 1200, 652], 1.0], [c.mot - 0.4, V_ALL, 0.8]]);
+  return (<>
+    {old && oldCard(360, 250, 1200)}
+    {!old && <div style={{ opacity: P(t, c.moi + 0.3, 0.4) }}>
+      <UICard box={box} layers={[{ src: 'd_rp_week', view: vw, o: t < c.viec ? 1 : 1 - P(t, c.viec - 0.2, 0.4) }, { src: 'd_rp_prev', view: vw, o: P(t, c.viec - 0.2, 0.4) * (1 - P(t, c.mot - 0.5, 0.4)) }, { src: 'd_rp_week', view: vw, o: t > c.mot - 0.5 && !sent ? P(t, c.mot - 0.5, 0.4) : 0 }, { src: 'd_rp_sent', view: V_ALL, o: sent ? P(t, c.gui - 0.3, 0.3) : 0 }]} />
+      <Ring t={t} at={c.mot - 0.1} box={box} view={V_ALL} r={[408, 356, 186, 40]} out={c.gui - 0.3} />
+      <Tap t={t} at={c.mot + 0.4} x={toScr(box, V_ALL, 500, 376)[0]} y={toScr(box, V_ALL, 500, 376)[1]} s={1.4} />
+    </div>}
+    <TitleBox t={t} at={c.cuoi - 0.1} x={90} y={old ? 120 : 880}>Gửi báo cáo <span style={{ color: K.coral }}>một chạm</span></TitleBox>
+    {!old && t < c.mot - 0.4 && <div style={{ ...abs(1500, 260), display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-end' }}>{chips.map(([l, at]) => <Pop key={l} t={t} at={at - 0.1}><div style={{ padding: '12px 22px', borderRadius: 14, background: K.ink, color: '#fff', fontSize: 28, fontWeight: 700, boxShadow: '0 12px 28px rgba(29,43,58,.25)' }}>{l}</div></Pop>)}</div>}
+    {t > c.ql - 0.3 && <div style={{ ...abs(1180, 130), display: 'flex', flexDirection: 'column', gap: 16 }}>{rec.map(([n, col], i) => { const k = P(t, c.ql - 0.2 + i * 0.18, 0.5); return <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 24px 12px 12px', borderRadius: 999, background: '#fff', boxShadow: '0 14px 30px rgba(29,43,58,.2)', fontSize: 28, fontWeight: 700, opacity: k, transform: `translateX(${(1 - k) * 80}px)` }}><span style={{ width: 52, height: 52, borderRadius: 26, background: col, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n[0]}</span>{n}{t > c.ql + 0.7 + i * 0.18 && <Check s={30} bg={K.green} />}</div>; })}</div>}
+    {t > c.bd - 0.3 && <In t={t} at={c.bd - 0.3} y={120}><Phone x={1540} y={380} w={300}><Shot src="crm_m_rp_prev" /></Phone></In>}
+    {t > c.ql - 0.3 && <div style={{ ...abs(380, 120), opacity: P(t, c.ql - 0.3, 0.3) * (1 - P(t, c.bd - 0.4, 0.3)), display: 'flex', alignItems: 'center', gap: 14, padding: '16px 28px', borderRadius: 18, background: K.green, color: '#fff', fontSize: 30, fontWeight: 800, boxShadow: '0 16px 36px rgba(42,157,111,.35)' }}><Check s={34} bg="rgba(255,255,255,.25)" />Đã gửi báo cáo tuần · PDF đính kèm</div>}
+    {flash > 0 && <AbsoluteFill style={{ background: `rgba(255,255,255,${flash * 0.8})` }} />}
   </>);
 };
 
@@ -1398,7 +1447,7 @@ const End3 = ({ t, v }) => {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: v ? -100 : -20 }}>
         <Pop t={t} at={a + 0.1}><div style={{ borderRadius: 50, boxShadow: '0 30px 70px rgba(228,87,46,.35)' }}><FMMark s={v ? 220 : 180} /></div></Pop>
         <In t={t} at={a + 0.4}><div style={{ fontSize: 100, fontWeight: 800, letterSpacing: -3, marginTop: 26 }}>FieldMap</div></In>
-        <In t={t} at={a + 0.6}><div style={{ fontSize: 34, color: K.mute, fontWeight: 500 }}>Tập 3 · CRM bản đồ</div></In>
+        <In t={t} at={a + 0.6}><div style={{ fontSize: 34, color: K.mute, fontWeight: 500 }}>Tập 3 · Doanh nghiệp tự làm CRM</div></In>
         <div style={{ display: 'flex', gap: v ? 24 : 40, marginTop: v ? 64 : 50 }}>{tools.map(([k, n], i) => <Pop key={k} t={t} at={a + 1.1 + i * 0.12}><div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, width: v ? 200 : 190 }}><Tile3 k={k} s={v ? 104 : 96} /><div style={{ fontSize: 23, fontWeight: 700 }}>{n}</div></div></Pop>)}</div>
         <In t={t} at={a + 1.7}><div style={{ fontSize: 30, color: K.ink, fontWeight: 700, marginTop: v ? 60 : 44 }}>Cảm ơn bạn đã xem</div></In>
       </div>
@@ -1416,12 +1465,12 @@ const SfxTrack3 = () => {
   const L = [];
   ORDER.slice(1).forEach((id) => L.push([SB[id][0], 'page_turn', 0.25]));
   L.push([tl.endcard, 'shimmer', 0.3]);
-  ['Bảy', 'Minh', 'Doanh', 'sổ', 'Zalo', 'báo'].forEach((w) => L.push([W('s1', w) - 0.1, 'pop', 0.28]));
-  L.push([W('s1', 'Bảy'), 'tick', 0.4], [W('s2', 'sếp'), 'notification', 0.3], [W('s2', 'lục'), 'whoosh_soft', 0.2], [W('s2', 'chồng'), 'glitch', 0.18], [W('s2', 'không') - 0.1, 'stamp', 0.4]);
+  ['Tám', 'Minh', 'Doanh', 'sổ', 'Zalo', 'báo'].forEach((w) => L.push([W('s1', w) - 0.1, 'pop', 0.28]));
+  L.push([W('s1', 'Tám'), 'tick', 0.4], [W('s2', 'sếp'), 'notification', 0.3], [W('s2', 'lục'), 'whoosh_soft', 0.2], [W('s2', 'chồng'), 'glitch', 0.18], [W('s2', 'không') - 0.1, 'stamp', 0.4]);
   L.push([W('s3', 'nhập'), 'impact', 0.2], [W('s3', 'tra'), 'impact', 0.2], [W('s3', 'Và') - 0.2, 'whoosh_long', 0.25], [W('s3', 'CRM') - 0.3, 'boom_soft', 0.3], [W('s3', 'CRM'), 'shimmer', 0.25]);
   L.push([W('map', 'chấm'), 'sparkle', 0.25], [W('map', 'Phóng') - 0.2, 'whoosh_long', 0.22], [W('map', 'khách', 1), 'pop', 0.3]);
   L.push([W('field', 'ghi') - 0.4, 'whoosh_soft', 0.22], [W('field', 'ảnh') - 0.1, 'camera', 0.4], [W('field', 'gọn') - 0.6, 'page_turn', 0.3], [W('field', 'gọn'), 'success', 0.25]);
-  L.push([W('manager', 'Người'), 'whoosh_soft', 0.22], [W('kpi', 'doanh') - 0.2, 'sparkle', 0.22], [W('kpi', 'Nhân') - 0.1, 'pop', 0.3], [W('kpi', 'khách') - 0.1, 'pop', 0.3]);
+  L.push([W('report', 'chụp'), 'camera', 0.4], [W('report', 'cáo', 0) + 0.05, 'stamp', 0.35], [W('report', 'Chỉ') + 0.4, 'click', 0.5], [W('report', 'gửi'), 'whoosh', 0.25], [W('report', 'quản'), 'success', 0.28], [W('manager', 'Người'), 'whoosh_soft', 0.22], [W('kpi', 'doanh') - 0.2, 'sparkle', 0.22], [W('kpi', 'Nhân') - 0.1, 'pop', 0.3], [W('kpi', 'khách') - 0.1, 'pop', 0.3]);
   [W('why','khách'), W('why','công',1), W('why','Quy'), W('why','dữ')].forEach((a) => L.push([a - 0.15, 'tick', 0.45]));
   L.push([W('mech', 'gom'), 'whoosh_long', 0.25], [W('mech', 'Claude') - 0.3, 'shimmer', 0.25]);
   L.push([W('change', 'sửa') + 0.3, 'tick', 0.45], [W('change', 'cấu') + 0.2, 'swoosh_short', 0.3], [W('change', 'giao'), 'pop', 0.3], [W('change', 'Vài') - 0.1, 'success', 0.3]);
@@ -1443,6 +1492,7 @@ export const Main: React.FC<{ v: boolean }> = ({ v }) => {
       <Scene t={t} id="s3" enter="focus"><Story3 t={t} v={v} /></Scene>
       <Scene t={t} id="map" enter="rise"><MapScene t={t} v={v} /></Scene>
       <Scene t={t} id="field" enter="right"><Field t={t} v={v} /></Scene>
+      <Scene t={t} id="report" enter="zoom"><Report t={t} v={v} /></Scene>
       <Scene t={t} id="manager" enter="left"><Manager t={t} v={v} /></Scene>
       <Scene t={t} id="kpi" enter="rise"><Kpi t={t} v={v} /></Scene>
       <Scene t={t} id="why" enter="zoom"><Why t={t} v={v} /></Scene>
@@ -1464,9 +1514,9 @@ export const ReelThumb: React.FC = () => (
     <AbsoluteFill style={{ background: 'radial-gradient(circle at 62% 58%, rgba(228,87,46,.20), transparent 46%)' }} />
     <div style={{ ...abs(0, 290, 1080), display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
       <div style={{ padding: '10px 28px', borderRadius: 999, background: C.ink, color: '#fff', fontSize: 28, fontWeight: 800, letterSpacing: 3 }}>TẬP 3</div>
-      <div style={{ fontSize: 116, fontWeight: 800, letterSpacing: -4, lineHeight: 1.0, marginTop: 26 }}>Tự làm app</div>
-      <div style={{ fontSize: 116, fontWeight: 800, letterSpacing: -4, lineHeight: 1.0, color: C.claude }}>CRM bản đồ</div>
-      <div style={{ fontSize: 54, fontWeight: 700, letterSpacing: -1.2, marginTop: 18 }}><span style={{ background: C.ink, color: '#fff', padding: '2px 18px', borderRadius: 16 }}>Khách hàng · Lịch · KPI</span></div>
+      <div style={{ fontSize: 86, fontWeight: 800, letterSpacing: -3, lineHeight: 1.05, marginTop: 26 }}>Cách doanh nghiệp</div>
+      <div style={{ fontSize: 116, fontWeight: 800, letterSpacing: -4, lineHeight: 1.0, color: C.claude }}>tự làm CRM</div>
+      <div style={{ fontSize: 60, fontWeight: 800, letterSpacing: -1.5, marginTop: 14 }}><span style={{ background: C.ink, color: '#fff', padding: '2px 22px', borderRadius: 16 }}>cho riêng mình</span></div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 30 }}>
         {['sheets', 'gas', 'github', 'claude'].map((k, i) => <React.Fragment key={k}>{i > 0 && <div style={{ fontSize: 40, color: C.mute, fontWeight: 300 }}>+</div>}<Tile k={k} s={86} /></React.Fragment>)}
       </div>
@@ -1476,6 +1526,6 @@ export const ReelThumb: React.FC = () => (
       <Phone x={660} y={930} w={340}><Shot src="crm_m_wm" /></Phone>
     </div>
     <div style={{ ...abs(520, 900) }}><div style={{ padding: '14px 26px', borderRadius: 999, background: '#fff', border: `3px solid ${C.claude}`, fontSize: 34, fontWeight: 800, boxShadow: '0 14px 34px rgba(22,22,27,.18)', transform: 'rotate(-4deg)' }}>Bản đồ làm việc</div></div>
-    <div style={{ ...abs(0, 1700, 1080), textAlign: 'center', fontSize: 32, fontWeight: 700, color: C.mute }}>Google Sheet · Apps Script · GitHub</div>
+    <div style={{ ...abs(0, 1700, 1080), textAlign: 'center', fontSize: 32, fontWeight: 700, color: C.mute }}>Khách hàng · Lịch · Báo cáo · KPI</div>
   </AbsoluteFill>
 );

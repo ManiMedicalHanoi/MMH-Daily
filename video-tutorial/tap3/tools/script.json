@@ -10,6 +10,7 @@
   [
    "map",
    "field",
+   "report",
    "manager",
    "kpi"
   ],
@@ -23,7 +24,7 @@
  "segments": [
   {
    "id": "s1",
-   "text": "Bảy giờ sáng. Minh, nhân viên kinh doanh, mở máy tính. Doanh số nằm trong một file Excel. Thông tin khách hàng thì ở sổ tay và tin nhắn Zalo. Còn báo cáo tuần, lại là một file Google Sheet khác, dòng nào cũng dài dằng dặc."
+   "text": "Tám giờ sáng. Minh, nhân viên kinh doanh, mở máy tính. Doanh số nằm trong một file Excel. Thông tin khách hàng thì ở sổ tay và tin nhắn Zalo. Còn báo cáo tuần, lại phải chụp màn hình rồi gõ tay vào một file Google Sheet khác, dòng nào cũng dài dằng dặc."
   },
   {
    "id": "s2",
@@ -40,6 +41,10 @@
   {
    "id": "field",
    "text": "Đi địa bàn xong, Minh ghi nhận ngay trên điện thoại: ảnh chụp tại phòng khám, người gặp, nội dung trao đổi, bước tiếp theo. Những dòng báo cáo khô khan trong từng ô Sheet được thay bằng một lịch sử chăm sóc gọn gàng, có hệ thống."
+  },
+  {
+   "id": "report",
+   "text": "Cuối tuần cũng không còn cảnh mở máy tính, chụp màn hình rồi gõ tay từng dòng báo cáo. Mọi thứ đã được CRM tổng hợp tự động: việc đã làm, khách đã gặp, kết quả và kế hoạch tuần sau. Chỉ một chạm, báo cáo có cấu trúc được gửi ngay tới quản lý và những người liên quan, ở bất cứ đâu, bất cứ lúc nào."
   },
   {
    "id": "manager",

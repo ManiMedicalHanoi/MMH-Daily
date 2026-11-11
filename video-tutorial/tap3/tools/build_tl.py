@@ -1,7 +1,7 @@
 import json, subprocess, re, numpy as np, soundfile as sf
 S = json.load(open('script.json')); SR = 48000
 LEAD, GAP, END = 0.6, 0.22, 6.5
-GAPS = {'map': 0.8, 'why': 0.7, 'mech': 0.35, 'close': 0.45}
+GAPS = {'map': 0.8, 'report': 0.4, 'why': 0.7, 'mech': 0.35, 'close': 0.45}
 t = LEAD; segs = {}; chunks = []; audio = [np.zeros(int(LEAD * SR))]
 for i, s in enumerate(S['segments']):
     if i: g = GAPS.get(s['id'], GAP); audio.append(np.zeros(int(g * SR))); t += g
