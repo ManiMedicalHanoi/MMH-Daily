@@ -1,26 +1,26 @@
 {
  "voice": "aN7cv9yXNrfIR87bDmyD",
- "model": "eleven_v3",
+ "model": "eleven_v4",
  "segments": [
   {
    "id": "hook",
-   "text": "[excited] Một ứng dụng podcast, mỗi sáng tự gom tin từ hàng chục trang báo và đọc cho bạn nghe. Không lập trình viên, không máy chủ, gần như không tốn đồng nào. Chỉ hai phút, bạn sẽ biết làm ra nó như thế nào."
+   "text": "Chào bạn! Một app podcast, sáng nào cũng tự đọc báo cho bạn nghe. Không cần lập trình viên, không cần máy chủ, gần như không tốn đồng nào. Chỉ khoảng hai phút nữa thôi, bạn sẽ biết mình làm ra nó như thế nào."
   },
   {
    "id": "trio",
-   "text": "Công thức chỉ có ba mảnh ghép. Thứ nhất là Claude Code, người viết code cho bạn. Thứ hai là GitHub, vừa là kho chứa, vừa chạy tác vụ tự động, vừa đăng trang web miễn phí. Và thứ ba là ElevenLabs, biến chữ thành giọng đọc tự nhiên như người thật."
+   "text": "Công thức chỉ có ba mảnh ghép. Thứ nhất là Claude Code, người viết code thay bạn. Thứ hai là GitHub: vừa là nơi cất code, vừa là máy chạy tự động, vừa đăng trang web miễn phí. Và thứ ba là ElevenLabs, biến chữ thành giọng đọc nghe như người thật."
   },
   {
    "id": "arch",
-   "text": "[curious] Vậy app này chạy ra sao? Rất đơn giản. App gồm hai phần. Phần nhìn thấy là trang web, đặt miễn phí trên GitHub Pages. Phần chạy ngầm là GitHub Actions: một máy tính của GitHub, mỗi sáng tự bật lên, đọc tin mới từ các trang báo, nhờ Claude viết tóm tắt, nhờ ElevenLabs đọc thành giọng, rồi cập nhật lại trang web. Không cần máy chủ riêng."
+   "text": "Vậy app này chạy thế nào? Đơn giản lắm. App có hai phần. Phần bạn nhìn thấy là trang web, đặt miễn phí trên GitHub Pages. Còn phần chạy ngầm là GitHub Actions, hiểu đơn giản là một máy tính của GitHub. Sáng nào nó cũng tự bật lên, đọc tin mới trên các trang báo, nhờ Claude viết tóm tắt, nhờ ElevenLabs đọc thành giọng, rồi cập nhật lại trang web. Hoàn toàn không cần máy chủ riêng."
   },
   {
    "id": "step1",
-   "text": "Bắt tay vào làm. Bước một: tạo một kho GitHub mới, đặt tên là DailyCast, rồi bật GitHub Pages."
+   "text": "Giờ mình bắt tay vào làm nhé. Bước một: tạo một kho GitHub mới, đặt tên là DailyCast, rồi bật GitHub Pages lên."
   },
   {
    "id": "step2",
-   "text": "Bước hai: vào ElevenLabs, chọn một giọng đọc ưng ý, rồi tạo khoá API. Dán khoá đó vào mục Secrets của kho GitHub. Khoá được cất kín, không ai nhìn thấy."
+   "text": "Bước hai: vào ElevenLabs, chọn một giọng đọc bạn ưng, rồi tạo một khoá API. Sau đó dán khoá này vào mục Secrets của kho GitHub. Khoá được cất kín ở đó, không ai nhìn thấy được."
   },
   {
    "id": "step3",
@@ -28,31 +28,31 @@
   },
   {
    "id": "prompt",
-   "text": "Giờ là phần thú vị nhất. Bạn chỉ cần gõ yêu cầu bằng tiếng Việt, như đang nói chuyện bình thường."
+   "text": "Và giờ là phần hay nhất. Bạn chỉ cần gõ yêu cầu bằng tiếng Việt, y như đang nói chuyện bình thường."
   },
   {
    "id": "build",
-   "text": "Claude tự lên kế hoạch, viết giao diện, viết bộ gom tin, viết phần gọi ElevenLabs, đặt lịch chạy mỗi sáng, rồi đẩy tất cả lên GitHub. Việc của bạn chỉ là đọc và duyệt."
+   "text": "Claude sẽ tự lên kế hoạch, viết giao diện, viết phần lấy tin, viết phần gọi ElevenLabs, đặt lịch chạy mỗi sáng, rồi đẩy hết lên GitHub. Việc của bạn chỉ là đọc lại và bấm duyệt."
   },
   {
    "id": "daily",
-   "text": "Từ đây, hệ thống tự vận hành. Năm giờ bốn lăm sáng, GitHub Actions thức dậy, đọc tin từ hàng chục trang báo, chấm điểm, chọn những tin quan trọng. Claude viết tóm tắt và kịch bản podcast. ElevenLabs biến kịch bản thành giọng đọc. Cuối cùng, GitHub Pages đăng ngay số mới lên app."
+   "text": "Từ đây, mọi thứ tự chạy. Đúng năm giờ bốn lăm sáng, GitHub Actions thức dậy, đọc tin từ hàng chục trang báo, chấm điểm, và chọn ra những tin quan trọng. Claude viết tóm tắt và kịch bản podcast. ElevenLabs đọc kịch bản thành giọng nói. Cuối cùng, GitHub Pages đăng ngay số mới lên app."
   },
   {
    "id": "phone",
-   "text": "Mở link trên điện thoại, bấm Cài app, và DailyCast nằm ngay trên màn hình chính, như một ứng dụng thật. Nghe podcast có phụ đề song ngữ, luyện tiếng Anh từng câu, đọc tin theo chuyên mục."
+   "text": "Bạn chỉ cần mở link trên điện thoại, bấm Cài app, thế là DailyCast nằm ngay trên màn hình chính, y như một app thật. Nghe podcast có phụ đề song ngữ, luyện tiếng Anh từng câu, hay đọc tin theo chuyên mục, đều được."
   },
   {
    "id": "deep",
-   "text": "Muốn đi sâu hơn? Bấm nút Tổng hợp ngay, chọn chủ đề, chọn nguồn báo, chọn giọng đọc ElevenLabs, nam hay nữ. Vài phút sau đã có một số mới."
+   "text": "Muốn chủ động hơn? Bấm nút Tổng hợp ngay, chọn chủ đề, chọn báo, chọn giọng đọc nam hay nữ. Vài phút sau là có ngay một số mới."
   },
   {
    "id": "close",
-   "text": "[confident] Chi phí máy chủ: không đồng. Thời gian: một buổi chiều. [excited] Còn ý tưởng tiếp theo của bạn? Hãy để Claude Code viết nó!"
+   "text": "Chi phí máy chủ: không đồng. Thời gian làm: chỉ một buổi chiều. Còn bạn, ý tưởng tiếp theo của bạn là gì? Cứ để Claude Code viết nó!"
   },
   {
    "id": "ep2",
-   "text": "[excited] Và ở tập hai: Google Sheet kết hợp GitHub, bộ đôi cho mọi ứng dụng trong doanh nghiệp. Hẹn gặp bạn ở tập sau nhé!"
+   "text": "Và ở tập hai, mình sẽ kết hợp Google Sheet với GitHub, bộ đôi dùng được cho gần như mọi ứng dụng trong doanh nghiệp. Hẹn gặp lại bạn ở tập sau nhé!"
   }
  ]
 }

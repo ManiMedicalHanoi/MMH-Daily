@@ -249,7 +249,7 @@ const StepFrame = ({ t, v, id, n, title, logos, items, url, children }) => {
 
 // ================= CẢNH =================
 const Hook = ({ t, v }) => {
-  const c = { pod: W('hook', 'podcast'), gom: W('hook', 'gom'), doc: W('hook', 'đọc'), lt: W('hook', 'lập'), mc: W('hook', 'máy'), dong: W('hook', 'đồng'), hai: W('hook', 'Chỉ') };
+  const c = { pod: W('hook', 'podcast'), gom: W('hook', 'sáng'), doc: W('hook', 'nghe'), lt: W('hook', 'lập'), mc: W('hook', 'máy'), dong: W('hook', 'đồng'), hai: W('hook', 'Chỉ') };
   const ph = v ? { x: 355, y: 455, w: 370 } : { x: 1230, y: 92, w: 425 };
   const sw = ph.w * 0.93, sh = ph.w * 2.1 - ph.w * 0.07;
   const cx = ph.x + ph.w / 2, cy = ph.y + ph.w * 1.05;
@@ -310,7 +310,7 @@ const Hook = ({ t, v }) => {
 };
 
 const Trio = ({ t, v }) => {
-  const c = { ba: W('trio', 'ba'), cc: W('trio', 'Claude'), gh: W('trio', 'GitHub'), kho: W('trio', 'kho'), td: W('trio', 'tự'), web: W('trio', 'web'), el: W('trio', 'ElevenLabs'), bien: W('trio', 'biến') };
+  const c = { ba: W('trio', 'ba'), cc: W('trio', 'Claude'), gh: W('trio', 'GitHub'), kho: W('trio', 'nơi'), td: W('trio', 'tự'), web: W('trio', 'web'), el: W('trio', 'ElevenLabs'), bien: W('trio', 'biến') };
   const cards = [
     { k: 'claude', name: 'Claude Code', role: 'Người viết code', at: c.cc, col: C.claude, chips: [['Bạn ra lệnh, Claude viết', c.cc + 0.8]] },
     { k: 'github', name: 'GitHub', role: 'Kho chứa + máy chạy + web', at: c.gh, col: C.gh, chips: [['Repository · kho code', c.kho], ['Actions · chạy tự động', c.td], ['Pages · web miễn phí', c.web]] },
@@ -364,7 +364,7 @@ const Arch = ({ t, v }) => {
   const card = (on, col) => ({ width: '100%', height: '100%', boxSizing: 'border-box', background: '#fff', borderRadius: 30, border: `2.5px solid ${on ? col : C.line}`, boxShadow: on ? '0 26px 60px rgba(22,22,27,.12)' : '0 10px 26px rgba(22,22,27,.06)' });
   return (
     <>
-      <In t={t} at={c.vay - 0.3}><div style={{ ...abs(0, v ? 215 : 145, v ? 1080 : 1920), textAlign: 'center', fontSize: v ? 54 : 60, fontWeight: 800, letterSpacing: -1.4 }}>Vậy app <span style={{ color: C.claude }}>chạy ra sao?</span></div></In>
+      <In t={t} at={c.vay - 0.3}><div style={{ ...abs(0, v ? 215 : 145, v ? 1080 : 1920), textAlign: 'center', fontSize: v ? 54 : 60, fontWeight: 800, letterSpacing: -1.4 }}>Vậy app <span style={{ color: C.claude }}>chạy thế nào?</span></div></In>
       <In t={t} at={c.nhin - 0.2} y={40} style={{ ...abs(L.x, L.y, L.w, L.h) }}>
         <div style={{ ...card(true, C.gh), padding: v ? '26px 34px' : 40, display: 'flex', flexDirection: v ? 'row' : 'column', alignItems: v ? 'center' : 'flex-start', gap: v ? 30 : 20, boxShadow: pulse > 0 ? `0 0 0 ${12 * pulse}px rgba(217,119,87,.25), 0 26px 60px rgba(22,22,27,.12)` : undefined }}>
           <Tile k="pages" s={v ? 130 : 120} />
@@ -743,7 +743,7 @@ const FILES = {
 };
 
 const Build = ({ t, v }) => {
-  const c = { k: W('build', 'kế'), gd: W('build', 'giao'), gom: W('build', 'gom'), goi: W('build', 'gọi'), lich: W('build', 'lịch'), day: W('build', 'đẩy'), viec: W('build', 'Việc'), duyet: W('build', 'duyệt') };
+  const c = { k: W('build', 'kế'), gd: W('build', 'giao'), gom: W('build', 'lấy'), goi: W('build', 'gọi'), lich: W('build', 'lịch'), day: W('build', 'đẩy'), viec: W('build', 'Việc'), duyet: W('build', 'duyệt') };
   const todo = [['Lên kế hoạch kiến trúc', c.k, null], ['Giao diện · app.js, app.css', c.gd, 'app.js'], ['Gom tin · tools/collect.mjs', c.gom, 'tools/collect.mjs'], ['Giọng đọc · tools/voice.py', c.goi, 'tools/voice.py'], ['Lịch chạy · daily.yml', c.lich, '.github/workflows/daily.yml'], ['git push → main', c.day, 'terminal']];
   const box = BIGBOX(v), CW = box.w, CH = box.h - 52;
   const curI = todo.reduce((a, it, i) => (t >= it[1] - 0.1 ? i : a), 0);
@@ -927,7 +927,7 @@ const Phone2 = ({ t, v }) => {
 };
 
 const Deep = ({ t, v }) => {
-  const c = { sau: W('deep', 'sâu'), th: W('deep', 'Tổng'), cd: W('deep', 'chủ'), ng: W('deep', 'nguồn'), gd: W('deep', 'giọng'), nam: W('deep', 'nam'), vp: W('deep', 'Vài'), so: W('deep', 'số') };
+  const c = { sau: W('deep', 'Muốn'), th: W('deep', 'Tổng'), cd: W('deep', 'chủ'), ng: W('deep', 'báo'), gd: W('deep', 'giọng'), nam: W('deep', 'nam'), vp: W('deep', 'Vài'), so: W('deep', 'số') };
   const ph = v ? { x: 330, y: 300, w: 420 } : { x: 1300, y: 95, w: 425 };
   const sw = ph.w * 0.93, sh = ph.w * 2.1 - ph.w * 0.07, fs = sw / 400;
   const open = t > c.th + 0.1;
@@ -938,7 +938,7 @@ const Deep = ({ t, v }) => {
   const voices = [['ElevenLabs', 'Nam'], ['ElevenLabs', 'Nữ'], ['Miễn phí', 'Giọng máy']];
   const vSel = t > c.nam ? 0 : t > c.gd + 0.15 ? 1 : -1;
   const prog = ['Gom tin', 'Claude viết', 'Giọng ElevenLabs', 'Đăng số mới']; const pStart = c.vp - 0.1, pEnd = c.so - 0.1;
-  const opts = [['Chủ đề', 'Y tế · Công nghệ', c.cd], ['Nguồn báo', 'VnExpress · Reuters …', c.ng], ['Giọng đọc', 'ElevenLabs · nam hoặc nữ', c.gd]];
+  const opts = [['Chủ đề', 'Y tế · Công nghệ', c.cd], ['Báo', 'VnExpress · Reuters …', c.ng], ['Giọng đọc', 'ElevenLabs · nam hoặc nữ', c.gd]];
   const curO = opts.reduce((a, o, i) => (t >= o[2] - 0.15 ? i : a), -1);
   const lab = (x) => <div style={{ fontSize: 14 * fs, fontWeight: 700, marginTop: 16 * fs, letterSpacing: 1, color: '#555' }}>{x}</div>;
   const chip = (x, on) => <div key={x} style={{ padding: `${6 * fs}px ${12 * fs}px`, borderRadius: 999, fontSize: 15 * fs, fontWeight: 600, background: on ? '#121212' : '#fff', color: on ? '#fff' : C.ink, border: '1.5px solid #D9D4C8' }}>{x}</div>;
@@ -1000,7 +1000,7 @@ const Deep = ({ t, v }) => {
 };
 
 const Close = ({ t, v }) => {
-  const c = { kd: W('close', 'không'), bc: W('close', 'buổi'), con: W('close', 'Còn'), hay: W('close', 'Hãy'), cc: W('close', 'Claude') };
+  const c = { kd: W('close', 'không'), bc: W('close', 'buổi'), con: W('close', 'Còn'), hay: W('close', 'Cứ'), cc: W('close', 'Claude') };
   const q = 'Ý tưởng tiếp theo của bạn là gì?';
   const stats = [['0 đ', 'Chi phí máy chủ', c.kd - 0.2], ['1 buổi chiều', 'Thời gian dựng app', c.bc - 0.2]];
   return (
@@ -1115,11 +1115,11 @@ const SfxTrack = () => {
   L.push([W('step2', 'chọn') + 0.05, 'click', 0.5], [W('step2', 'giọng') + 0.45, 'click', 0.5], [W('step2', 'tạo') - 0.05, 'click', 0.5], [W('step2', 'tạo') + 1.25, 'click', 0.5], [W('step2', 'Dán') - 0.05, 'click', 0.45], [W('step2', 'GitHub') + 0.3, 'click', 0.5], [W('step2', 'GitHub') + 0.45, 'success', 0.28]);
   L.push([W('step3', 'kết') + 0.25, 'click', 0.5], [W('step3', 'chọn'), 'click', 0.5], [W('step3', 'chọn') + 0.5, 'click', 0.5]);
   L.push([SEG('build').start - 0.55, 'swoosh_short', 0.35]);
-  [W('build', 'giao'), W('build', 'gom'), W('build', 'gọi'), W('build', 'lịch'), W('build', 'đẩy')].forEach((a) => L.push([a - 0.1, 'tick', 0.5]));
+  [W('build', 'giao'), W('build', 'lấy'), W('build', 'gọi'), W('build', 'lịch'), W('build', 'đẩy')].forEach((a) => L.push([a - 0.1, 'tick', 0.5]));
   L.push([W('build', 'duyệt') + 0.1, 'success', 0.3]);
   ['Năm', 'GitHub', 'đọc', 'chấm', 'Claude', 'ElevenLabs', 'Pages'].forEach((w) => L.push([W('daily', w) - 0.1, 'pop', 0.22]));
   L.push([W('phone', 'Cài') - 0.05, 'click', 0.45], [W('phone', 'màn'), 'sparkle', 0.25], [W('deep', 'Tổng') - 0.05, 'click', 0.45], [W('deep', 'số') - 0.1, 'ding', 0.3]);
-  L.push([W('close', 'không') - 0.2, 'impact', 0.22], [W('close', 'buổi') - 0.2, 'pop', 0.3], [W('close', 'Hãy'), 'swell', 0.25]);
+  L.push([W('close', 'không') - 0.2, 'impact', 0.22], [W('close', 'buổi') - 0.2, 'pop', 0.3], [W('close', 'Cứ'), 'swell', 0.25]);
   L.push([W('ep2', 'tập') - 0.15, 'impact', 0.25], [W('ep2', 'Google') - 0.1, 'pop', 0.3], [W('ep2', 'GitHub') - 0.1, 'pop', 0.3]);
   [0, 1, 2, 3, 4].forEach((i) => L.push([W('ep2', 'doanh') - 0.1 + i * 0.12, 'tick', 0.4]));
   const typing = [[W('step1', 'đặt') - 0.05, 0.7], [W('step2', 'Dán'), 0.9], [SEG('prompt').start + 0.35, SEG('build').start - 0.95 - SEG('prompt').start], [W('close', 'Còn'), 1.6]];
