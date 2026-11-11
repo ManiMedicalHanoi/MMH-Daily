@@ -1,0 +1,19 @@
+# Tạm thời: đọc lời video hướng dẫn bằng ElevenLabs (secret ELEVENLABS_API_KEY), trả MP3 về nhánh này. Chỉ chạy trên nhánh video, không ảnh hưởng main.
+name: Video TTS (tạm)
+on:
+  push:
+    branches: ['claude/claude-code-app-tutorial-video-sl6n1p']
+    paths: ['video/vo/request.json']
+permissions: { contents: write }
+jobs:
+  tts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 video/vo/tts.py
+      - run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add video/vo/out && git commit -m "Video TTS: kết quả" && git push || echo "không có gì mới"
