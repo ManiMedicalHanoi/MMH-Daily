@@ -4,15 +4,15 @@
  "segments": [
   {
    "id": "hook",
-   "text": "Một ứng dụng podcast, mỗi sáng tự gom tin từ hàng chục trang báo và đọc cho bạn nghe. Không lập trình viên, không máy chủ, gần như không tốn đồng nào. Hai phút nữa, bạn sẽ biết cách tạo ra nó."
+   "text": "[excited] Một ứng dụng podcast, mỗi sáng tự gom tin từ hàng chục trang báo và đọc cho bạn nghe. Không lập trình viên, không máy chủ, gần như không tốn đồng nào. Chỉ hai phút, bạn sẽ biết làm ra nó như thế nào."
   },
   {
    "id": "trio",
-   "text": "Công thức chỉ có ba mảnh ghép. Claude Code: người viết code. GitHub: vừa là kho chứa, vừa chạy tác vụ tự động, vừa đăng trang web miễn phí. Và ElevenLabs: biến chữ thành giọng đọc tự nhiên như người thật."
+   "text": "Công thức chỉ có ba mảnh ghép. Thứ nhất là Claude Code, người viết code cho bạn. Thứ hai là GitHub, vừa là kho chứa, vừa chạy tác vụ tự động, vừa đăng trang web miễn phí. Và thứ ba là ElevenLabs, biến chữ thành giọng đọc tự nhiên như người thật."
   },
   {
    "id": "arch",
-   "text": "Nguyên lý rất gọn. Giao diện là một trang web tĩnh trên GitHub Pages. Việc nặng, như gom tin và tạo giọng đọc, chạy trên GitHub Actions. Khoá ElevenLabs được cất kín trong GitHub Secrets. Không cần máy chủ riêng."
+   "text": "[curious] Vậy app này chạy ra sao? Rất đơn giản. App gồm hai phần. Phần nhìn thấy là trang web, đặt miễn phí trên GitHub Pages. Phần chạy ngầm là GitHub Actions: một máy tính của GitHub, mỗi sáng tự bật lên, đọc tin mới từ các trang báo, nhờ Claude viết tóm tắt, nhờ ElevenLabs đọc thành giọng, rồi cập nhật lại trang web. Không cần máy chủ riêng."
   },
   {
    "id": "step1",
@@ -36,7 +36,7 @@
   },
   {
    "id": "daily",
-   "text": "Từ đây, hệ thống tự vận hành. Năm giờ bốn lăm sáng, GitHub Actions thức dậy, gom tin, chấm điểm, chọn những tin quan trọng. Claude viết kịch bản, ElevenLabs đọc thành giọng tự nhiên, và trang web tự cập nhật số mới."
+   "text": "Từ đây, hệ thống tự vận hành. Năm giờ bốn lăm sáng, GitHub Actions thức dậy, đọc tin từ hàng chục trang báo, chấm điểm, chọn những tin quan trọng. Claude viết tóm tắt và kịch bản podcast. ElevenLabs biến kịch bản thành giọng đọc. Cuối cùng, GitHub Pages đăng ngay số mới lên app."
   },
   {
    "id": "phone",
@@ -48,11 +48,11 @@
   },
   {
    "id": "close",
-   "text": "Chi phí máy chủ: không đồng. Thời gian: một buổi chiều. Còn ý tưởng tiếp theo của bạn? Hãy để Claude Code viết nó."
+   "text": "[confident] Chi phí máy chủ: không đồng. Thời gian: một buổi chiều. [excited] Còn ý tưởng tiếp theo của bạn? Hãy để Claude Code viết nó!"
   },
   {
    "id": "ep2",
-   "text": "Và ở tập hai: Google Sheet kết hợp GitHub, bộ đôi cho mọi ứng dụng trong doanh nghiệp. Hẹn gặp bạn ở tập sau!"
+   "text": "[excited] Và ở tập hai: Google Sheet kết hợp GitHub, bộ đôi cho mọi ứng dụng trong doanh nghiệp. Hẹn gặp bạn ở tập sau nhé!"
   }
  ]
 }

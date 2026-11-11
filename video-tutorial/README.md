@@ -1,6 +1,6 @@
 # Video hướng dẫn Tập 1: tạo app bằng Claude Code + GitHub + ElevenLabs
 
-Mã nguồn Tập 1: 2 video 4K (16:9 và 9:16, khoảng 2 phút 24 giây) giới thiệu cách dựng app ví dụ **DailyCast**,
+Mã nguồn Tập 1: 2 video 4K (16:9 và 9:16, khoảng 2 phút 43 giây) giới thiệu cách dựng app ví dụ **DailyCast**,
 một podcast tự đọc báo mỗi sáng: Claude Code viết code, GitHub chứa code, chạy Actions và đăng Pages,
 ElevenLabs đọc thành giọng nói (khoá API cất trong GitHub Secrets). Cuối video giới thiệu Tập 2: Google Sheet + GitHub,
 combo cho mọi ứng dụng trong doanh nghiệp.
@@ -12,7 +12,9 @@ combo cho mọi ứng dụng trong doanh nghiệp.
 | `src/data/timeline.json` | Mốc từng từ: mọi chuyển động khớp lời qua `W('đoạn', 'từ')` |
 | `src/Video.tsx` | Toàn bộ cảnh. Một component cho 2 khổ (`v = true` là dọc 9:16, có phụ đề) |
 | `public/media/` | Ảnh chụp giao diện app (đã bỏ tên MMH), icon GitHub / Google Sheets / Apps Script (dùng cho phần giới thiệu Tập 2), icon DailyCast |
-| `render.mjs` | Dựng 4K (`scale: 2` từ 1920×1080 / 1080×1920) |
+| `tools/takes.py` | Thu 3 bản mỗi đoạn, chép lời bằng Scribe, chấm lệch chữ + từ kém rõ, chọn bản đọc chuẩn nhất |
+| `frames.mjs` | Dựng khung JPEG 4K (`scale: 2`) hoặc chỉ âm thanh (`audio`), ghép bằng ffmpeg: nhanh hơn `render.mjs` |
+| `render.mjs` | Dựng thẳng MP4 4K (chậm hơn) |
 | `snap.mjs` | Chụp nhanh vài khung để soát bố cục |
 
 Âm thanh (`public/narration.wav`, `public/music.wav`, `public/sfx/`) không lưu trong git, vì nặng và tạo lại được:

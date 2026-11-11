@@ -10,12 +10,13 @@ for i, s in enumerate(S['segments']):
     al = json.load(open(f"vo/el/{s['id']}.align.json")); ch, st, en = al['characters'], al['character_start_times_seconds'], al['character_end_times_seconds']
     words = []; cur = ''; ws = None
     for c, a, b in zip(ch, st, en):
-        if c.isspace():
+        if c.isspace() or c in '[]':
             if cur: words.append({'w': cur, 's': round(t + ws, 3), 'e': round(t + pe, 3)}); cur = ''
             continue
         if not cur: ws = a
         cur += c; pe = b
     if cur: words.append({'w': cur, 's': round(t + ws, 3), 'e': round(t + pe, 3)})
+    words = [w for w in words if w['w'] not in ('excited', 'curious', 'confident')]
     segs[s['id']] = {'start': round(t, 3), 'end': round(t + d, 3), 'words': words}
     # phụ đề: tách theo dấu câu, tối đa 7 từ
     buf = []

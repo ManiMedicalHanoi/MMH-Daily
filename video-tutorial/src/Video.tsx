@@ -249,7 +249,7 @@ const StepFrame = ({ t, v, id, n, title, logos, items, url, children }) => {
 
 // ================= CẢNH =================
 const Hook = ({ t, v }) => {
-  const c = { pod: W('hook', 'podcast'), gom: W('hook', 'gom'), doc: W('hook', 'đọc'), lt: W('hook', 'lập'), mc: W('hook', 'máy'), dong: W('hook', 'đồng'), hai: W('hook', 'Hai') };
+  const c = { pod: W('hook', 'podcast'), gom: W('hook', 'gom'), doc: W('hook', 'đọc'), lt: W('hook', 'lập'), mc: W('hook', 'máy'), dong: W('hook', 'đồng'), hai: W('hook', 'Chỉ') };
   const ph = v ? { x: 355, y: 455, w: 370 } : { x: 1230, y: 92, w: 425 };
   const sw = ph.w * 0.93, sh = ph.w * 2.1 - ph.w * 0.07;
   const cx = ph.x + ph.w / 2, cy = ph.y + ph.w * 1.05;
@@ -349,57 +349,83 @@ const Trio = ({ t, v }) => {
 };
 
 const Arch = ({ t, v }) => {
-  const c = { ng: W('arch', 'Nguyên'), gd: W('arch', 'Giao'), viec: W('arch', 'Việc'), gom: W('arch', 'gom'), tao: W('arch', 'tạo'), act: W('arch', 'Actions'), khoa: W('arch', 'Khoá'), sec: W('arch', 'Secrets'), kc: W('arch', 'Không') };
-  const nodes = [
-    { k: 'pages', lab: 'GIAO DIỆN', title: 'Trang web tĩnh', sub: 'GitHub Pages', code: 'index.html · app.js', at: c.gd, col: C.gh },
-    { k: 'actions', lab: 'MÁY CHẠY', title: 'Việc nặng', sub: 'GitHub Actions', code: 'gom tin · tạo giọng', at: c.viec, col: '#2088FF' },
-    { k: 'el', lab: 'GIỌNG ĐỌC', title: 'ElevenLabs', sub: 'API chữ → giọng', code: 'khoá trong Secrets', at: c.khoa, col: '#111111' },
+  const c = { vay: W('arch', 'Vậy'), hai: W('arch', 'hai'), nhin: W('arch', 'nhìn'), ngam: W('arch', 'ngầm'), may: W('arch', 'máy'), bat: W('arch', 'bật'), doc: W('arch', 'đọc'), cl: W('arch', 'Claude'), el: W('arch', 'ElevenLabs'), cap: W('arch', 'cập'), kc: W('arch', 'Không') };
+  const steps = [
+    { k: 'news', t: 'Đọc tin', s: 'từ các trang báo', at: c.doc },
+    { k: 'claude', t: 'Claude viết', s: 'tóm tắt + kịch bản', at: c.cl },
+    { k: 'el', t: 'ElevenLabs', s: 'đọc thành giọng', at: c.el },
+    { k: 'pages', t: 'Cập nhật', s: 'trang web', at: c.cap },
   ];
-  const NW = v ? 660 : 420, NH = v ? 230 : 300;
-  const pos = (i) => (v ? { x: 540, y: 440 + i * 345 } : { x: 330 + i * 630, y: 530 });
-  const pkt = (a, b, at, label, col, period = 1.7, off = 0) => {
-    if (t < at) return null;
-    const ph = ((t - at + off) % period) / period; const e = eio(Math.min(1, ph * 1.25));
-    const A = pos(a), B = pos(b);
-    const sx = v ? A.x + (a < b ? -42 : 42) : A.x + (a < b ? NW / 2 : -NW / 2), sy = v ? A.y + (a < b ? NH / 2 : -NH / 2) : A.y + (a < b ? -40 : 40);
-    const ex = v ? sx : B.x + (a < b ? -NW / 2 : NW / 2), ey = v ? B.y + (a < b ? -NH / 2 : NH / 2) : sy;
-    return <div style={{ ...abs(lerp(sx, ex, e), lerp(sy, ey, e)), transform: 'translate(-50%,-50%)', padding: '7px 14px', borderRadius: 10, background: col, color: '#fff', fontFamily: MONO, fontSize: v ? 22 : 20, fontWeight: 600, whiteSpace: 'nowrap', opacity: P(t, at, 0.3) * (ph < 0.85 ? 1 : 1 - (ph - 0.85) / 0.15), boxShadow: '0 6px 16px rgba(0,0,0,.18)' }}>{label}</div>;
-  };
-  const link = (a, at) => {
-    const A = pos(a), B = pos(a + 1); const k = P(t, at, 0.6);
-    if (v) return [-42, 42].map((dx) => <div key={dx} style={{ ...abs(A.x + dx - 2, A.y + NH / 2 + 8, 4, (B.y - A.y - NH - 16) * k), background: `repeating-linear-gradient(180deg, ${C.mute} 0 10px, transparent 10px 18px)`, opacity: 0.6 }} />);
-    return [-40, 40].map((dy) => <div key={dy} style={{ ...abs(A.x + NW / 2 + 10, A.y + dy - 2, (B.x - A.x - NW - 20) * k, 4), background: `repeating-linear-gradient(90deg, ${C.mute} 0 10px, transparent 10px 18px)`, opacity: 0.6 }} />);
-  };
+  const act = steps.reduce((a, s, i) => (t >= s.at - 0.1 ? i : a), -1);
+  let pi = 0; for (let i = 0; i < 3; i++) { if (t >= steps[i + 1].at - 0.1) pi = i + 1; else if (t > steps[i].at) { pi = i + eio((t - steps[i].at) / Math.max(0.3, steps[i + 1].at - 0.1 - steps[i].at)); break; } else break; }
+  const back = t > c.cap + 0.2; const pulse = back ? Math.max(0, Math.sin((t - c.cap - 0.2) * 5)) * (1 - P(t, c.cap + 1.6, 0.6)) : 0;
+  const L = v ? { x: 60, y: 315, w: 960, h: 230 } : { x: 110, y: 290, w: 520, h: 480 };
+  const Rb = v ? { x: 60, y: 600, w: 960, h: 660 } : { x: 700, y: 290, w: 1110, h: 480 };
+  const card = (on, col) => ({ width: '100%', height: '100%', boxSizing: 'border-box', background: '#fff', borderRadius: 30, border: `2.5px solid ${on ? col : C.line}`, boxShadow: on ? '0 26px 60px rgba(22,22,27,.12)' : '0 10px 26px rgba(22,22,27,.06)' });
   return (
     <>
-      <In t={t} at={c.ng - 0.3}><div style={{ ...abs(0, v ? 225 : 150, v ? 1080 : 1920), textAlign: 'center', fontSize: v ? 54 : 58, fontWeight: 800, letterSpacing: -1.4 }}>Nguyên lý: <span style={{ color: C.claude }}>3 lớp, 0 máy chủ</span></div></In>
-      {link(0, c.act)}{link(1, c.khoa)}
-      {nodes.map((n, i) => {
-        const p = pos(i);
-        return (
-          <In key={n.k} t={t} at={n.at - 0.2} y={40} style={{ ...abs(p.x - NW / 2, p.y - NH / 2, NW, NH) }}>
-            <div style={{ width: '100%', height: '100%', boxSizing: 'border-box', background: '#fff', borderRadius: 28, border: `2.5px solid ${n.col}`, boxShadow: '0 22px 50px rgba(22,22,27,.12)', padding: v ? '26px 34px' : 30, display: 'flex', flexDirection: v ? 'row' : 'column', alignItems: 'center', gap: v ? 30 : 12, textAlign: v ? 'left' : 'center' }}>
-              <Tile k={n.k} s={v ? 130 : 104} />
-              <div>
-                <div style={{ fontSize: v ? 22 : 18, fontWeight: 700, letterSpacing: 3, color: n.col }}>{n.lab}</div>
-                <div style={{ fontSize: v ? 40 : 36, fontWeight: 800, letterSpacing: -0.8 }}>{n.title}</div>
-                <div style={{ fontSize: v ? 26 : 23, color: C.mute }}>{n.sub}</div>
-                <div style={{ fontFamily: MONO, fontSize: v ? 22 : 19, marginTop: 8, color: C.ink, background: '#F3F2EE', borderRadius: 8, padding: '4px 10px', display: 'inline-block' }}>{n.code}</div>
-              </div>
+      <In t={t} at={c.vay - 0.3}><div style={{ ...abs(0, v ? 215 : 145, v ? 1080 : 1920), textAlign: 'center', fontSize: v ? 54 : 60, fontWeight: 800, letterSpacing: -1.4 }}>Vậy app <span style={{ color: C.claude }}>chạy ra sao?</span></div></In>
+      <In t={t} at={c.nhin - 0.2} y={40} style={{ ...abs(L.x, L.y, L.w, L.h) }}>
+        <div style={{ ...card(true, C.gh), padding: v ? '26px 34px' : 40, display: 'flex', flexDirection: v ? 'row' : 'column', alignItems: v ? 'center' : 'flex-start', gap: v ? 30 : 20, boxShadow: pulse > 0 ? `0 0 0 ${12 * pulse}px rgba(217,119,87,.25), 0 26px 60px rgba(22,22,27,.12)` : undefined }}>
+          <Tile k="pages" s={v ? 130 : 120} />
+          <div>
+            <div style={{ fontSize: v ? 22 : 20, fontWeight: 700, letterSpacing: 3, color: C.gh }}>PHẦN NHÌN THẤY</div>
+            <div style={{ fontSize: v ? 44 : 46, fontWeight: 800, letterSpacing: -1 }}>Trang web</div>
+            <div style={{ fontSize: v ? 27 : 27, color: C.mute }}>GitHub Pages · miễn phí</div>
+            {!v && <div style={{ marginTop: 26, fontFamily: MONO, fontSize: 20, background: '#F3F2EE', borderRadius: 10, padding: '8px 14px', display: 'inline-block' }}>index.html · app.js · today.mp3</div>}
+            {back && <div style={{ marginTop: v ? 10 : 22, display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 16px', borderRadius: 999, background: '#E6F4EA', color: C.sheet, fontSize: v ? 24 : 24, fontWeight: 700, opacity: P(t, c.cap + 0.2, 0.3) }}><Check s={24} bg={C.sheet} />Số mới đã lên</div>}
+          </div>
+        </div>
+      </In>
+      <In t={t} at={c.ngam - 0.2} y={40} style={{ ...abs(Rb.x, Rb.y, Rb.w, Rb.h) }}>
+        <div style={{ ...card(true, '#2088FF'), padding: v ? '30px 34px' : '36px 40px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+            <Tile k="actions" s={v ? 110 : 104} />
+            <div>
+              <div style={{ fontSize: v ? 22 : 20, fontWeight: 700, letterSpacing: 3, color: '#2088FF' }}>PHẦN CHẠY NGẦM</div>
+              <div style={{ fontSize: v ? 42 : 42, fontWeight: 800, letterSpacing: -1 }}>GitHub Actions</div>
+              <In t={t} at={c.may - 0.1} x={-16} y={0}><div style={{ fontSize: v ? 26 : 26, color: C.mute }}>Máy tính của GitHub, <b style={{ color: C.ink, opacity: P(t, c.bat - 0.1, 0.3) }}>mỗi sáng tự bật</b></div></In>
             </div>
-          </In>
-        );
-      })}
-      {pkt(1, 2, c.khoa + 0.3, 'kịch bản', '#2088FF')}
-      {pkt(2, 1, c.khoa + 1.1, 'MP3', '#111111')}
-      {pkt(1, 0, c.act + 0.2, 'đăng số mới', C.gh)}
-      <div style={{ ...abs(v ? 0 : pos(2).x - 230, v ? pos(2).y + NH / 2 + 14 : pos(2).y + NH / 2 + 22, v ? 1080 : 460), display: 'flex', justifyContent: 'center' }}>
-        <Pop t={t} at={c.sec - 0.1}><div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 18px', borderRadius: 12, background: C.gh, color: '#fff', fontFamily: MONO, fontSize: v ? 22 : 19, fontWeight: 600 }}><Lock s={20} />secrets.ELEVENLABS_API_KEY</div></Pop>
-      </div>
-      <div style={{ ...abs(0, v ? 1325 : 850, v ? 1080 : 1920), display: 'flex', justifyContent: 'center' }}>
+          </div>
+          {v ? (
+            <div style={{ position: 'relative', marginTop: 34 }}>
+              <div style={{ ...abs(46, 46, 6, 112 * 3), background: '#E2DED5', borderRadius: 3, opacity: P(t, c.doc - 0.25, 0.4) }} />
+              {act >= 0 && <div style={{ ...abs(46, 46, 6, 112 * pi), background: C.claude, borderRadius: 3 }} />}
+              {steps.map((s, i) => (
+                <In key={i} t={t} at={s.at - 0.25} x={-20} y={0} style={{ ...abs(0, i * 112, 880, 96) }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 26, height: 96 }}>
+                    <Tile k={s.k} s={96} ring={i === act ? C.claude : null} />
+                    <div><div style={{ fontSize: 36, fontWeight: 800, color: i <= act ? C.ink : C.mute }}>{s.t}</div><div style={{ fontSize: 26, color: C.mute }}>{s.s}</div></div>
+                    {i < act && <div style={{ marginLeft: 'auto' }}><Check s={34} bg={C.sheet} /></div>}
+                  </div>
+                </In>
+              ))}
+            </div>
+          ) : (
+            <div style={{ position: 'relative', marginTop: 50, height: 260 }}>
+              <div style={{ ...abs(120, 56, 3 * 250, 6), background: '#E2DED5', borderRadius: 3, opacity: P(t, c.doc - 0.25, 0.4) }} />
+              {act >= 0 && <div style={{ ...abs(120, 56, 250 * pi, 6), background: C.claude, borderRadius: 3 }} />}
+              {act >= 0 && <div style={{ ...abs(120 + 250 * pi - 14, 45, 28, 28), borderRadius: 14, background: C.claude, boxShadow: '0 0 0 10px rgba(217,119,87,.22)' }} />}
+              {steps.map((s, i) => (
+                <In key={i} t={t} at={s.at - 0.25} y={24} style={{ ...abs(i * 250, 0, 240) }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                    <div style={{ transform: `scale(${i === act ? 1.1 : 1})` }}><Tile k={s.k} s={112} ring={i === act ? C.claude : null} /></div>
+                    <div style={{ fontSize: 28, fontWeight: 800, marginTop: 16, color: i <= act ? C.ink : C.mute }}>{s.t}</div>
+                    <div style={{ fontSize: 22, color: C.mute }}>{s.s}</div>
+                  </div>
+                </In>
+              ))}
+            </div>
+          )}
+        </div>
+      </In>
+      {!v && back && (
+        <div style={{ ...abs(640, 528, 60, 6), background: `repeating-linear-gradient(90deg, ${C.claude} 0 10px, transparent 10px 16px)`, opacity: P(t, c.cap + 0.2, 0.3) }} />
+      )}
+      <div style={{ ...abs(0, v ? 1325 : 880, v ? 1080 : 1920), display: 'flex', justifyContent: 'center' }}>
         <Pop t={t} at={c.kc}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '14px 30px 14px 20px', background: '#fff', borderRadius: 999, border: `2px solid ${C.ink}`, boxShadow: '0 16px 36px rgba(22,22,27,.14)' }}>
-            <ServerMark s={64} /><div style={{ fontSize: v ? 34 : 34, fontWeight: 800 }}>Không cần máy chủ riêng</div>
+            <ServerMark s={64} /><div style={{ fontSize: 34, fontWeight: 800 }}>Không cần máy chủ riêng</div>
           </div>
         </Pop>
       </div>
@@ -760,15 +786,15 @@ const Build = ({ t, v }) => {
 };
 
 const Daily = ({ t, v }) => {
-  const c = { tdy: W('daily', 'Từ'), nam: W('daily', 'Năm'), gha: W('daily', 'GitHub'), gom: W('daily', 'gom'), cham: W('daily', 'chấm'), cl: W('daily', 'Claude'), el: W('daily', 'ElevenLabs'), web: W('daily', 'trang'), so: W('daily', 'số') };
+  const c = { tdy: W('daily', 'Từ'), nam: W('daily', 'Năm'), gha: W('daily', 'GitHub'), gom: W('daily', 'đọc'), cham: W('daily', 'chấm'), cl: W('daily', 'Claude'), el: W('daily', 'ElevenLabs'), web: W('daily', 'Pages'), so: W('daily', 'số') };
   const N = [
     { k: 'clock', t: '05:45', s: 'Mỗi sáng', at: c.nam, log: '▶ Bắt đầu workflow daily.yml' },
     { k: 'actions', t: 'GitHub Actions', s: 'Thức dậy', at: c.gha, log: '✓ Máy chạy GitHub đã sẵn sàng' },
-    { k: 'news', t: 'Gom tin', s: 'Hàng chục nguồn báo', at: c.gom, log: '✓ Gom tin từ hàng chục nguồn báo' },
+    { k: 'news', t: 'Đọc tin báo', s: 'Hàng chục trang báo', at: c.gom, log: '✓ Đọc tin mới từ hàng chục trang báo (RSS)' },
     { k: 'rank', t: 'Chấm điểm', s: 'Chọn tin quan trọng', at: c.cham, log: '✓ Chấm điểm, chọn tin quan trọng' },
-    { k: 'claude', t: 'Claude', s: 'Viết kịch bản', at: c.cl, log: '✓ Claude viết tóm tắt + kịch bản podcast' },
-    { k: 'el', t: 'ElevenLabs', s: 'Giọng đọc tự nhiên', at: c.el, log: '✓ ElevenLabs tạo giọng đọc (MP3)' },
-    { k: 'pages', t: 'GitHub Pages', s: 'Số mới lên web', at: c.web, log: '✓ Đăng GitHub Pages: số mới đã lên' },
+    { k: 'claude', t: 'Claude', s: 'Tóm tắt + kịch bản', at: c.cl, log: '✓ Claude viết tóm tắt + kịch bản podcast' },
+    { k: 'el', t: 'ElevenLabs', s: 'Kịch bản → giọng đọc', at: c.el, log: '✓ ElevenLabs đọc kịch bản thành MP3' },
+    { k: 'pages', t: 'GitHub Pages', s: 'Đăng số mới lên app', at: c.web, log: '✓ Lưu vào kho, GitHub Pages đăng số mới lên app' },
   ];
   const tms = ['05:45:00', '05:45:06', '05:45:31', '05:45:48', '05:46:20', '05:47:42', '05:48:10'];
   const act = N.reduce((a, n, i) => (t >= n.at - 0.1 ? i : a), -1);
@@ -1091,7 +1117,7 @@ const SfxTrack = () => {
   L.push([SEG('build').start - 0.55, 'swoosh_short', 0.35]);
   [W('build', 'giao'), W('build', 'gom'), W('build', 'gọi'), W('build', 'lịch'), W('build', 'đẩy')].forEach((a) => L.push([a - 0.1, 'tick', 0.5]));
   L.push([W('build', 'duyệt') + 0.1, 'success', 0.3]);
-  ['Năm', 'GitHub', 'gom', 'chấm', 'Claude', 'ElevenLabs', 'trang'].forEach((w) => L.push([W('daily', w) - 0.1, 'pop', 0.22]));
+  ['Năm', 'GitHub', 'đọc', 'chấm', 'Claude', 'ElevenLabs', 'Pages'].forEach((w) => L.push([W('daily', w) - 0.1, 'pop', 0.22]));
   L.push([W('phone', 'Cài') - 0.05, 'click', 0.45], [W('phone', 'màn'), 'sparkle', 0.25], [W('deep', 'Tổng') - 0.05, 'click', 0.45], [W('deep', 'số') - 0.1, 'ding', 0.3]);
   L.push([W('close', 'không') - 0.2, 'impact', 0.22], [W('close', 'buổi') - 0.2, 'pop', 0.3], [W('close', 'Hãy'), 'swell', 0.25]);
   L.push([W('ep2', 'tập') - 0.15, 'impact', 0.25], [W('ep2', 'Google') - 0.1, 'pop', 0.3], [W('ep2', 'GitHub') - 0.1, 'pop', 0.3]);
