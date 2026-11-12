@@ -30,7 +30,7 @@ const W = (id, needle, nth = 0, off = 0) => {
   throw new Error(`Không thấy mốc "${needle}" trong đoạn ${id}`);
 };
 const SEG = (id) => tl.segs[id];
-const ORDER = ['hook', 'essence', 'roles', 'price', 'travel1', 'travel2', 'tender1', 'tender2', 'brain', 'close'];
+const ORDER = ['hook', 'essence', 'roles', 'price', 'tender1', 'tender2', 'travel1', 'travel2', 'brain', 'close'];
 const SB: any = {};
 ORDER.forEach((id, i) => { SB[id] = [i === 0 ? 0 : SEG(id).start - 0.45, i < ORDER.length - 1 ? SEG(ORDER[i + 1]).start - 0.45 : tl.endcard]; });
 SB.end = [tl.endcard, tl.total + 1];
@@ -305,7 +305,7 @@ const Flow = ({ t, at, a, b, color = E.ink, bend = 0, out = 9999, dots = 3, spee
 };
 
 // ---------- đầu trang tạp chí ----------
-const SECT = { hook: 'Lời mở', essence: 'Bản chất', roles: 'Giải phẫu một ứng dụng', price: 'Ví dụ 01', travel1: 'Ví dụ 02', travel2: 'Ví dụ 02', tender1: 'Ví dụ 03', tender2: 'Ví dụ 03', brain: 'Kết luận', close: 'Lời cảm ơn' };
+const SECT = { hook: 'Lời mở', essence: 'Bản chất', roles: 'Giải phẫu một ứng dụng', price: 'Ví dụ 01', travel1: 'Ví dụ 03 · Cuộc sống', travel2: 'Ví dụ 03 · Cuộc sống', tender1: 'Ví dụ 02', tender2: 'Ví dụ 02', brain: 'Kết luận', close: 'Lời cảm ơn' };
 const Mast = ({ t, v }) => {
   const id = ORDER.slice().reverse().find((i) => t >= SB[i][0]) || 'hook'; const pg = ORDER.indexOf(id) + 1;
   const o = 1 - P(t, tl.endcard - 0.3, 0.4); if (o < 0.01) return null;
@@ -365,7 +365,7 @@ const Essence = ({ t, v }) => {
   };
   return (<>
     <div style={{ opacity: fade }}>
-      <Head t={t} at={10.4} x={v ? 60 : 110} y={v ? 130 : 100} size={v ? 74 : 84}>App nào cũng chỉ làm <span style={{ color: E.red }}>ba việc</span></Head>
+      <Head t={t} at={SEG('essence').start - 0.15} x={v ? 60 : 110} y={v ? 130 : 100} size={v ? 74 : 84}>App nào cũng chỉ làm <span style={{ color: E.red }}>ba việc</span></Head>
       {cols.map(([n, name, a], i) => { const k = P(t, a - 0.2, 0.55); if (k < 0.01) return null; return (
         <div key={n} style={{ ...abs(cx(i), cy(i), cw), opacity: k, transform: `translateY(${(1 - k) * 30}px)`, display: v ? 'flex' : 'block', gap: 36 }}>
           <div style={{ width: v ? 330 : undefined, flexShrink: 0 }}>
@@ -379,7 +379,7 @@ const Essence = ({ t, v }) => {
     </div>
     {t > c.hi - 0.3 && <>
       <Head t={t} at={c.hi} x={v ? 60 : 110} y={v ? 150 : 120} size={v ? 74 : 76} w={v ? 960 : 1500}>Những phần mềm <span style={{ fontStyle: 'italic', color: E.mute }}>tưởng phải đi mua</span></Head>
-      {[['Tra giá thị trường', 'thuê bao theo tháng'], ['Trợ lý du lịch', 'nhiều app rời rạc'], ['Số liệu đấu thầu', 'mua gói dữ liệu']].map(([a, b], i) => { const k = SPR(t, c.hi + 0.5 + i * 0.35, 0.8); if (k < 0.01) return null; return (
+      {[['Tra giá thị trường', 'thuê bao theo tháng'], ['Số liệu đấu thầu', 'mua gói dữ liệu'], ['Trợ lý du lịch', 'nhiều app rời rạc']].map(([a, b], i) => { const k = SPR(t, c.hi + 0.5 + i * 0.35, 0.8); if (k < 0.01) return null; return (
         <div key={a} style={{ ...abs(v ? 90 : 110 + i * 580, v ? 390 + i * 300 : 360), width: v ? 900 : 540, opacity: cl(k * 2), transform: `rotate(${(i - 1) * 2}deg) scale(${0.85 + 0.15 * k})`, background: '#fff', borderRadius: 10, padding: '30px 34px', boxShadow: '0 24px 50px rgba(40,30,20,.14)' }}>
           <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: 4, color: E.mute }}>VÍ DỤ 0{i + 1}</div>
           <div style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 66, marginTop: 6 }}>{a}</div>
@@ -396,7 +396,7 @@ const Roles = ({ t, v }) => {
   const L = v ? { kho: [270, 1060], be: [540, 1330], gh: [810, 1060], cl: [540, 640], mp: [250, 330], ext: [830, 330] } : { kho: [330, 560], be: [960, 760], gh: [1590, 560], cl: [960, 330], mp: [470, 200], ext: [1450, 200] };
   const ic = v ? 92 : 100; const half = ic / 2;
   return (<>
-    <Head t={t} at={28.9} x={v ? 60 : 110} y={v ? 130 : 110} size={v ? 70 : 64} w={v ? 900 : 600}>Giải phẫu <span style={{ fontStyle: 'italic', color: E.red }}>một ứng dụng</span></Head>
+    <Head t={t} at={SEG('roles').start + 0.15} x={v ? 60 : 110} y={v ? 130 : 110} size={v ? 70 : 64} w={v ? 900 : 600}>Giải phẫu <span style={{ fontStyle: 'italic', color: E.red }}>một ứng dụng</span></Head>
     <Flow t={t} at={c.can} a={[L.kho[0] + 60, L.kho[1] + half]} b={[L.be[0] - 60, L.be[1] + half]} bend={-0.6} color={E.green} out={c.ket - 0.3} />
     <Flow t={t} at={c.hi - 0.2} a={[L.be[0] + 60, L.be[1] + half]} b={[L.gh[0] - 60, L.gh[1] + half]} bend={-0.6} color={E.blue} out={c.ket - 0.3} />
     {[L.kho, L.be, L.gh].map((p, i) => <Flow key={i} t={t} at={c.ket + i * 0.15} a={[L.cl[0], L.cl[1] + 70]} b={[p[0], p[1] - 10]} bend={i === 1 ? 0 : (i === 0 ? 0.3 : -0.3)} color={E.red} />)}
@@ -427,7 +427,7 @@ const Price = ({ t, v }) => {
   const view = camV(t, [[0, PV.all], [c.bd + 0.2, PV.chart, 1.0], [c.ng2 + 0.3, PV.alert, 1.0], [c.th + 0.1, PV.table, 1.0], [c.gi + 0.2, PV.chart, 0.9], [c.nh + 0.1, PV.all, 0.9]]);
   const q = 'giá máy đo huyết áp bắp tay';
   return (<>
-    <Kicker t={t} at={48.9} x={v ? 60 : 90} y={v ? 140 : 180}>VÍ DỤ 01</Kicker>
+    <Kicker t={t} at={SEG('price').start + 0.1} x={v ? 60 : 90} y={v ? 140 : 180}>VÍ DỤ 01</Kicker>
     <Head t={t} at={c.tra - 0.1} x={v ? 60 : 90} y={v ? 180 : 222} size={v ? 96 : 108} w={v ? 960 : 490}>Tra giá thị trường</Head>
     <div style={{ display: v ? 'none' : 'block' }}>
       <Steps t={t} x={90} y={480} w={480} size={42} list={[[c.tr, 'Trước: Google từng sản phẩm', 'rồi chép tay vào bảng'], [c.gio, 'Mỗi sáng 06:00 tự quét', '6 nguồn bạn đã cấp quyền'], [c.ghi, 'Ghi vào Sheet, so sánh, vẽ biểu đồ', null], [c.ng2, 'Claude gợi ý nguồn đáng tin', null], [c.th, 'Rẻ nhất ở đâu, ai vừa giảm giá', 'nhìn là thấy']]} />
@@ -470,7 +470,9 @@ const Travel1 = ({ t, v }) => {
   const pw = v ? 300 : 320;
   const sw = t > c.cy - 0.2 ? Math.floor((t - c.cy + 0.2) / 0.35) % 3 : -1;
   return (<>
-    <Kicker t={t} at={72.4} x={v ? 60 : 90} y={v ? 140 : 180}>VÍ DỤ 02</Kicker>
+    <Kicker t={t} at={SEG('travel1').start + 0.1} x={v ? 60 : 90} y={v ? 140 : 180}>VÍ DỤ 03 · CUỘC SỐNG HẰNG NGÀY</Kicker>
+    <Head t={t} at={SEG('travel1').start + 0.1} out={c.du - 0.5} x={v ? 60 : 90} y={v ? 180 : 222} size={v ? 92 : 108} w={v ? 960 : 560}>Không chỉ <span style={{ fontStyle: 'italic', color: E.red }}>công việc</span></Head>
+    <Head t={t} at={W('travel1', 'cả') - 0.1} out={c.du - 0.5} x={v ? 60 : 90} y={v ? 400 : 480} size={v ? 70 : 76} italic color={E.mute} w={v ? 960 : 1500}>cả cuộc sống hằng ngày cũng vậy.</Head>
     <Head t={t} at={c.du - 0.2} x={v ? 60 : 90} y={v ? 180 : 222} size={v ? 92 : 108} w={v ? 960 : 540}>Đi du lịch nước ngoài</Head>
     {tabs.map(([n, sub, body, a]: any, i) => {
       const k = SPR(t, a - 0.2, 0.8); if (k < 0.01) return null;
@@ -488,7 +490,7 @@ const Travel1 = ({ t, v }) => {
 
 // ---------- 6. TripLens: một ứng dụng làm hết ----------
 const Travel2 = ({ t, v }) => {
-  const c = { se: W('travel2', 'sẽ'), vi: W('travel2', 'vị'), tt: W('travel2', 'trực'), cd: W('travel2', 'chỉ', 1), dich: W('travel2', 'dịch'), td: W('travel2', 'thực'), gt: W('travel2', 'giới'), dd: W('travel2', 'địa') };
+  const c = { muoi: W('travel2', 'mười'), mot: W('travel2', 'một', 1), se: W('travel2', 'sẽ'), vi: W('travel2', 'vị'), tt: W('travel2', 'trực'), cd: W('travel2', 'chỉ', 1), dich: W('travel2', 'dịch'), td: W('travel2', 'thực'), gt: W('travel2', 'giới'), dd: W('travel2', 'địa') };
   const pw = v ? 470 : 420; const px = v ? 305 : 760, py = v ? 380 : 120;
   const inner = pw * 0.93; const sc = inner / 400; const pad = pw * 0.035;
   const scr = t < c.cd - 0.2 ? 'tr_m' : t < c.dich - 0.2 ? 'tr_nav' : t < c.gt - 0.2 ? 'menu' : 'tr_m';
@@ -507,10 +509,11 @@ const Travel2 = ({ t, v }) => {
         {scr !== 'menu' && t > c.vi - 0.2 && <div style={{ position: 'absolute', left: dot[0] * sc - 13, top: dot[1] * sc - 13, width: 26, height: 26, borderRadius: 13, background: '#1A73E8', border: '4px solid #fff', boxShadow: `0 0 0 ${10 + 6 * Math.sin(t * 5)}px rgba(26,115,232,.2)` }} />}
         {scr === 'tr_m' && t > c.gt && <div style={{ position: 'absolute', left: 10, right: 10, top: 640 * sc, height: 72 * sc, borderRadius: 14, border: `4px solid ${E.red}`, opacity: P(t, c.gt, 0.3) }} />}
       </Phone>
-      {t > c.gt && (() => { const kk = SPR(t, c.dd - 0.1, 0.7); return <div style={{ ...abs(v ? 140 : 90, v ? 1520 : 640), opacity: cl(kk * 2), transform: `scale(${0.8 + 0.2 * kk})` }}><SrcChip size={v ? 26 : 26} bg={E.ink} color="#fff"><span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>{[0, 1, 2, 3, 4].map((j) => <span key={j} style={{ width: 5, height: 10 + 14 * Math.abs(Math.sin(t * 6 + j)), background: '#fff', borderRadius: 3 }} />)}</span>Đang giới thiệu: Nhà thờ Trinity</SrcChip></div>; })()}
+      {t > c.gt && (() => { const kk = SPR(t, c.dd - 0.1, 0.7); return <div style={{ ...abs(v ? 140 : 90, v ? 1520 : 640), opacity: cl(kk * 2) * (v ? 1 - P(t, c.mot - 0.3, 0.3) : 1), transform: `scale(${0.8 + 0.2 * kk})` }}><SrcChip size={v ? 26 : 26} bg={E.ink} color="#fff"><span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>{[0, 1, 2, 3, 4].map((j) => <span key={j} style={{ width: 5, height: 10 + 14 * Math.abs(Math.sin(t * 6 + j)), background: '#fff', borderRadius: 3 }} />)}</span>Đang giới thiệu: Nhà thờ Trinity</SrcChip></div>; })()}
     </div>
     {!v && <div style={{ ...abs(1300, 300, 540) }}>{feats.map(([a, n], i) => { const kk = P(t, a - 0.15, 0.45); if (kk < 0.01) return null; const on = i === feats.filter(([aa]) => t >= aa - 0.15).length - 1; return <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 30, opacity: kk * (on ? 1 : 0.5), transform: `translateX(${(1 - kk) * 40}px)` }}><Check s={44} bg={on ? E.red : E.green} /><div style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 50, lineHeight: 1.05 }}>{n}</div></div>; })}</div>}
-    {v && (() => { const f = feats.filter(([aa]) => t >= aa - 0.15).slice(-1)[0]; if (!f) return null; return <div style={{ ...abs(0, 1440, 1080), display: 'flex', justifyContent: 'center' }}><div key={f[1]} style={{ display: 'flex', alignItems: 'center', gap: 14, opacity: P(t, f[0] - 0.15, 0.3) }}><Check s={40} bg={E.red} /><div style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 54 }}>{f[1]}</div></div></div>; })()}
+    {(() => { const kk = SPR(t, c.mot - 0.1, 0.8); if (kk < 0.01) return null; return <div style={{ ...abs(v ? 540 : 1300, v ? 1430 : 760), transform: `translate(${v ? '-50%' : '0'}, 0) scale(${0.85 + 0.15 * kk})`, transformOrigin: v ? 'center' : 'left', opacity: cl(kk * 2), display: 'flex', flexDirection: v ? 'row' : 'column', alignItems: v ? 'baseline' : 'flex-start', gap: v ? 16 : 4, background: E.ink, color: '#fff', borderRadius: 14, padding: v ? '18px 32px' : '22px 34px', whiteSpace: 'nowrap', zIndex: 9 }}><div style={{ fontFamily: SERIF, fontWeight: 700, fontSize: v ? 76 : 84, lineHeight: 1 }}>~{t > c.muoi - 0.1 ? 10 : '…'} phút</div><div style={{ fontFamily: SERIF, fontStyle: 'italic', fontSize: v ? 36 : 38, color: '#E8DFD2' }}>để dựng ứng dụng này</div></div>; })()}
+    {v && t < c.mot - 0.1 && (() => { const f = feats.filter(([aa]) => t >= aa - 0.15).slice(-1)[0]; if (!f) return null; return <div style={{ ...abs(0, 1440, 1080), display: 'flex', justifyContent: 'center' }}><div key={f[1]} style={{ display: 'flex', alignItems: 'center', gap: 14, opacity: P(t, f[0] - 0.15, 0.3) }}><Check s={40} bg={E.red} /><div style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 54 }}>{f[1]}</div></div></div>; })()}
   </>);
 };
 
@@ -523,7 +526,7 @@ const Tender1 = ({ t, v }) => {
   const stepsO = 1 - P(t, c.tq - 0.3, 0.5);
   const panels = [['Tải dữ liệu công khai', 'từ hệ thống mua sắm công', c.tai], ['Làm sạch', 'gộp, bỏ trùng, chuẩn hoá', c.lam], ['Cập nhật tự động', 'mỗi ngày, không cần nhắc', c.cap]];
   return (<>
-    <Kicker t={t} at={95.8} x={v ? 60 : 90} y={v ? 140 : 180}>VÍ DỤ 03</Kicker>
+    <Kicker t={t} at={SEG('tender1').start + 0.1} x={v ? 60 : 90} y={v ? 140 : 180}>VÍ DỤ 02</Kicker>
     <Head t={t} at={c.dt - 0.2} x={v ? 60 : 90} y={v ? 180 : 222} size={v ? 92 : 108} w={v ? 960 : 1400}>Theo dõi đấu thầu</Head>
     <div style={{ opacity: 1 - P(t, c.ban - 0.2, 0.4) }}>
       {(() => { const k = SPR(t, c.thay - 0.1, 0.7); if (k < 0.01) return null; return <div style={{ ...abs(v ? 140 : 560, v ? 520 : 420, v ? 800 : 800), opacity: cl(k * 2), transform: `rotate(-2deg) scale(${0.85 + 0.15 * k})`, background: '#fff', borderRadius: 10, padding: 36, boxShadow: '0 24px 50px rgba(40,30,20,.14)' }}>
@@ -562,7 +565,7 @@ const Tender2 = ({ t, v }) => {
   const mails = ['Thông tin thầu ngày 12/11 · phần 1', 'Thông tin thầu ngày 12/11 · phần 2', 'Kết quả mở thầu ngày 12/11'];
   const filesK = P(t, c.tai, 0.8); const rows = Math.floor(412 * P(t, c.dua, 1.2));
   return (<>
-    <Head t={t} at={111.0} x={v ? 60 : 90} y={v ? 150 : 150} size={v ? 74 : 70} w={v ? 960 : 900}>Nếu đã mua số liệu?</Head>
+    <Head t={t} at={SEG('tender2').start} x={v ? 60 : 90} y={v ? 150 : 150} size={v ? 74 : 70} w={v ? 960 : 900}>Nếu đã mua số liệu?</Head>
     {(() => { const k = SPR(t, c.nam - 0.15, 0.8); if (k < 0.01) return null; return <div style={{ ...abs(v ? 760 : 1060, v ? 150 : 140), opacity: cl(k * 2), transform: `scale(${0.8 + 0.2 * k})`, fontFamily: SERIF, fontWeight: 700, fontSize: v ? 96 : 110, color: E.red, lineHeight: 1 }}>17:00</div>; })()}
     <In t={t} at={c.em - 0.3} y={30}><div style={{ ...abs(ib[0], ib[1], ib[2]), background: '#fff', borderRadius: 14, boxShadow: '0 24px 60px rgba(40,30,20,.16)', overflow: 'hidden' }}>
       <div style={{ padding: '18px 24px', fontWeight: 800, fontSize: 26, display: 'flex', alignItems: 'center', gap: 12 }}><span style={{ width: 34, height: 26, borderRadius: 5, background: E.red, display: 'inline-block' }} />Hộp thư · thông tin thầu</div>
@@ -651,7 +654,7 @@ const SfxTrack4 = () => {
   ['drive', 'sheet', 'apps', 'github'].forEach((w) => L.push([W('roles', w) - 0.2, 'pop', 0.3])); L.push([W('roles', 'claude') - 0.2, 'shimmer', 0.3], [W('roles', 'kết'), 'whoosh_long', 0.22], [W('roles', 'maps') - 0.2, 'pop', 0.28]);
   L.push([W('price', 'giờ'), 'tick', 0.45], [W('price', 'ghi') - 0.2, 'whoosh', 0.22], [W('price', 'so') - 0.2, 'swoosh_short', 0.3], [W('price', 'claude') - 0.1, 'sparkle', 0.25], [W('price', 'giảm') + 0.3, 'pop', 0.3]);
   L.push([W('travel1', 'tab') - 0.2, 'pop', 0.28], [W('travel1', 'tab', 1) - 0.2, 'pop', 0.28], [W('travel1', 'chụp'), 'camera', 0.4], [W('travel1', 'chuyển'), 'glitch', 0.16]);
-  L.push([W('travel2', 'sẽ') - 0.2, 'whoosh_long', 0.25], [W('travel2', 'chỉ', 1) - 0.2, 'swoosh_short', 0.28], [W('travel2', 'thực'), 'sparkle', 0.25], [W('travel2', 'giới') - 0.1, 'notification', 0.25]);
+  L.push([W('travel2', 'mười') - 0.1, 'success', 0.3], [W('travel2', 'sẽ') - 0.2, 'whoosh_long', 0.25], [W('travel2', 'chỉ', 1) - 0.2, 'swoosh_short', 0.28], [W('travel2', 'thực'), 'sparkle', 0.25], [W('travel2', 'giới') - 0.1, 'notification', 0.25]);
   L.push([W('tender1', 'tải'), 'whoosh_soft', 0.22], [W('tender1', 'làm'), 'swoosh_short', 0.28], [W('tender1', 'cập'), 'tick', 0.4], [W('tender1', 'trực') - 0.2, 'whoosh', 0.22]);
   L.push([W('tender2', 'email') - 0.3, 'notification', 0.25], [W('tender2', 'năm') - 0.15, 'impact', 0.25], [W('tender2', 'tải'), 'whoosh_soft', 0.22], [W('tender2', 'đưa'), 'swoosh_short', 0.26], [W('tender2', 'báo') - 0.1, 'notification', 0.32], [W('tender2', 'chính'), 'success', 0.25]);
   L.push([W('brain', 'ứng') - 0.2, 'swell', 0.25], [W('brain', 'claude') - 0.2, 'shimmer', 0.25], [W('brain', 'sáng') - 0.3, 'riser', 0.25], [W('close', 'giờ') - 0.1, 'sparkle', 0.25]);
@@ -693,6 +696,6 @@ export const ReelThumb: React.FC = () => (
     <div style={{ ...abs(64, 640), display: 'flex', gap: 14 }}>{['drive', 'sheets', 'gas', 'github', 'claude'].map((k) => <Ico key={k} k={k} s={84} />)}</div>
     <div style={{ ...abs(-60, 900, 800, 800), WebkitMaskImage: 'linear-gradient(to bottom, #000 72%, transparent 98%)', maskImage: 'linear-gradient(to bottom, #000 72%, transparent 98%)' }}><Img src={staticFile('media/me.png')} style={{ width: '100%', height: '100%' }} /></div>
     <div style={{ position: 'absolute', left: 0, top: 0, transform: 'rotate(6deg)', transformOrigin: '850px 1300px' }}><Phone x={650} y={860} w={360}><Shot src="tr_m" /></Phone></div>
-    <div style={{ ...abs(0, 1740, 1080), textAlign: 'center', fontFamily: SERIF, fontStyle: 'italic', fontSize: 44, color: E.mute }}>Tra giá · Du lịch · Đấu thầu</div>
+    <div style={{ ...abs(0, 1740, 1080), textAlign: 'center', fontFamily: SERIF, fontStyle: 'italic', fontSize: 44, color: E.mute }}>Tra giá · Đấu thầu · Du lịch</div>
   </AbsoluteFill>
 );

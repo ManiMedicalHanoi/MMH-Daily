@@ -1,6 +1,6 @@
 # Lời đọc Tập 4 · Bản chất (tập cuối)
 
-Giọng ElevenLabs "Ninh Đôn", model `eleven_v4`, đọc liền theo 4 cụm. Khoảng 2 phút 34 giây. Phong cách hình: tạp chí / biên tập
+Giọng ElevenLabs "Ninh Đôn", model `eleven_v4`, đọc liền theo 4 cụm. Khoảng 2 phút 37 giây. Phong cách hình: tạp chí / biên tập
 (nền giấy, chữ có chân Cormorant Garamond, đầu trang "Tự dựng app · Số 04").
 
 Ba app ví dụ là bản demo dữ liệu mẫu trong `demo-app/index.html` (PriceScope, TripLens, TenderWatch), chụp bằng `tools/shots.js` (Playwright).
@@ -19,17 +19,17 @@ Hãy hình dung thế này. Google Drive và Google Sheet là kho dữ liệu. A
 **Ví dụ 01 · Tra giá thị trường**
 Ví dụ đầu tiên: tra giá thị trường. Trước đây, muốn biết thị trường đang bán bao nhiêu, bạn phải Google từng sản phẩm rồi chép tay vào bảng. Giờ, mỗi sáng, hệ thống tự thu thập giá các sản phẩm liên quan từ những nguồn bạn đã cấp quyền, ghi vào Sheet, so sánh và vẽ biểu đồ. Nguồn nào đáng tin, Claude cũng giúp bạn tìm. Giá thấp nhất ở đâu, ai vừa giảm giá, nhìn là thấy.
 
-**Ví dụ 02 · Du lịch: ba ứng dụng rời rạc**
-Ví dụ thứ hai, khi đi du lịch nước ngoài. Một tab mở Google Maps tìm đường, một tab Chrome xem chỗ ăn chỗ chơi, rồi lại chụp ảnh để dịch. Cứ thế chuyển qua chuyển lại.
+**Ví dụ 02 · Theo dõi đấu thầu**
+Ví dụ thứ hai, đấu thầu. Thay vì mua số liệu từ bên cung cấp, bạn hoàn toàn có thể tải dữ liệu công khai từ hệ thống mua sắm công, dựng công cụ làm sạch, cập nhật tự động, và trực quan toàn bộ thông tin. Thử tưởng tượng bạn tiết kiệm được bao nhiêu thời gian.
 
-**Ví dụ 02 · Một ứng dụng làm hết**
-Sẽ ra sao nếu chỉ một ứng dụng làm hết? Vị trí của bạn cập nhật trực tiếp trên bản đồ, chỉ đường từng bước, dịch biển hiệu hay thực đơn ngay lập tức, và giới thiệu luôn những địa điểm bạn đi qua trên đường.
-
-**Ví dụ 03 · Theo dõi đấu thầu**
-Ví dụ thứ ba, đấu thầu. Thay vì mua số liệu từ bên cung cấp, bạn hoàn toàn có thể tải dữ liệu công khai từ hệ thống mua sắm công, dựng công cụ làm sạch, cập nhật tự động, và trực quan toàn bộ thông tin. Thử tưởng tượng bạn tiết kiệm được bao nhiêu thời gian.
-
-**Ví dụ 03 · 17:00 hệ thống tự làm**
+**Ví dụ 02 · 17:00 hệ thống tự làm**
 Còn nếu đã mua, mỗi ngày bạn nhận email thông tin thầu. Thay vì tự tải thủ công, cứ năm giờ chiều, hệ thống quét hộp thư, tự tải file, đưa vào file tổng hợp, rồi cập nhật và báo ngay trên ứng dụng theo dõi đấu thầu, do chính bạn dựng ra.
+
+**Ví dụ 03 · Cuộc sống hằng ngày: đi du lịch**
+Không chỉ trong công việc, cả cuộc sống hằng ngày cũng vậy. Ví dụ, khi đi du lịch nước ngoài: một tab mở Google Maps tìm đường, một tab Chrome xem chỗ ăn chỗ chơi, rồi lại chụp ảnh để dịch. Cứ thế chuyển qua chuyển lại.
+
+**Ví dụ 03 · Một ứng dụng làm hết**
+Sẽ ra sao nếu chỉ một ứng dụng làm hết? Vị trí của bạn cập nhật trực tiếp trên bản đồ, chỉ đường từng bước, dịch biển hiệu hay thực đơn ngay lập tức, và giới thiệu luôn những địa điểm bạn đi qua trên đường. Một ứng dụng như thế này, chỉ mất khoảng mười phút để dựng.
 
 **Kết luận**
 Bạn thấy đấy, ứng dụng không có gì bí ẩn. Bản chất chỉ là một yêu cầu: xử lý dữ liệu, và chuyển dạng dữ liệu. Hãy tưởng tượng, khi bạn cho Claude quyền truy cập Drive, và dựng một kho backend trên GitHub, thì sáng tạo của bạn gần như không có giới hạn.
