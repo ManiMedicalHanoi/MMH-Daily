@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo apps</title>
+<link rel="stylesheet" href="fonts/be-vietnam-pro/400.css"><link rel="stylesheet" href="fonts/be-vietnam-pro/500.css"><link rel="stylesheet" href="fonts/be-vietnam-pro/600.css"><link rel="stylesheet" href="fonts/be-vietnam-pro/700.css"><link rel="stylesheet" href="fonts/be-vietnam-pro/800.css">
+<script src="trip.js"></script>
+<style>
+:root{--ink:#14202E;--mute:#6A7584;--line:#E7E4DD;--bg:#F5F4F0;--card:#fff;--blue:#1F6FEB;--green:#1E9E68;--red:#E0533D;--amber:#E8A33A;--violet:#6B5BD6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Be Vietnam Pro",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:14px}
+.app{display:none}.app.on{display:block}
+/* ---------- khung desktop ---------- */
+.dk{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+.side{background:#fff;border-right:1px solid var(--line);padding:22px 16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:-.3px;margin-bottom:26px}
+.brand i{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-style:normal;font-size:16px}
+.nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--mute);font-weight:600;font-size:13.5px;text-decoration:none;margin-bottom:2px}
+.nav a.on{background:#F1F0EC;color:var(--ink)}
+.nav a b{width:8px;height:8px;border-radius:3px;background:currentColor;opacity:.5}
+.side h6{font-size:10.5px;letter-spacing:1.4px;color:#9AA2AD;margin:20px 12px 8px;font-weight:700}
+.src{display:flex;align-items:center;gap:8px;padding:7px 12px;font-size:12.5px;font-weight:600;color:#3A4655}
+.src s{text-decoration:none;margin-left:auto;width:16px;height:16px;border-radius:8px;background:var(--green);display:grid;place-items:center;color:#fff;font-size:10px}
+.main{padding:22px 28px}
+.top{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.top h1{font-size:23px;font-weight:800;letter-spacing:-.5px}
+.top .sub{color:var(--mute);font-size:13px;font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12.5px;font-weight:600;color:#3A4655}
+.pill.live::before{content:"";width:8px;height:8px;border-radius:4px;background:var(--green);box-shadow:0 0 0 3px #D6F1E4}
+.btn{padding:9px 16px;border-radius:10px;background:var(--ink);color:#fff;font-weight:700;font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.kpi{background:#fff;border-radius:16px;padding:16px 18px;border:1px solid var(--line)}
+.kpi small{font-size:12px;color:var(--mute);font-weight:600}
+.kpi b{display:block;font-size:28px;font-weight:800;letter-spacing:-.8px;margin-top:4px}
+.kpi em{font-style:normal;font-size:12px;font-weight:700}
+.up{color:var(--green)}.dn{color:var(--red)}
+.grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:14px}
+.card{background:#fff;border-radius:16px;border:1px solid var(--line);padding:16px 18px}
+.card h3{font-size:15px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:10px}
+.card h3 span{margin-left:auto;font-size:12px;color:var(--mute);font-weight:600}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th{font-size:11px;letter-spacing:.6px;color:#8C95A1;text-align:left;font-weight:700;padding:8px 8px;border-bottom:1px solid var(--line);text-transform:uppercase}
+td{padding:10px 8px;border-bottom:1px solid #F0EEE9;font-size:13px;font-weight:500}
+td.n{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:700}
+.tag{white-space:nowrap;display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700}
+.t-g{background:#DDF3E8;color:#167A50}.t-r{background:#FBE3DE;color:#B83A26}.t-a{background:#FCEFD6;color:#9A6512}.t-b{background:#E2ECFD;color:#1C5BC4}.t-v{background:#ECE9FB;color:#5143B8}.t-n{background:#F0EFEB;color:#5A6370}
+.alert{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:#FFF7EC;border:1px solid #F6DFB8;margin-top:10px}
+.alert i{width:30px;height:30px;border-radius:9px;background:var(--amber);color:#fff;display:grid;place-items:center;font-style:normal;font-weight:800;flex-shrink:0}
+.alert b{font-size:13.5px;display:block}.alert small{font-size:12px;color:var(--mute)}
+.bars{display:flex;align-items:flex-end;gap:10px;height:150px;margin-top:14px;padding:0 4px}
+.bars div{flex:1;border-radius:6px 6px 2px 2px;position:relative}
+.bars div span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:11px;color:var(--mute);font-weight:600}
+.bars div em{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:11px;font-weight:800;font-style:normal}
+.log{font-size:12.5px;margin-top:8px}
+.log div{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed #ECE9E2;align-items:center}
+.log time{font-variant-numeric:tabular-nums;color:var(--mute);font-weight:700;width:44px}
+.log s{text-decoration:none;margin-left:auto;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{padding:5px 10px;border-radius:8px;background:#F3F2EE;font-size:12px;font-weight:700;color:#3A4655}
+/* ---------- điện thoại ---------- */
+.ph{width:100vw;height:100vh;position:relative;overflow:hidden;background:#EEE}
+.map{position:absolute;left:0;top:0;width:400px}
+.map img{width:400px;display:block}
+.srch{position:absolute;left:14px;right:14px;top:52px;height:50px;border-radius:25px;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,.14);display:flex;align-items:center;gap:10px;padding:0 8px 0 18px;font-weight:600;color:#3A4655}
+.srch .av{margin-left:auto;width:36px;height:36px;border-radius:18px;background:var(--violet);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+.lang{position:absolute;top:112px;left:14px;display:flex;gap:6px}
+.lang span{padding:6px 11px;border-radius:999px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.1);font-size:12px;font-weight:700}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.12);padding:10px 18px 26px}
+.sheet .grab{width:40px;height:5px;border-radius:3px;background:#DDD;margin:0 auto 12px}
+.step{display:flex;gap:12px;align-items:center;background:#1A73E8;color:#fff;border-radius:18px;padding:14px 16px;position:absolute;left:12px;right:12px;top:48px;box-shadow:0 8px 20px rgba(26,115,232,.35)}
+.step i{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-style:normal;font-size:24px;font-weight:800}
+.step b{font-size:19px;display:block}.step small{font-size:13px;opacity:.9}
+.poi{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #F0EEE9}
+.poi .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:16px;flex-shrink:0}
+.poi b{font-size:15px;display:block}.poi small{font-size:12.5px;color:var(--mute)}
+.poi em{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;color:var(--blue);white-space:nowrap}
+.eta{display:flex;align-items:baseline;gap:8px}.eta b{font-size:24px;font-weight:800;color:var(--green)}.eta span{color:var(--mute);font-weight:600}
+.cam{position:absolute;inset:0;background:#2B2B2B}
+.menu{position:absolute;left:34px;top:150px;width:332px;background:#F7F1E3;border-radius:6px;padding:26px 24px;transform:rotate(-2deg);box-shadow:0 20px 40px rgba(0,0,0,.5);font-family:Georgia,serif;color:#2B2116}
+.menu h2{text-align:center;font-size:24px;letter-spacing:3px}.menu h4{text-align:center;font-size:11px;letter-spacing:2px;margin:4px 0 14px;color:#7A6A55}
+.mi{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dotted #CDBFA4;font-size:15px}
+.mi .vi{display:block;font-family:"Be Vietnam Pro";font-size:13px;font-weight:700;color:#fff;background:#1A73E8;border-radius:6px;padding:2px 8px;margin-top:4px;width:max-content}
+.frame{position:absolute;border:3px solid #fff;border-radius:18px;left:24px;top:136px;width:352px;height:470px;box-shadow:0 0 0 2000px rgba(0,0,0,.35)}
+.camtop{position:absolute;top:50px;left:0;right:0;display:flex;justify-content:center;gap:8px}
+.camtop span{padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font-weight:700;font-size:13px}
+.camtop span.on{background:#fff;color:#111}
+.shut{position:absolute;bottom:56px;left:50%;margin-left:-36px;width:72px;height:72px;border-radius:36px;border:5px solid #fff;background:rgba(255,255,255,.25)}
+/* mobile list */
+.mh{padding:54px 18px 12px;display:flex;align-items:center;gap:10px}
+.mh .brand{margin:0}
+.ml{padding:0 14px}
+.nt{background:#fff;border-radius:16px;padding:14px;margin-bottom:10px;border:1px solid var(--line)}
+.nt b{font-size:14.5px;display:block;margin:4px 0}.nt small{color:var(--mute);font-size:12.5px}
+</style>
+</head>
+<body>
+
+<!-- ======================= PriceScope (desktop) ======================= -->
+<div class="app" id="price">
+ <div class="dk">
+  <div class="side">
+   <div class="brand"><i style="background:#1E9E68">P</i>PriceScope</div>
+   <div class="nav"><a class="on"><b></b>Tổng quan giá</a><a><b></b>Sản phẩm theo dõi</a><a><b></b>Cảnh báo giá</a><a><b></b>Báo cáo tuần</a></div>
+   <h6>NGUỒN ĐÃ CẤP QUYỀN</h6>
+   <div class="src">Sàn TMĐT A<s>✓</s></div><div class="src">Sàn TMĐT B<s>✓</s></div><div class="src">Web nhà phân phối<s>✓</s></div><div class="src">Chuỗi nhà thuốc<s>✓</s></div><div class="src">Báo giá đại lý (Drive)<s>✓</s></div><div class="src">Website hãng<s>✓</s></div>
+   <h6>LƯU TRỮ</h6>
+   <div class="src">Google Sheet · GiaThiTruong</div><div class="src">Apps Script · quét 06:00</div>
+  </div>
+  <div class="main">
+   <div class="top"><div><h1>Giá thị trường hôm nay</h1><div class="sub">Tự thu thập lúc 06:00 · 12/11/2026 · dữ liệu mẫu</div></div><span class="pill live" style="margin-left:auto">Đã cập nhật 06:00</span><span class="btn">Xuất báo cáo</span></div>
+   <div class="kpis">
+    <div class="kpi"><small>Sản phẩm theo dõi</small><b>128</b><em class="up">+6 tuần này</em></div>
+    <div class="kpi"><small>Nguồn giá</small><b>6</b><em style="color:var(--mute)">đều đã cấp quyền</em></div>
+    <div class="kpi"><small>Thay đổi giá hôm nay</small><b>9</b><em class="dn">5 giảm · 4 tăng</em></div>
+    <div class="kpi"><small>Chênh lệch TB giữa nguồn</small><b>11,4%</b><em class="up">thu hẹp 1,2 điểm</em></div>
+   </div>
+   <div class="grid2">
+    <div class="card">
+     <h3>Máy đo huyết áp bắp tay · 30 ngày <span>giá bán lẻ (nghìn đồng)</span></h3>
+     <svg id="pchart" viewBox="0 0 640 230" style="width:100%;height:230px;margin-top:6px"></svg>
+     <div class="chips" id="plegend"></div>
+    </div>
+    <div class="card">
+     <h3>Cảnh báo mới <span>3</span></h3>
+     <div class="alert"><i>↓</i><div><b>Sàn TMĐT B giảm 8% · Máy đo huyết áp bắp tay</b><small>865.000đ → 795.000đ · thấp nhất thị trường</small></div></div>
+     <div class="alert" style="background:#EEF5FF;border-color:#CFE0FB"><i style="background:var(--blue)">+</i><div><b>Thêm nguồn: Website hãng</b><small>Claude gợi ý · 42 sản phẩm khớp mã</small></div></div>
+     <div class="alert" style="background:#F2FBF6;border-color:#CDEBDB"><i style="background:var(--green)">↑</i><div><b>Chuỗi nhà thuốc tăng 3% · Nhiệt kế hồng ngoại</b><small>420.000đ → 433.000đ</small></div></div>
+    </div>
+   </div>
+   <div class="card" style="margin-top:14px">
+    <h3>So sánh theo nguồn <span>sắp xếp: chênh lệch lớn nhất</span></h3>
+    <table><thead><tr><th>Sản phẩm</th><th>Thấp nhất</th><th>Trung bình</th><th>Cao nhất</th><th>Rẻ nhất tại</th><th>7 ngày</th></tr></thead>
+    <tbody id="ptable"></tbody></table>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- ======================= TenderWatch (desktop) ======================= -->
+<div class="app" id="tender">
+ <div class="dk">
+  <div class="side">
+   <div class="brand"><i style="background:#6B5BD6">T</i>TenderWatch</div>
+   <div class="nav"><a class="on"><b></b>Gói thầu mới</a><a><b></b>Theo dõi của tôi</a><a><b></b>Phân tích</a><a><b></b>Đối thủ trúng thầu</a></div>
+   <h6>NGUỒN DỮ LIỆU</h6>
+   <div class="src">Mua sắm công (công khai)<s>✓</s></div><div class="src">Email số liệu hằng ngày<s>✓</s></div>
+   <h6>TỪ KHOÁ THEO DÕI</h6>
+   <div class="chips" style="padding:0 10px"><span class="chip">vật tư tiêu hao</span><span class="chip">nha khoa</span><span class="chip">nhãn khoa</span><span class="chip">chỉ khâu</span></div>
+   <h6>LƯU TRỮ</h6>
+   <div class="src">Drive · ThauHangNgay/</div><div class="src">Sheet · TongHopThau</div>
+  </div>
+  <div class="main">
+   <div class="top"><div><h1>Gói thầu mới</h1><div class="sub">Đồng bộ tự động 17:00 hằng ngày · dữ liệu mẫu</div></div><span class="pill live" style="margin-left:auto">Đồng bộ lúc 17:00</span><span class="btn">Tải Excel</span></div>
+   <div class="kpis">
+    <div class="kpi"><small>Gói mới hôm nay</small><b>14</b><em class="up">+5 so với hôm qua</em></div>
+    <div class="kpi"><small>Đang mở thầu</small><b>236</b><em style="color:var(--mute)">khớp từ khoá</em></div>
+    <div class="kpi"><small>Sắp đóng (≤ 3 ngày)</small><b>11</b><em class="dn">cần xem ngay</em></div>
+    <div class="kpi"><small>Dòng dữ liệu đã làm sạch</small><b>412</b><em style="color:var(--mute)">từ 5 tệp hôm nay</em></div>
+   </div>
+   <div class="grid2">
+    <div class="card">
+     <h3>Danh sách gói thầu <span>khớp từ khoá theo dõi</span></h3>
+     <table><thead><tr><th>Mã TBMT</th><th>Tên gói</th><th>Bên mời thầu</th><th>Giá gói</th><th>Đóng thầu</th><th></th></tr></thead><tbody id="ttable"></tbody></table>
+    </div>
+    <div>
+     <div class="card">
+      <h3>Đồng bộ 17:00 hôm nay <span>tự động</span></h3>
+      <div class="log">
+       <div><time>17:00</time>Quét hộp thư · 3 email thông tin thầu<s class="up">✓</s></div>
+       <div><time>17:01</time>Tải 5 tệp đính kèm về Drive<s class="up">✓</s></div>
+       <div><time>17:02</time>Làm sạch · gộp 412 dòng, bỏ 37 dòng trùng<s class="up">✓</s></div>
+       <div><time>17:02</time>Ghi vào Sheet TongHopThau<s class="up">✓</s></div>
+       <div><time>17:03</time>Báo 14 gói mới lên ứng dụng<s class="up">✓</s></div>
+      </div>
+     </div>
+     <div class="card" style="margin-top:14px">
+      <h3>Gói mới theo tháng <span>2026</span></h3>
+      <div class="bars" id="tbars"></div><div style="height:22px"></div>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- ======================= TenderWatch (mobile) ======================= -->
+<div class="app" id="tender-m">
+ <div class="mh"><div class="brand"><i style="background:#6B5BD6">T</i>TenderWatch</div><span class="pill live" style="margin-left:auto">17:03</span></div>
+ <div class="ml">
+  <div class="nt" style="background:#6B5BD6;color:#fff;border:0"><small style="color:#E4E0FF">Hôm nay · 17:03</small><b style="font-size:17px">14 gói thầu mới khớp từ khoá</b><small style="color:#E4E0FF">Đã tự tải 5 tệp · làm sạch 412 dòng</small></div>
+  <div id="tmlist"></div>
+ </div>
+</div>
+
+<!-- ======================= TripLens (mobile) ======================= -->
+<div class="app" id="trip">
+ <div class="ph">
+  <div class="map"><img src="img/map.jpg"><svg id="tsvg" style="position:absolute;left:0;top:0" width="400"></svg></div>
+  <div id="tstep" class="step"><i>↓</i><div><b>Đi thẳng 250 m</b><small>rồi rẽ trái về phía nhà thờ Trinity</small></div></div>
+  <div class="srch" id="tsrch">🔍&nbsp; Stone Street<div class="av">L</div></div>
+  <div class="lang" id="tlang"><span>EN → VI</span><span>Đi bộ</span><span>Ăn uống</span></div>
+  <div class="sheet" id="tsheet">
+   <div class="grab"></div>
+   <div class="eta"><b>15 phút</b><span>· 1,2 km · đi bộ</span></div>
+   <div style="font-size:13px;color:var(--mute);margin:2px 0 8px;font-weight:600">Trên đường bạn sẽ đi qua</div>
+   <div class="poi"><div class="ic" style="background:#8D6E63">T</div><div><b>Nhà thờ Trinity</b><small>Nhà thờ cổ giữa khu tài chính</small></div><em>Nghe giới thiệu ›</em></div>
+   <div class="poi"><div class="ic" style="background:#C9A227">B</div><div><b>Tượng Bò Đồng</b><small>Biểu tượng Phố Wall · điểm chụp ảnh</small></div><em>Nghe giới thiệu ›</em></div>
+   <div class="poi" style="border:0"><div class="ic" style="background:#E0533D">S</div><div><b>Stone Street</b><small>Phố đi bộ lát đá · nhiều quán ăn</small></div><em>Điểm đến</em></div>
+  </div>
+ </div>
+</div>
+
+<!-- ======================= TripLens: dịch thực đơn ======================= -->
+<div class="app" id="trip-tr">
+ <div class="ph"><div class="cam"></div>
+  <div class="menu">
+   <h2>THE CORNER</h2><h4>LUNCH · EST. 1998</h4>
+   <div class="mi"><div>Clam Chowder<span class="vi">Súp nghêu kem</span></div><div>$9</div></div>
+   <div class="mi"><div>Lobster Roll<span class="vi">Bánh mì kẹp tôm hùm</span></div><div>$28</div></div>
+   <div class="mi"><div>Pastrami on Rye<span class="vi">Bánh mì lúa mạch thịt bò xông khói</span></div><div>$19</div></div>
+   <div class="mi"><div>Cheesecake<span class="vi">Bánh phô mai</span></div><div>$8</div></div>
+   <div class="mi" style="border:0"><div>Iced Tea<span class="vi">Trà đá</span></div><div>$4</div></div>
+  </div>
+  <div class="frame"></div>
+  <div class="camtop"><span>Biển hiệu</span><span class="on">Thực đơn</span><span>Hội thoại</span></div>
+  <div class="shut"></div>
+ </div>
+</div>
+
+<script>
+const R=location.hash.slice(1)||'price'; if(location.search.includes('raw'))document.head.insertAdjacentHTML('beforeend','<style>.mi .vi{display:none}</style>'); document.getElementById(R).classList.add('on');
+// ---- PriceScope
+const P=[['Máy đo huyết áp bắp tay',795,842,905,'Sàn TMĐT B',-8],['Nhiệt kế hồng ngoại',389,412,433,'Web nhà phân phối',3],['Máy xông khí dung',1150,1236,1390,'Sàn TMĐT A',-4],['Máy đo SpO2 kẹp ngón',265,298,345,'Sàn TMĐT B',-6],['Máy đo đường huyết',540,575,620,'Chuỗi nhà thuốc',0],['Que thử đường huyết (hộp 50)',219,236,259,'Báo giá đại lý',-2]];
+const f=n=>n.toLocaleString('vi-VN')+'k';
+document.getElementById('ptable').innerHTML=P.map(r=>`<tr><td style="font-weight:700">${r[0]}</td><td class="n" style="color:var(--green)">${f(r[1])}</td><td class="n">${f(r[2])}</td><td class="n">${f(r[3])}</td><td><span class="tag t-n">${r[4]}</span></td><td>${r[5]<0?`<span class="tag t-r">▼ ${-r[5]}%</span>`:r[5]>0?`<span class="tag t-g">▲ ${r[5]}%</span>`:'<span class="tag t-n">—</span>'}</td></tr>`).join('');
+const S=[['Sàn TMĐT A','#1F6FEB',860],['Sàn TMĐT B','#E0533D',865],['Web nhà phân phối','#1E9E68',880],['Chuỗi nhà thuốc','#E8A33A',905]];
+let sv='';for(let g=0;g<5;g++){const y=20+g*45;sv+=`<line x1="40" x2="630" y1="${y}" y2="${y}" stroke="#EEE"/><text x="0" y="${y+4}" font-size="11" fill="#9AA2AD">${920-g*35}</text>`}
+let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;
+S.forEach(([n,c,b],i)=>{let pts=[];let v=b;for(let d=0;d<30;d++){v+= (rnd()-.5)*8; if(i==1&&d==27)v=795; if(i==1&&d>27)v=795+(rnd()-.5)*3; pts.push([40+d*20.3,20+(920-v)/35*45])}
+ sv+=`<polyline fill="none" stroke="${c}" stroke-width="${i==1?3.5:2.2}" points="${pts.map(p=>p.join(',')).join(' ')}"/>`; if(i==1){const p=pts[27];sv+=`<circle cx="${p[0]}" cy="${p[1]}" r="6" fill="${c}"/><text x="${p[0]-72}" y="${p[1]+22}" font-size="12" font-weight="800" fill="${c}">795k · −8%</text>`}});
+document.getElementById('pchart').innerHTML=sv;
+document.getElementById('plegend').innerHTML=S.map(([n,c])=>`<span class="chip"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${c};margin-right:6px"></span>${n}</span>`).join('');
+// ---- TenderWatch
+const T=[['IB2600418231','Mua sắm vật tư tiêu hao y tế năm 2027','Bệnh viện Đa khoa A','4,82 tỷ','14/11','t-r','Sắp đóng'],['IB2600418655','Vật tư nha khoa, mũi khoan, trâm nội nha','TT Y tế Khu vực B','1,26 tỷ','19/11','t-v','Mới'],['IB2600419012','Chỉ khâu phẫu thuật các loại','Bệnh viện Ngoại khoa C','2,10 tỷ','21/11','t-v','Mới'],['IB2600419377','Dao mổ, vật tư phẫu thuật nhãn khoa','Bệnh viện Mắt D','3,45 tỷ','24/11','t-v','Mới'],['IB2600417790','Vật tư tiêu hao khoa Răng Hàm Mặt','Bệnh viện Đa khoa E','0,86 tỷ','26/11','t-b','Đang mở'],['IB2600416540','Hoá chất, vật tư xét nghiệm','TT Y tế Huyện F','5,30 tỷ','28/11','t-b','Đang mở'],['IB2600415981','Vật tư y tế dùng một lần','Bệnh viện Nhi G','2,74 tỷ','02/12','t-b','Đang mở']];
+document.getElementById('ttable').innerHTML=T.map(r=>`<tr><td style="font-family:ui-monospace,monospace;font-size:12px;color:var(--mute)">${r[0]}</td><td style="font-weight:700;max-width:230px">${r[1]}</td><td>${r[2]}</td><td class="n">${r[3]}</td><td class="n">${r[4]}</td><td><span class="tag ${r[5]}">${r[6]}</span></td></tr>`).join('');
+const B=[38,42,35,51,47,58,62,55,71,66,84];
+document.getElementById('tbars').innerHTML=B.map((v,i)=>`<div style="height:${v/84*100}%;background:${i==10?'#6B5BD6':'#DCD7F7'}"><em style="color:${i==10?'#6B5BD6':'#9A93C9'}">${v}</em><span>T${i+1}</span></div>`).join('');
+document.getElementById('tmlist').innerHTML=T.slice(0,5).map(r=>`<div class="nt"><span class="tag ${r[5]}">${r[6]}</span><b>${r[1]}</b><small>${r[2]} · ${r[3]} · đóng ${r[4]}</small></div>`).join('');
+// ---- TripLens
+if(window.TRIP){const t=TRIP,s=document.getElementById('tsvg');s.setAttribute('height',t.mh);const pts=t.route.map(p=>p.join(',')).join(' ');
+ let h=`<polyline points="${pts}" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><polyline points="${pts}" fill="none" stroke="#1A73E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`;
+ const pin=(p,c,l)=>`<g transform="translate(${p[0]},${p[1]})"><circle r="15" fill="${c}" stroke="#fff" stroke-width="3"/><text y="5" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">${l}</text></g>`;
+ h+=pin(t.P.trinity,'#8D6E63','T')+pin(t.P.bull,'#C9A227','B');
+ const e=t.route[t.route.length-1];h+=`<g transform="translate(${e[0]},${e[1]})"><path d="M0,0 C-14,-18 -14,-34 0,-34 C14,-34 14,-18 0,0Z" fill="#E0533D" stroke="#fff" stroke-width="2.5"/><circle cy="-23" r="5" fill="#fff"/></g>`;
+ const u=t.route[0];h+=`<circle cx="${u[0]}" cy="${u[1]}" r="26" fill="#1A73E8" opacity=".18"/><circle cx="${u[0]}" cy="${u[1]}" r="10" fill="#1A73E8" stroke="#fff" stroke-width="3.5"/>`;
+ s.innerHTML=h;
+ const q=new URLSearchParams(location.search);const dy=Number(q.get('dy')||0);document.querySelector('.map').style.top=(-dy)+'px';
+ if(q.get('mode')==='nav'){document.getElementById('tsrch').style.display='none';document.getElementById('tlang').style.display='none'}else{document.getElementById('tstep').style.display='none'}
+}
+</script>
+</body>
+</html>
