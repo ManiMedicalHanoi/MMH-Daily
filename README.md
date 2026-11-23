@@ -22,7 +22,7 @@ Tờ báo buổi sáng của MMH + podcast tiếng Anh mỗi ngày.
   ⇒ Training Hub `dailyRun` (đăng nhập email công ty; máy chủ giữ token) ⇒ GitHub Actions (inputs `sources`, `topics`, `voice`, `voices`) hoặc Routine Claude. Tiến độ: `dailyStatus`.
   Admin: Thiết lập ▸ token GitHub (fine-grained, kho này, Actions R/W), Fire URL + token Routine, số lượt ElevenLabs / ngày.
 - **Chế độ học** (`learn.js`): phụ đề Anh + Việt chạy theo câu, lặp câu, dừng sau mỗi câu, ẩn Anh / Việt, từ vựng gạch chân.
-- **Học từ số này** (`study.js`, trang Nghe): máy chủ soạn sẵn `ed.study` (`edition.mjs ▸ studyWrite`): 12 từ mới, 6 cụm hay / câu móc, 3 ngữ pháp, 8 câu kiểm tra nghe (ý chính · chi tiết · từ trong ngữ cảnh · suy luận); mỗi mục có "Nghe lại" tua đúng câu, "＋ Sổ từ" ghi vào Sổ từ của Luyện nói; điểm lưu `mmh_daily_quiz:<ngày>`.
+- **Học bài này** (`study.js`, trang Nghe, ngay dưới nút phát): bài học 4 bước toàn màn hình dựng từ `ed.study` (`edition.mjs ▸ studyWrite`) — 1 Từ khoá (thẻ lật, phát âm, "Chưa biết" ⇒ Sổ từ Luyện nói, vuốt trái / phải) · 2 Nghe (phụ đề lớn theo giọng đọc, ẩn chữ / Anh / Anh + Việt, câu trước / sau, tốc độ) · 3 Kiểm tra nghe (từng câu, đúng / sai ngay, nghe lại đúng đoạn) · 4 Nói theo (cụm hay + câu ngữ pháp, chấm bằng nhận diện giọng nói của trình duyệt) · Tổng kết. Tiến độ `mmh_daily_lesson:<ngày>`, điểm `mmh_daily_quiz:<ngày>`.
 - **Hướng dẫn** (`guide.js`, nút ?), **Cài app** (`install.js`, `manifest.webmanifest`, `sw.js` — đổi quy tắc đệm ⇒ tăng `V`).
 - Giọng ElevenLabs: secret `ELEVENLABS_API_KEY` (Settings ▸ Secrets ▸ Actions) ⇒ podcast hằng ngày tự đọc bằng ElevenLabs v4 Turbo có thẻ cảm xúc (PODCAST.md ▸ 6); hết credit / lỗi ⇒ giọng miễn phí. Không có khoá ⇒ luôn giọng miễn phí.
 
