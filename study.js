@@ -47,18 +47,20 @@
     html(e) {
       ed = e; const s = e.study; if (!s || !(s.quiz?.length || s.words?.length)) return '';
       const p = progress(e.date, s), idx = STEPS.findIndex(([k]) => k === p.l.step);
+      const L = (D.L || ((v) => v)), SN = { words: 'Keywords', listen: 'Listen', quiz: 'Quiz', speak: 'Speak' };
       return `<section class="ls-box st" id="study">
-        <div class="st-hero"><div><h3>Học bài này</h3><p>4 bước · khoảng 10 phút: ${s.words.length} từ khoá · nghe · ${p.nq} câu kiểm tra · ${s.phrases.length + s.grammar.length} câu nói theo</p>
-          <div class="st-steps">${STEPS.slice(0, 4).map(([k, n], i) => `<span class="${i < idx || p.finished ? 'ok' : i === idx ? 'on' : ''}">${i + 1}. ${n}</span>`).join('')}</div>
-          ${p.done ? `<p class="st-sc">Kiểm tra nghe: <b>${p.right}/${p.nq}</b></p>` : ''}</div>
-          <div class="st-btns"><a class="st-rk" href="#/rank">Bảng xếp hạng</a><button class="st-go" type="button" data-ls2="open">${p.finished ? 'Học lại' : idx > 0 ? 'Học tiếp' : 'Bắt đầu'}</button></div></div>
-        <details class="st-all"><summary>Xem nhanh toàn bộ từ, cụm, ngữ pháp</summary>
+        <div class="st-hero"><div><h3>${L('Học bài này', 'Study this episode')}</h3><p>${L(`4 bước · khoảng 10 phút: ${s.words.length} từ khoá · nghe · ${p.nq} câu kiểm tra · ${s.phrases.length + s.grammar.length} câu nói theo`, `4 steps · about 10 minutes: ${s.words.length} keywords · listen · ${p.nq} questions · ${s.phrases.length + s.grammar.length} lines to repeat`)}</p>
+          <div class="st-steps">${STEPS.slice(0, 4).map(([k, n], i) => `<span class="${i < idx || p.finished ? 'ok' : i === idx ? 'on' : ''}">${i + 1}. ${L(n, SN[k] || n)}</span>`).join('')}</div>
+          ${p.done ? `<p class="st-sc">${L('Kiểm tra nghe', 'Listening quiz')}: <b>${p.right}/${p.nq}</b></p>` : ''}</div>
+          <div class="st-btns"><a class="st-rk" href="#/rank">${L('Bảng xếp hạng', 'Ranking')}</a><button class="st-go" type="button" data-ls2="open">${p.finished ? L('Học lại', 'Study again') : idx > 0 ? L('Học tiếp', 'Continue') : L('Bắt đầu', 'Start')}</button></div></div>
+        <details class="st-all"><summary>${L('Xem nhanh toàn bộ từ, cụm, ngữ pháp', 'All words, phrases and grammar')}</summary>
           <dl class="st-dl">${s.words.map(w => `<dt>${esc(w.en)}</dt><dd>${esc(w.vi)}</dd>`).join('')}${s.phrases.map(x => `<dt>${esc(x.en)}</dt><dd>${esc(x.vi)}</dd>`).join('')}${s.grammar.map(g => `<dt>${esc(g.p)}</dt><dd>${esc(g.vi)}</dd>`).join('')}</dl></details>
       </section>`;
     },
     tabs(e) {   // thanh chuyển nhanh đầu trang Nghe: Nghe · Học bài này · Luyện nói · Xếp hạng
       const s = e.study, ok = s && (s.quiz?.length || s.words?.length);
-      return `<nav class="ls-tabs" aria-label="Chuyển nhanh"><a class="on" href="#/listen/${e.date}">Nghe</a>${ok ? '<button type="button" data-ls2="open">Học bài này</button>' : ''}<a href="coach/#/">Luyện nói</a><a href="#/rank">Xếp hạng</a></nav>`;
+      const L = (D.L || ((v) => v));
+      return `<nav class="ls-tabs" aria-label="${L('Chuyển nhanh', 'Quick links')}"><a class="on" href="#/listen/${e.date}">${L('Nghe', 'Listen')}</a>${ok ? `<button type="button" data-ls2="open">${L('Học bài này', 'Study this episode')}</button>` : ''}<a href="coach/#/">${L('Luyện nói', 'Speaking')}</a><a href="#/rank">${L('Xếp hạng', 'Ranking')}</a></nav>`;
     },
     open(e) { if (e) ed = e; if (!ed?.study) return; L = load(ed.date); if (L.step === 'done') Object.assign(L, { step: 'words', i: 0 }); ov.hidden = false; document.documentElement.classList.add('ls2-on'); render(); }
   };

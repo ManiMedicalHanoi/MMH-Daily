@@ -5,6 +5,15 @@
 Tờ báo buổi sáng của MMH + podcast tiếng Anh mỗi ngày.
 **Ưu tiên y tế** (đấu thầu, chính sách, đầu tư công, bệnh viện lớn, thiết bị y tế), sau đó kinh tế, chính trị, xã hội Việt Nam.
 
+## AI & Công nghệ + AI Pulse, tiếng Anh toàn app, không lặp nội dung (24/11/2026)
+- **Mục AI & Công nghệ** (`config.json ▸ sections.ai`, feeds `sec: "ai"`, chỉ nguồn quốc tế, giữ 10 ngày): blog chính thức các hãng AI, bài do chính lãnh đạo / người xây AI viết,
+  phát biểu – bài đăng của lãnh đạo OpenAI · Anthropic · Meta · Google · NVIDIA · Microsoft (qua báo công nghệ — X / Threads không cho đọc tự động), kênh YouTube AI lớn
+  + kênh AI cho sales & marketing (khai báo `@handle`, GitHub tự tra mã kênh ⇒ `data/yt.json`). Nhãn: lãnh đạo AI · mô hình mới · AI agent · AI cho sales & marketing · AI trong y tế · video.
+- **AI Pulse** (Thứ Năm, Liam — giọng ElevenLabs "Liam", edge-tts `en-US-RogerNeural`): kiểu YouTuber review công nghệ, đi sâu công nghệ, góc MMH tuỳ chọn luân phiên (PODCAST.md ▸ 8).
+  Thiếu tin AI mới (< 3) ⇒ MMH Talk. Tổng hợp ngay ▸ chỉ chọn chủ đề AI ⇒ ra số AI Pulse.
+- **Không lặp**: `data/aired.json` (`tools/aired.mjs`) — tin / video đã nói trong podcast (`podcast.covered`) không series nào dùng lại trong 30 ngày (so mã tin + tiêu đề gần giống). Week in Review được nhắc lại.
+- **VI · EN** đổi cả giao diện: mục, nhãn chủ đề, ngày, tên báo (tên tiếng Anh hoặc không dấu), hướng dẫn, chế độ học. Chữ giao diện mới: `L(vi, en)` / `data-en`.
+
 ## Mỗi sáng (GitHub Actions `.github/workflows/daily.yml`, 05:45 giờ VN)
 
 1. `tools/collect.mjs`: gom tin từ ~45 kênh của báo chính thống Việt + Anh và Google News (Reuters, Bloomberg, Nikkei…), cùng văn bản mới trên vanban.chinhphu.vn.

@@ -7,20 +7,43 @@
     get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* riêng tư */ } },
   };
-  const SEC = { health: ['Y tế', 'Health'], economy: ['Kinh tế', 'Economy'], politics: ['Chính trị', 'Politics'], society: ['Xã hội', 'Society'] };
-  const TAG = { dental: 'Nha khoa', eye: 'Nhãn khoa', tender: 'Đấu thầu', device: 'Thiết bị y tế', insurance: 'BHYT & giá', surgery: 'Phẫu thuật', policy: 'Chính sách', invest: 'Đầu tư công', hospital: 'Bệnh viện', market: 'Thị trường' };
-  const DESK = { dental: 'Nha khoa', eye: 'Nhãn khoa', tender: 'Thầu & thiết bị', policy: 'Chính sách & BHYT', market: 'Bệnh viện & thị trường', invest: 'Đầu tư công', hospital: 'Bệnh viện', device: 'Thiết bị y tế' };
+  /* Mọi nhãn có 2 ngôn ngữ [Việt, Anh] — nút VI · EN đổi CẢ giao diện, không chỉ tiêu đề tin (người dùng yêu cầu 24/11/2026). */
+  const SEC = { health: ['Y tế', 'Health'], economy: ['Kinh tế', 'Economy'], politics: ['Chính trị', 'Politics'], society: ['Xã hội', 'Society'], ai: ['AI & Công nghệ', 'AI & Tech'] };
+  const TAG = { dental: ['Nha khoa', 'Dentistry'], eye: ['Nhãn khoa', 'Ophthalmology'], tender: ['Đấu thầu', 'Tenders'], device: ['Thiết bị y tế', 'Medical devices'], insurance: ['BHYT & giá', 'Insurance & fees'],
+    surgery: ['Phẫu thuật', 'Surgery'], policy: ['Chính sách', 'Policy'], invest: ['Đầu tư công', 'Public investment'], hospital: ['Bệnh viện', 'Hospitals'], market: ['Thị trường', 'Market'],
+    people: ['Lãnh đạo AI', 'AI leaders'], model: ['Mô hình mới', 'New models'], agent: ['AI agent', 'AI agents'], salesmkt: ['AI cho sales & marketing', 'AI in sales & marketing'],
+    aimed: ['AI trong y tế', 'AI in healthcare'], airules: ['Quy định AI', 'AI rules'], chips: ['Chip & hạ tầng', 'Chips & compute'], research: ['Nghiên cứu', 'Research'], video: ['Video', 'Video'] };
+  const DESK = { dental: ['Nha khoa', 'Dentistry'], eye: ['Nhãn khoa', 'Ophthalmology'], tender: ['Thầu & thiết bị', 'Tenders & devices'], policy: ['Chính sách & BHYT', 'Policy & insurance'],
+    market: ['Bệnh viện & thị trường', 'Hospitals & market'], invest: ['Đầu tư công', 'Public investment'], hospital: ['Bệnh viện', 'Hospitals'], device: ['Thiết bị y tế', 'Medical devices'] };
   const WD = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
   const ICON = {
     play: '<svg viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" fill="currentColor"/></svg>',
     pause: '<svg viewBox="0 0 24 24"><rect x="5.5" y="4" width="4.5" height="16" rx="1.2" fill="currentColor"/><rect x="14" y="4" width="4.5" height="16" rx="1.2" fill="currentColor"/></svg>',
   };
   const S = { index: null, eds: {}, cur: null, lang: store.get('mmh_daily_lang', 'vi'), ep: null, tab: '', sub: store.get('mmh_daily_sub', 'both') };
+  const EN = () => S.lang === 'en';
+  const L = (vi, en) => (S.lang === 'en' ? en : vi);
+  const tr = pair => (pair ? pair[S.lang === 'en' ? 1 : 0] : '');
   const toast = t => { const el = $('#toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (el.hidden = true), 2400); };
   const viDate = ds => { ds = String(ds).replace(/^i-/, ''); const d = new Date(ds + 'T00:00:00Z'); return `${WD[d.getUTCDay()]}, ${d.getUTCDate()}/${d.getUTCMonth() + 1}/${d.getUTCFullYear()}`; };
   const enDate = ds => new Date(ds + 'T00:00:00Z').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
   const mmss = s => { s = Math.max(0, Math.floor(s || 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
-  const ago = d => { const h = Math.round((Date.now() - new Date(d)) / 36e5); return h < 1 ? 'vừa xong' : h < 24 ? h + ' giờ trước' : Math.round(h / 24) + ' ngày trước'; };
+  const ago = d => { const h = Math.round((Date.now() - new Date(d)) / 36e5); return h < 1 ? L('vừa xong', 'just now') : h < 24 ? h + L(' giờ trước', 'h ago') : Math.round(h / 24) + L(' ngày trước', 'd ago'); };
+  const dateL = ds => (S.lang === 'en' ? enDate(String(ds).replace(/^i-/, '')) : viDate(ds));
+  /* Tên báo khi xem tiếng Anh: tên tiếng Anh chính thức (cơ quan, báo có tên Anh), báo khác viết không dấu (Tuoi Tre, Nhan Dan…) */
+  const SRC_EN = { 'Báo Chính phủ': 'Government News', 'Cổng TTĐT Chính phủ': 'Government Portal', 'Bộ Y tế': 'Ministry of Health', 'Văn bản Chính phủ': 'Government documents',
+    'Sức khỏe & Đời sống': 'Health & Life', 'Báo Đấu thầu': 'Bidding Newspaper', 'Báo Đầu tư': 'Vietnam Investment News', 'Kinh tế Sài Gòn': 'Saigon Economic Times',
+    'Quân đội Nhân dân': 'People\'s Army', 'Báo Đảng Cộng sản': 'Communist Party News', 'Quốc hội': 'National Assembly', 'Đại biểu Nhân dân': 'People\'s Representative',
+    'Báo Tin tức (TTXVN)': 'Vietnam News Agency', 'Hà Nội Mới': 'Hanoi Moi', 'Sài Gòn Giải Phóng': 'Saigon Giai Phong', 'Người Lao Động': 'Nguoi Lao Dong', 'Lao Động': 'Lao Dong',
+    'Pháp luật TP.HCM': 'HCMC Law', 'Luật Việt Nam': 'LuatVietnam', 'Bộ Tài chính': 'Ministry of Finance', 'Ngân hàng Nhà nước': 'State Bank of Vietnam',
+    'Tổng cục Thống kê': 'General Statistics Office', 'Cục Thống kê': 'National Statistics Office', 'Báo Quốc tế': 'World & Vietnam Report', 'Công Thương': 'Industry & Trade',
+    'Tạp chí Tài chính': 'Finance Review', 'Hải quan Việt Nam': 'Vietnam Customs', 'BHXH Việt Nam': 'Vietnam Social Security', 'BV Mắt Trung ương': 'Vietnam National Eye Hospital',
+    'BV Răng Hàm Mặt TW': 'National Hospital of Odonto-Stomatology', 'Cục Quản lý Khám chữa bệnh': 'Medical Services Administration', 'Cục Quản lý Dược': 'Drug Administration of Vietnam',
+    'Mua sắm công': 'Public Procurement System', 'BV Bạch Mai': 'Bach Mai Hospital', 'Hội Nhãn khoa Việt Nam': 'Vietnam Ophthalmological Society', 'Thư viện Pháp luật': 'Law Library',
+    'CSDL văn bản pháp luật': 'National Legal Database', 'Tin đọc nhiều (VnExpress)': 'VnExpress most read' };
+  const unmark = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+  const srcN = s => (S.lang === 'en' ? SRC_EN[s] || unmark(s) : s);
+  const views = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'K' : String(n);
 
   // ── ảnh bìa podcast (SVG, theo màu chương trình) ──
   function cover(pod, date, big) {
@@ -64,12 +87,12 @@
 
   // ── mẩu tin ──
   function kicker(x) {
-    const tags = (x.tags || []).map(t => TAG[t]).filter(Boolean).slice(0, 2);
-    const pe = window.PESTEL ? PESTEL.of(x).map(f => `<span class="pe pe-${f}" title="${esc(PESTEL.NAMES[f][1])}">${PESTEL.NAMES[f][0]}</span>`).join('') : '';
-    return `<div class="kick">${esc(SEC[x.sec]?.[0] || '')}${tags.map(t => `<span class="tg">· ${esc(t)}</span>`).join('')}${x.kind === 'doc' ? '<span class="red">· Văn bản mới</span>' : ''}${pe ? `<span class="pes">${pe}</span>` : ''}</div>`;
+    const tags = (x.tags || []).filter(t => t !== 'video').map(t => tr(TAG[t])).filter(Boolean).slice(0, 2);
+    const pe = window.PESTEL ? PESTEL.of(x).map(f => `<span class="pe pe-${f}" title="${esc(PESTEL.NAMES[f][EN() ? 2 : 1])}">${PESTEL.NAMES[f][0]}</span>`).join('') : '';
+    return `<div class="kick">${esc(tr(SEC[x.sec]))}${tags.map(t => `<span class="tg">· ${esc(t)}</span>`).join('')}${x.kind === 'doc' ? `<span class="red">· ${L('Văn bản mới', 'New document')}</span>` : ''}${x.tags?.includes('video') ? `<span class="red">· ${L('Video', 'Video')}</span>` : ''}${pe ? `<span class="pes">${pe}</span>` : ''}</div>`;
   }
   function byline(x) {
-    return `<div class="by"><b>${esc(x.src)}</b><span>· ${esc(ago(x.d))}</span>${x.lang === 'en' ? '<span class="badge en">EN</span>' : ''}${x.also?.length ? `<span>· cũng đăng trên ${esc(x.also.slice(0, 3).join(', '))}</span>` : ''}</div>`;
+    return `<div class="by"><b>${esc(srcN(x.src))}</b><span>· ${esc(ago(x.d))}</span>${x.views ? `<span>· ${views(x.views)} ${L('lượt xem', 'views')}</span>` : ''}${x.lang === 'en' && !EN() ? '<span class="badge en">EN</span>' : ''}${x.also?.length ? `<span>· ${L('cũng đăng trên', 'also in')} ${esc(x.also.slice(0, 3).map(srcN).join(', '))}</span>` : ''}</div>`;
   }
   function body(x, opt = {}) {
     const vi = SUMV(x), en = SUME(x);
@@ -90,31 +113,32 @@
     const p = ed.podcast; const a = p.audio;
     return `<a class="lcard" href="#/listen/${ed.date}" style="--show:${p.color}">
       <div class="cv">${cover(p, ed.date)}</div>
-      <div><div class="k">Nghe hôm nay · English podcast</div><b>${esc(p.name)}</b><span>${esc(p.hosts.map(h => h.name).join(' & '))}${a ? ' · ' + Math.round(a.dur / 60) + ' phút' : ''}</span>
-      <div class="row"><button class="pbtn" type="button" data-play="${ed.date}" aria-label="Phát podcast">${ICON.play}</button><span>${a ? 'Bấm để nghe' : 'Đang tạo âm thanh…'}</span></div></div></a>`;
+      <div><div class="k">${L('Nghe hôm nay · English podcast', 'Today\'s English podcast')}</div><b>${esc(p.name)}</b><span>${esc(p.hosts.map(h => h.name).join(' & '))}${a ? ' · ' + Math.round(a.dur / 60) + L(' phút', ' min') : ''}</span>
+      <div class="row"><button class="pbtn" type="button" data-play="${ed.date}" aria-label="${L('Phát podcast', 'Play podcast')}">${ICON.play}</button><span>${a ? L('Bấm để nghe', 'Tap to listen') : L('Đang tạo âm thanh…', 'Audio is being made…')}</span></div></div></a>`;
   }
 
   // ── TRANG NHẤT ──
   function front(ed) {
-    const L = story(ed, ed.lead);
+    const LD = story(ed, ed.lead);
     const secs = ed.sections;
     const healthIds = (secs.health || []).filter(id => id !== ed.lead);
     const leadSub = healthIds.slice(0, 2).map(id => story(ed, id)).filter(Boolean);
-    const note = ed.note ? `<div class="note"><h3>Lời biên tập</h3><p>${esc(ed.note.vi)}</p><p class="en">${esc(ed.note.en)}</p></div>` : '';
+    const note = ed.note ? `<div class="note"><h3>${L('Lời biên tập', 'Editor\'s note')}</h3>${EN() ? `<p>${esc(ed.note.en)}</p>` : `<p>${esc(ed.note.vi)}</p><p class="en">${esc(ed.note.en)}</p>`}</div>` : '';
     const docs = (ed.docs || []).map(id => story(ed, id)).filter(Boolean).slice(0, 6);
-    const docsBox = docs.length ? `<div class="docs-box"><h3>Văn bản & chính sách mới</h3>${docs.map(x => `<div class="doc"><span class="no">${esc((x.docs || [''])[0])}</span>${link(x, esc(H(x)))}</div>`).join('')}</div>` : '';
+    const docsBox = docs.length ? `<div class="docs-box"><h3>${L('Văn bản & chính sách mới', 'New laws & policies')}</h3>${docs.map(x => `<div class="doc"><span class="no">${esc((x.docs || [''])[0])}</span>${link(x, esc(H(x)))}</div>`).join('')}</div>` : '';
     const vocab = ed.vocab?.length ? vocabHtml(ed) : '';
     let html = `<div class="mlisten">${listenCard(ed)}</div><div class="front">
-      <div class="lead">${L ? `${kicker(L)}${L.img ? `<img class="ph" src="${esc(L.img)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
-        <h1 class="hl xl">${link(L, esc(H(L)))}</h1>${L.dek ? `<p class="dek">${esc(L.dek)}</p>` : ''}${body(L, { both: true })}${byline(L)}` : '<div class="empty">Chưa có tin.</div>'}
+      <div class="lead">${LD ? `${kicker(LD)}${LD.img ? `<img class="ph" src="${esc(LD.img)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
+        <h1 class="hl xl">${link(LD, esc(H(LD)))}</h1>${LD.dek && EN() ? `<p class="dek">${esc(LD.dek)}</p>` : ''}${body(LD, { both: true })}${byline(LD)}` : `<div class="empty">${L('Chưa có tin.', 'No stories yet.')}</div>`}
         <div class="lead-sub">${leadSub.map(x => storyHtml(x, 'm', { kick: true })).join('')}</div>
       </div>
       <aside class="side">${listenCard(ed)}${note}${docsBox}${vocab}</aside>
     </div>`;
     html += healthDesk(ed, true);
-    html += `<div class="sec-h"><h2>Kinh tế · Chính trị · Xã hội</h2><span class="sub">Economy · Politics · Society</span></div><div class="cols3">`;
+    html += aiBlock(ed);
+    html += `<div class="sec-h"><h2>${L('Kinh tế · Chính trị · Xã hội', 'Economy · Politics · Society')}</h2>${EN() ? '' : '<span class="sub">Economy · Politics · Society</span>'}</div><div class="cols3">`;
     for (const sec of ['economy', 'politics', 'society']) {
-      html += `<div><div class="col-h">${SEC[sec][0]}</div>${(secs[sec] || []).slice(0, 5).map((id, i) => storyHtml(story(ed, id), i ? 's' : 'm', { img: i === 0 })).join('') || '<p class="empty">Chưa có tin.</p>'}<a class="by" href="#/s/${sec}">Xem tất cả ${SEC[sec][0].toLowerCase()} →</a></div>`;
+      html += `<div><div class="col-h">${tr(SEC[sec])}</div>${(secs[sec] || []).slice(0, 5).map((id, i) => storyHtml(story(ed, id), i ? 's' : 'm', { img: i === 0 })).join('') || `<p class="empty">${L('Chưa có tin.', 'No stories yet.')}</p>`}<a class="by" href="#/s/${sec}">${L('Xem tất cả ' + tr(SEC[sec]).toLowerCase(), 'All ' + tr(SEC[sec]).toLowerCase() + ' stories')} →</a></div>`;
     }
     html += '</div>';
     return html;
@@ -125,43 +149,58 @@
     const an = ed.healthDesk?.analysis;
     const col = t => {
       const xs = (g[t] || []).map(id => story(ed, id)).filter(Boolean).slice(0, compact ? 4 : 8);
-      return `<div><h4>${DESK[t] || TAG[t]}</h4>${xs.length ? `<ul>${xs.map(x => `<li>${link(x, esc(H(x)))}<small>${esc(x.src)} · ${esc(ago(x.d))}</small></li>`).join('')}</ul>` : '<p class="none">Chưa có tin mới.</p>'}</div>`;
+      return `<div><h4>${esc(tr(DESK[t] || TAG[t]))}</h4>${xs.length ? `<ul>${xs.map(x => `<li>${link(x, esc(H(x)))}<small>${esc(srcN(x.src))} · ${esc(ago(x.d))}</small></li>`).join('')}</ul>` : `<p class="none">${L('Chưa có tin mới.', 'Nothing new.')}</p>`}</div>`;
     };
-    return `<section class="desk"><div class="sec-h"><h2>Bàn tin Y tế</h2><span class="sub">Tin ảnh hưởng tới MMH — nha khoa, nhãn khoa, thầu, thiết bị, BHYT, thị trường</span><a href="#/s/health">Tất cả tin y tế →</a></div>
-      ${an ? `<div class="desk-an"><div><p>${esc(an.vi)}</p></div><div><p class="en">${esc(an.en)}</p></div></div>` : ''}
+    return `<section class="desk"><div class="sec-h"><h2>${L('Bàn tin Y tế', 'Health Desk')}</h2><span class="sub">${L('Tin ảnh hưởng tới MMH — nha khoa, nhãn khoa, thầu, thiết bị, BHYT, thị trường', 'Stories that affect MMH — dentistry, ophthalmology, tenders, devices, health insurance, market')}</span><a href="#/s/health">${L('Tất cả tin y tế →', 'All health stories →')}</a></div>
+      ${an ? (EN() ? `<div class="desk-an"><div><p>${esc(an.en)}</p></div><div><p class="en">${esc(an.vi)}</p></div></div>` : `<div class="desk-an"><div><p>${esc(an.vi)}</p></div><div><p class="en">${esc(an.en)}</p></div></div>`) : ''}
       <div class="desk-g">${(ed.healthDesk?.order || ['tender', 'policy', 'invest', 'hospital', 'device']).map(col).join('')}</div></section>`;
   }
 
+  /* AI & Công nghệ trên trang nhất: 6 tin / video AI quốc tế (3 cột × 2) */
+  function aiBlock(ed) {
+    const xs = (ed.sections.ai || []).map(id => story(ed, id)).filter(Boolean).slice(0, 6);
+    if (!xs.length) return '';
+    const col = [xs.slice(0, 2), xs.slice(2, 4), xs.slice(4, 6)].filter(c => c.length);
+    return `<section class="aib"><div class="sec-h"><h2>${esc(tr(SEC.ai))}</h2><span class="sub">${L('Lãnh đạo OpenAI · Anthropic · Meta · Google nói gì · mô hình, công cụ mới · AI trong sales & marketing', 'What AI leaders are saying · new models and tools · AI in sales & marketing')}</span><a href="#/s/ai">${L('Tất cả tin AI →', 'All AI stories →')}</a></div>
+      <div class="cols3">${col.map(c => `<div>${c.map((x, i) => storyHtml(x, i ? 's' : 'm', { img: i === 0, kick: true })).join('')}</div>`).join('')}</div></section>`;
+  }
+
   function vocabHtml(ed, dark) {
-    return `<div class="vocab${dark ? ' dk' : ''}"><h3>Học tiếng Anh hôm nay</h3><dl>${ed.vocab.map(v => `<dt>${esc(v.en)}</dt><dd>${esc(v.vi)}</dd>${v.ex ? `<div class="ex">“${esc(v.ex)}”</div>` : ''}`).join('')}</dl></div>`;
+    return `<div class="vocab${dark ? ' dk' : ''}"><h3>${L('Học tiếng Anh hôm nay', 'Today\'s English words')}</h3><dl>${ed.vocab.map(v => `<dt>${esc(v.en)}</dt><dd>${esc(v.vi)}</dd>${v.ex ? `<div class="ex">“${esc(v.ex)}”</div>` : ''}`).join('')}</dl></div>`;
   }
 
   // ── TRANG CHUYÊN MỤC ──
   function sectionPage(ed, sec) {
     const ids = sec === 'health' ? [...new Set([...(ed.sections.health || []), ...Object.values(ed.healthDesk?.groups || {}).flat()])] : (ed.sections[sec] || []);
     let xs = ids.map(id => story(ed, id)).filter(Boolean);
-    if (sec === 'health' && S.tab) xs = xs.filter(x => x.tags?.includes(S.tab));
-    const chips = sec === 'health' ? `<div class="filters">${['', 'tender', 'policy', 'invest', 'hospital', 'device'].map(t => `<button class="chip${S.tab === t ? ' on' : ''}" data-tab="${t}" type="button">${t ? TAG[t] : 'Tất cả'}</button>`).join('')}</div>` : '';
+    const CH = { health: ['', 'dental', 'eye', 'tender', 'policy', 'invest', 'hospital', 'device'], ai: ['', 'people', 'model', 'agent', 'salesmkt', 'aimed', 'video'] }[sec];
+    if (CH && S.tab && CH.includes(S.tab)) xs = xs.filter(x => x.tags?.includes(S.tab));
+    const chips = CH ? `<div class="filters">${CH.filter(t => !t || ids.some(id => story(ed, id)?.tags?.includes(t))).map(t => `<button class="chip${(S.tab === t || (!CH.includes(S.tab) && !t)) ? ' on' : ''}" data-tab="${t}" type="button">${t ? esc(tr(TAG[t])) : L('Tất cả', 'All')}</button>`).join('')}</div>` : '';
     const items = xs.map(x => `<div class="sp-item${x.img ? '' : ' noimg'}"><div>${kicker(x)}<h2 class="hl l">${link(x, esc(H(x)))}</h2>${x.dek && S.lang === 'en' ? `<p class="dek">${esc(x.dek)}</p>` : ''}${body(x, { both: true })}${byline(x)}</div>${x.img ? `<img class="ph" src="${esc(x.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('noimg');this.remove()">` : ''}</div>`).join('');
-    return `<div class="sec-h" style="margin-top:4px"><h2>${SEC[sec][0]}</h2><span class="sub">${SEC[sec][1]}</span></div>${chips}
-      <div class="secpage"><div class="main">${items || '<div class="empty">Chưa có tin.</div>'}</div><aside class="side">${listenCard(ed)}${sec === 'health' && ed.healthDesk?.analysis ? `<div class="note"><h3>Phân tích</h3><p>${esc(ed.healthDesk.analysis.vi)}</p></div>` : ''}${ed.vocab?.length ? vocabHtml(ed) : ''}</aside></div>`;
+    return `<div class="sec-h" style="margin-top:4px"><h2>${esc(tr(SEC[sec]))}</h2>${EN() ? '' : `<span class="sub">${esc(SEC[sec][1])}</span>`}</div>${chips}
+      <div class="secpage"><div class="main">${items || `<div class="empty">${L('Chưa có tin.', 'No stories yet.')}</div>`}</div><aside class="side">${listenCard(ed)}${sec === 'health' && ed.healthDesk?.analysis ? `<div class="note"><h3>${L('Phân tích', 'Analysis')}</h3><p>${esc(EN() ? ed.healthDesk.analysis.en : ed.healthDesk.analysis.vi)}</p></div>` : ''}${ed.vocab?.length ? vocabHtml(ed) : ''}</aside></div>`;
   }
 
   function docsPage(ed) {
     const xs = (ed.docs || []).map(id => story(ed, id)).filter(Boolean);
-    return `<div class="sec-h" style="margin-top:4px"><h2>Văn bản & chính sách</h2><span class="sub">Nghị định, thông tư, quyết định mới liên quan y tế, đấu thầu, đầu tư công</span></div>
-      <div class="secpage"><div class="main">${xs.map(x => `<div class="sp-item noimg"><div><div class="kick"><span class="red">${esc((x.docs || []).join(' · '))}</span></div><h2 class="hl m">${link(x, esc(H(x)))}</h2>${body(x)}${byline(x)}</div></div>`).join('') || '<div class="empty">Chưa có văn bản mới trong số này.</div>'}</div>
+    return `<div class="sec-h" style="margin-top:4px"><h2>${L('Văn bản & chính sách', 'Laws & policies')}</h2><span class="sub">${L('Nghị định, thông tư, quyết định mới liên quan y tế, đấu thầu, đầu tư công', 'New decrees, circulars and decisions on health, tenders and public investment')}</span></div>
+      <div class="secpage"><div class="main">${xs.map(x => `<div class="sp-item noimg"><div><div class="kick"><span class="red">${esc((x.docs || []).join(' · '))}</span></div><h2 class="hl m">${link(x, esc(H(x)))}</h2>${body(x)}${byline(x)}</div></div>`).join('') || `<div class="empty">${L('Chưa có văn bản mới trong số này.', 'No new documents in this edition.')}</div>`}</div>
       <aside class="side">${listenCard(ed)}</aside></div>`;
   }
 
   function archivePage() {
     const eds = S.index.editions;
-    return `<div class="sec-h" style="margin-top:4px"><h2>Số cũ</h2><span class="sub">${eds.length} số báo · bấm để đọc / nghe lại</span></div>
-      <div class="archive">${eds.map(e => `<a class="arc" href="#/e/${e.date}"><div class="cv">${cover({ name: showName(e.show), color: showColor(e.show) }, e.date)}</div><div><b>${esc(viDate(e.date))}</b><span>Số ${e.no} · ${esc(showName(e.show))}</span><br><span>${esc(e.lead || '')}</span></div></a>`).join('')}</div>`;
+    return `<div class="sec-h" style="margin-top:4px"><h2>${L('Số cũ', 'Past editions')}</h2><span class="sub">${eds.length} ${L('số báo · bấm để đọc / nghe lại', 'editions · tap to read or listen again')}</span></div>
+      <div class="archive">${eds.map(e => `<a class="arc" href="#/e/${e.date}"><div class="cv">${cover({ name: showName(e.show), color: showColor(e.show) }, e.date)}</div><div><b>${esc(dateL(e.date))}</b><span>${L('Số', 'No.')} ${e.no} · ${esc(showName(e.show))}</span><br><span>${esc(e.lead || '')}</span></div></a>`).join('')}</div>`;
   }
-  const SERIES = [['talk', 'Thứ Hai, Thứ Năm'], ['clinicroom', 'Thứ Ba'], ['lawdesk', 'Thứ Tư'], ['headlines', 'Thứ Sáu'], ['english', 'Thứ Bảy'], ['weekly', 'Chủ nhật']];
-  const SHOWMETA = { talk: ['MMH Talk', '#1F5E8C'], clinicroom: ['The Clinic Room', '#2E7D8C'], lawdesk: ['Law & Tender Desk', '#5B3F8C'], headlines: ['Morning Headlines', '#A23B3B'], english: ['English at Work', '#8A5A00'], briefing: ['The Morning Briefing', '#1F4E79'], twotakes: ['Two Takes', '#7A3E9D'], healthdesk: ['Health Desk', '#0E7C6B'], markets: ['Market Watch', '#B8641B'], editor: ['Ask the Editor', '#2F6F9F'], explainer: ['The Explainer', '#A23B3B'], weekly: ['Week in Review', '#3D5A3D'], notes: ['Morning Notes', '#6B4E9B'], clinic: ['Clinic Notes', '#2E7D8C'], story: ['One Story', '#5A4632'], quickfive: ['Quick Five', '#C0582B'] };
+  const SERIES = [['talk', ['Thứ Hai', 'Monday']], ['clinicroom', ['Thứ Ba', 'Tuesday']], ['lawdesk', ['Thứ Tư', 'Wednesday']], ['aipulse', ['Thứ Năm', 'Thursday']], ['headlines', ['Thứ Sáu', 'Friday']], ['english', ['Thứ Bảy', 'Saturday']], ['weekly', ['Chủ nhật', 'Sunday']]];
+  const SHOWMETA = { talk: ['MMH Talk', '#1F5E8C'], clinicroom: ['The Clinic Room', '#2E7D8C'], lawdesk: ['Law & Tender Desk', '#5B3F8C'], headlines: ['Morning Headlines', '#A23B3B'], english: ['English at Work', '#8A5A00'], briefing: ['The Morning Briefing', '#1F4E79'], twotakes: ['Two Takes', '#7A3E9D'], healthdesk: ['Health Desk', '#0E7C6B'], markets: ['Market Watch', '#B8641B'], editor: ['Ask the Editor', '#2F6F9F'], explainer: ['The Explainer', '#A23B3B'], weekly: ['Week in Review', '#3D5A3D'], aipulse: ['AI Pulse', '#3949AB'], notes: ['Morning Notes', '#6B4E9B'], clinic: ['Clinic Notes', '#2E7D8C'], story: ['One Story', '#5A4632'], quickfive: ['Quick Five', '#C0582B'] };
   const SHOWDESC = { talk: 'Emma & Daniel trò chuyện về các chuyện nóng nhất với MMH', clinicroom: 'Dr. Sarah giảng nhãn khoa, nha khoa · Minh hỏi', lawdesk: 'Thomas giải thích luật, nghị định, quy định thầu', headlines: 'Andrew đọc tin thời sự · mỗi tin một câu "với MMH"', english: 'Lớp tiếng Anh công sở: cô Olivia & Minh ôn từ của tuần', briefing: 'Một người dẫn · tin chính trong ~8 phút', twotakes: 'Hai người dẫn trao đổi', healthdesk: 'Chuyên sâu y tế: đấu thầu, chính sách, bệnh viện', markets: 'Kinh tế, thương mại, đầu tư', editor: 'Hỏi – đáp với biên tập viên', explainer: 'Giải thích sâu một tin lớn', weekly: 'Emma & Daniel nhìn lại cả tuần', notes: 'Một giọng nữ · tóm tắt nhẹ nhàng từng tin', clinic: 'Nhãn khoa, nha khoa: xu hướng điều trị và sản phẩm', story: 'Một người kể · một câu chuyện lớn từ đầu đến cuối', quickfive: 'Năm tin nhanh, mỗi tin một câu hỏi cho bạn' };
+  SHOWDESC.aipulse = 'Liam (tech creator) điểm tin AI: lãnh đạo OpenAI · Anthropic · Meta nói gì, công nghệ mới, AI trong sales & marketing';
+  const SHOWDESC_EN = { talk: 'Emma & Daniel talk through the stories that matter most for MMH', clinicroom: 'Dr. Sarah teaches eye care and dentistry · Minh asks', lawdesk: 'Thomas explains laws, decrees and tender rules',
+    headlines: 'Andrew reads the headlines · each with a line on MMH', english: 'Business English class: Ms. Olivia & Minh review the week\'s words', weekly: 'Emma & Daniel look back on the week',
+    aipulse: 'Liam (tech creator): what AI leaders say, new tech explained, AI in sales & marketing' };
+  const showDesc = id => (S.lang === 'en' && SHOWDESC_EN[id]) || SHOWDESC[id] || '';
   const showName = id => SHOWMETA[id]?.[0] || id;
   const showColor = id => SHOWMETA[id]?.[1] || '#0E7C6B';
 
@@ -173,32 +212,32 @@
     const recent = S.index.editions.slice(0, 14);
     return `<div class="ls" style="--show:${p.color}">${window.STUDY ? STUDY.tabs(ed) : ''}
       <section class="ls-hero"><div class="cv">${cover(p, ed.date, true)}</div><div>
-        <div class="ls-k">Podcast · ${esc(viDate(ed.date))}</div>
+        <div class="ls-k">Podcast · ${esc(dateL(ed.date))}</div>
         <h1 class="ls-t">${esc(p.name)}</h1>
         <p class="ls-d">${esc(p.desc || '')}</p>
-        <div class="ls-meta"><span>${esc(p.hosts.map(h => `${h.name} (${h.role})`).join(' · '))}</span>${a ? `<span>${Math.round(a.dur / 60)} phút</span>` : ''}<span>Tiếng Anh · phụ đề bên dưới</span></div>
+        <div class="ls-meta"><span>${esc(p.hosts.map(h => `${h.name} (${h.role})`).join(' · '))}</span>${a ? `<span>${Math.round(a.dur / 60)} ${L('phút', 'min')}</span>` : ''}<span>${L('Tiếng Anh · phụ đề bên dưới', 'In English · Vietnamese subtitles below')}</span></div>
       </div></section>
       <div class="ls-ctl">
-        <button class="bigplay" id="ls-play" type="button" data-play="${ed.date}" aria-label="Phát">${ICON.play}</button>
-        <button class="ibtn" id="ls-back" type="button" aria-label="Lùi 15 giây" title="Lùi 15 giây">${$('#mini-back').innerHTML}</button>
-        <button class="ibtn" id="ls-fwd" type="button" aria-label="Tới 15 giây" title="Tới 15 giây">${$('#mini-fwd').innerHTML}</button>
-        <button class="spd" id="ls-spd" type="button" title="Tốc độ đọc">${(store.get('mmh_daily_rate', 1)).toFixed(2).replace(/0$/, '')}×</button>
-        ${a ? `<a class="dl" href="${esc(a.file)}" download>Tải MP3</a>` : '<span class="dl">Âm thanh đang được tạo…</span>'}
+        <button class="bigplay" id="ls-play" type="button" data-play="${ed.date}" aria-label="${L('Phát', 'Play')}">${ICON.play}</button>
+        <button class="ibtn" id="ls-back" type="button" aria-label="${L('Lùi 15 giây', 'Back 15 seconds')}" title="${L('Lùi 15 giây', 'Back 15 seconds')}">${$('#mini-back').innerHTML}</button>
+        <button class="ibtn" id="ls-fwd" type="button" aria-label="${L('Tới 15 giây', 'Forward 15 seconds')}" title="${L('Tới 15 giây', 'Forward 15 seconds')}">${$('#mini-fwd').innerHTML}</button>
+        <button class="spd" id="ls-spd" type="button" title="${L('Tốc độ đọc', 'Speed')}">${(store.get('mmh_daily_rate', 1)).toFixed(2).replace(/0$/, '')}×</button>
+        ${a ? `<a class="dl" href="${esc(a.file)}" download>${L('Tải MP3', 'Download MP3')}</a>` : `<span class="dl">${L('Âm thanh đang được tạo…', 'Audio is being made…')}</span>`}
       </div>
       <div class="nowsub" id="nowsub" aria-live="off"><span class="en"></span><span class="vi"></span></div>
       <div class="seek"><span id="ls-cur">0:00</span><div class="tr" id="ls-tr"><i id="ls-prog" style="width:0"></i></div><span id="ls-dur">${a ? mmss(a.dur) : '--:--'}</span></div>
       ${window.STUDY ? STUDY.html(ed) : ''}
       <div class="ls-grid">
-        <div class="ls-box"><h3>Lời thoại<small>bấm một câu để nghe từ đó</small></h3>
-          <div class="subsel" id="subsel" role="group" aria-label="Phụ đề">${[['both', 'Anh + Việt'], ['en', 'Tiếng Anh'], ['vi', 'Tiếng Việt']].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+        <div class="ls-box"><h3>${L('Lời thoại', 'Transcript')}<small>${L('bấm một câu để nghe từ đó', 'tap a line to play from there')}</small></h3>
+          <div class="subsel" id="subsel" role="group" aria-label="${L('Phụ đề', 'Subtitles')}">${[['both', L('Anh + Việt', 'EN + VI')], ['en', L('Tiếng Anh', 'English')], ['vi', L('Tiếng Việt', 'Vietnamese')]].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div>
           <div class="tx sub-${S.sub}" id="tx">${turns.map((t, i) => `<p data-i="${i}" data-t="${t.t ?? ''}"><b>${esc(hosts[t.sp]?.name || t.sp)}</b><span class="en">${esc(t.text)}</span>${t.vi ? `<span class="vi">${esc(t.vi)}</span>` : ''}</p>`).join('')}</div></div>
         <div>
-          <div class="ls-box"><h3>Các số gần đây</h3><div class="eps">${recent.map(e => `<a class="ep${e.date === ed.date ? ' on' : ''}" href="#/listen/${e.date}"><div class="cv">${cover({ name: showName(e.show), color: showColor(e.show) }, e.date)}</div><div><b>${esc(showName(e.show))}</b><span>${esc(viDate(e.date))}</span></div><em>${e.words ? '~' + Math.round(e.words / 130) + ' ph' : ''}</em></a>`).join('')}</div></div>
+          <div class="ls-box"><h3>${L('Các số gần đây', 'Recent episodes')}</h3><div class="eps">${recent.map(e => `<a class="ep${e.date === ed.date ? ' on' : ''}" href="#/listen/${e.date}"><div class="cv">${cover({ name: showName(e.show), color: showColor(e.show) }, e.date)}</div><div><b>${esc(showName(e.show))}</b><span>${esc(dateL(e.date))}</span></div><em>${e.words ? '~' + Math.round(e.words / 130) + L(' ph', ' min') : ''}</em></a>`).join('')}</div></div>
           ${ed.vocab?.length ? `<div style="margin-top:20px">${vocabHtml(ed, true)}</div>` : ''}
         </div>
       </div>
-      <h2 class="ls-sh">Các series trong tuần</h2>
-      <div class="shows">${SERIES.map(([id, day]) => `<div class="show${id === p.show ? ' today' : ''}" style="--show:${showColor(id)}"><div class="cv">${cover({ name: showName(id), color: showColor(id) })}</div><b>${esc(showName(id))}</b><span>${esc(day)} · ${esc(SHOWDESC[id])}</span></div>`).join('')}</div>
+      <h2 class="ls-sh">${L('Các series trong tuần', 'This week\'s series')}</h2>
+      <div class="shows">${SERIES.map(([id, day]) => `<div class="show${id === p.show ? ' today' : ''}" style="--show:${showColor(id)}"><div class="cv">${cover({ name: showName(id), color: showColor(id) })}</div><b>${esc(showName(id))}</b><span>${esc(tr(day))} · ${esc(showDesc(id))}</span></div>`).join('')}</div>
     </div>`;
   }
 
@@ -207,7 +246,7 @@
   audio.playbackRate = store.get('mmh_daily_rate', 1);
   function setEp(ed) {
     const a = ed.podcast.audio;
-    if (!a) { toast('Âm thanh của số này chưa sẵn sàng'); return false; }
+    if (!a) { toast(L('Âm thanh của số này chưa sẵn sàng', 'The audio for this episode is not ready yet')); return false; }
     if (S.ep?.date !== ed.date) {
       S.ep = ed;
       audio.src = a.file;
@@ -217,7 +256,7 @@
       $('#mini').hidden = false;
       $('#mini-open').innerHTML = cover(ed.podcast, ed.date);
       $('#mini-t').textContent = ed.podcast.name;
-      $('#mini-s').textContent = viDate(ed.date) + ' · ' + ed.podcast.hosts.map(h => h.name).join(' & ');
+      $('#mini-s').textContent = dateL(ed.date) + ' · ' + ed.podcast.hosts.map(h => h.name).join(' & ');
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({ title: ed.podcast.title || ed.podcast.name, artist: 'MMH Daily Podcast', album: viDate(ed.date),
           artwork: [{ src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' }] });
@@ -230,12 +269,12 @@
       const ed = await loadEd(date);
       if (!setEp(ed)) return;
       if (audio.paused) await audio.play(); else audio.pause();
-    } catch (e) { toast('Không phát được: ' + e.message); }
+    } catch (e) { toast(L('Không phát được: ', 'Cannot play: ') + e.message); }
   }
   function syncUi() {
     const playing = !audio.paused;
     $('#mini-play').innerHTML = playing ? ICON.pause : ICON.play;
-    $('#mini-play').setAttribute('aria-label', playing ? 'Tạm dừng' : 'Phát');
+    $('#mini-play').setAttribute('aria-label', playing ? L('Tạm dừng', 'Pause') : L('Phát', 'Play'));
     document.querySelectorAll('[data-play]').forEach(b => { const on = S.ep && b.dataset.play === S.ep.date && playing; b.innerHTML = on ? ICON.pause : ICON.play; });
     const ip = document.querySelector('[data-inplay]'); if (ip) ip.innerHTML = (S.ep && S.cur && S.ep.date === S.cur.date && playing) ? ICON.pause : ICON.play;
   }
@@ -255,7 +294,7 @@
     const turns = (S.ep?.podcast.turns || []).filter(x => x.text);
     let i = -1; turns.forEach((x, k) => { if (x.t != null && x.t <= t + 0.2) i = k; });
     if (i === miniIdx) return; miniIdx = i;
-    $('#mini-s').textContent = (i >= 0 && turns[i].vi && !audio.paused) ? turns[i].vi : viDate(S.ep.date) + ' · ' + S.ep.podcast.hosts.map(h => h.name).join(' & ');
+    $('#mini-s').textContent = (i >= 0 && turns[i].vi && !audio.paused) ? turns[i].vi : dateL(S.ep.date) + ' · ' + S.ep.podcast.hosts.map(h => h.name).join(' & ');
   }
   function hiLine(t) {
     const ps = [...document.querySelectorAll('#tx p')];
@@ -277,7 +316,7 @@
   audio.addEventListener('error', () => {
     const alt = S.ep?.podcast.audio?.alt;
     if (alt && !audio.src.endsWith(alt)) { const t = audio.currentTime; audio.src = alt; audio.currentTime = t; audio.play().catch(() => {}); return; }
-    if (S.ep) toast('Không tải được file âm thanh');
+    if (S.ep) toast(L('Không tải được file âm thanh', 'Could not load the audio file'));
   });
   $('#mini-play').onclick = () => { if (!S.ep) return; audio.paused ? audio.play() : audio.pause(); };
   $('#mini-back').onclick = () => seekBy(-15);
@@ -299,13 +338,13 @@
     if (r === 'noibo-old') { if (!$('#m-date').textContent && S.index.editions[0]) $('#m-date').textContent = viDate(S.index.editions[0].date); document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === 'noibo')); return internalPage(); }
     let date = S.index.editions[0]?.date;
     if ((r === 'e' || r === 'listen') && a) date = a;
-    if (!date) { $('#view').innerHTML = '<div class="empty">Chưa có số báo nào. Số đầu tiên sẽ có sau lượt chạy sáng mai.</div>'; return; }
+    if (!date) { $('#view').innerHTML = `<div class="empty">${L('Chưa có số báo nào. Số đầu tiên sẽ có sau lượt chạy sáng mai.', 'No editions yet. The first one will appear after tomorrow morning\'s run.')}</div>`; return; }
     let ed;
-    try { ed = await loadEd(date); } catch { $('#view').innerHTML = '<div class="empty">Không tải được số báo này.</div>'; return; }
+    try { ed = await loadEd(date); } catch { $('#view').innerHTML = `<div class="empty">${L('Không tải được số báo này.', 'Could not load this edition.')}</div>`; return; }
     S.cur = ed;
     const row = S.index.editions.find(e => e.date === date);
-    $('#m-date').textContent = viDate(date);
-    $('#m-no').textContent = `Số ${row?.no || ed.no} · ${S.lang === 'en' ? enDate(date) : 'Hà Nội'}`;
+    $('#m-date').textContent = dateL(date);
+    $('#m-no').textContent = `${L('Số', 'No.')} ${row?.no || ed.no} · ${L('Hà Nội', 'Hanoi')}`;
     const dark = r === 'listen' || r === 'rank';
     document.body.classList.toggle('dark', dark);
     document.querySelector('meta[name=theme-color]').content = dark ? '#0E1013' : '#FBF9F4';
@@ -335,7 +374,7 @@
       const nx = steps[(steps.indexOf(cur) + 1) % steps.length] || 1;
       store.set('mmh_daily_rate', nx); audio.playbackRate = nx;
       e.currentTarget.textContent = String(nx).replace(/^1$/, '1') + '×';
-      toast('Tốc độ đọc ' + nx + '×');
+      toast(L('Tốc độ đọc ', 'Speed ') + nx + '×');
     };
     $('#ls-tr').onclick = e => { if (!setEp(ed)) return; const r = e.currentTarget.getBoundingClientRect(); audio.currentTime = (e.clientX - r.left) / r.width * (audio.duration || ed.podcast.audio.dur); if (audio.paused) audio.play(); };
     $('#tx').onclick = e => {
@@ -347,9 +386,11 @@
   }
   function footer(ed) {
     const ok = (ed.sources || []).filter(s => s.ok).length;
-    const writer = ed.writer === 'claude' ? 'Biên tập bằng Claude (AI) từ tin gom được' : 'Tin lấy nguyên văn từ báo · podcast đọc tin tiếng Anh';
-    return `<span><b>MMH Daily Podcast</b> · số ${ed.no} · cập nhật ${new Date(ed.updated).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</span>
-      <span>${ok}/${(ed.sources || []).length} nguồn tin chạy</span><span>${writer}</span><span>Giọng đọc: giọng máy (Microsoft neural)</span><span>Bấm tiêu đề để đọc bài gốc</span>`;
+    const ai = /claude|gemini/.test(ed.writer || '');
+    const writer = ai ? L('Biên tập bằng AI từ tin gom được', 'Edited by AI from the collected news') : L('Tin lấy nguyên văn từ báo · podcast đọc tin tiếng Anh', 'Stories as published · the podcast reads English stories');
+    const voice = ed.podcast?.voice?.engine === 'eleven' ? L('Giọng đọc: ElevenLabs', 'Voices: ElevenLabs') : L('Giọng đọc: giọng máy (Microsoft neural)', 'Voices: Microsoft neural');
+    return `<span><b>MMH Daily Podcast</b> · ${L('số', 'no.')} ${ed.no} · ${L('cập nhật', 'updated')} ${new Date(ed.updated).toLocaleString(EN() ? 'en-GB' : 'vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</span>
+      <span>${ok}/${(ed.sources || []).length} ${L('nguồn tin chạy', 'sources ran')}</span><span>${writer}</span><span>${voice}</span><span>${L('Bấm tiêu đề để đọc bài gốc', 'Tap a headline to read the original')}</span>`;
   }
 
   document.addEventListener('click', e => {
@@ -361,7 +402,16 @@
     if (c) { S.tab = c.dataset.tab; route(); }
   });
   $('#lang').onclick = () => { S.lang = S.lang === 'vi' ? 'en' : 'vi'; store.set('mmh_daily_lang', S.lang); paintLang(); route(); };
-  const paintLang = () => { $('#lang').innerHTML = S.lang === 'vi' ? '<b>VI</b> · EN' : 'VI · <b>EN</b>'; $('#lang').title = S.lang === 'vi' ? 'Đang đọc tiêu đề tiếng Việt — bấm để chuyển tiếng Anh' : 'Reading English headlines — tap for Vietnamese'; };
+  const paintLang = () => {
+    $('#lang').innerHTML = S.lang === 'vi' ? '<b>VI</b> · EN' : 'VI · <b>EN</b>';
+    $('#lang').title = S.lang === 'vi' ? 'Đang xem tiếng Việt — bấm để chuyển cả app sang tiếng Anh' : 'English — tap for Vietnamese';
+    document.documentElement.lang = S.lang;
+    // chữ cố định trong index.html: data-en = bản tiếng Anh, bản Việt nhớ ở data-vi
+    document.querySelectorAll('[data-en]').forEach(el => { if (el.dataset.vi == null) el.dataset.vi = el.textContent; el.textContent = S.lang === 'en' ? el.dataset.en : el.dataset.vi; });
+    document.querySelectorAll('[data-en-title]').forEach(el => { if (el.dataset.viTitle == null) el.dataset.viTitle = el.title; el.title = S.lang === 'en' ? el.dataset.enTitle : el.dataset.viTitle; });
+    document.querySelectorAll('[data-en-aria]').forEach(el => { if (el.dataset.viAria == null) el.dataset.viAria = el.getAttribute('aria-label') || ''; el.setAttribute('aria-label', S.lang === 'en' ? el.dataset.enAria : el.dataset.viAria); });
+    document.dispatchEvent(new CustomEvent('mmh-lang', { detail: S.lang }));
+  };
   window.addEventListener('hashchange', route);
   document.addEventListener('keydown', e => {
     if (e.target.closest('input,textarea')) return;
@@ -481,7 +531,7 @@
         <div class="nowsub" id="nowsub"><span class="en"></span><span class="vi"></span></div>
         <div class="seek"><span id="ls-cur">0:00</span><div class="tr" id="ls-tr"><i id="ls-prog" style="width:0"></i></div><span id="ls-dur">${p.audio?.dur ? mmss(p.audio.dur) : '--:--'}</span></div>
         <details class="in-tx"><summary>Lời thoại + phụ đề tiếng Việt</summary>
-          <div class="subsel" id="subsel">${[['both', 'Anh + Việt'], ['en', 'Tiếng Anh'], ['vi', 'Tiếng Việt']].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+          <div class="subsel" id="subsel">${[['both', L('Anh + Việt', 'EN + VI')], ['en', L('Tiếng Anh', 'English')], ['vi', L('Tiếng Việt', 'Vietnamese')]].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div>
           <div class="tx sub-${S.sub}" id="tx">${turns.map((t, i) => `<p data-i="${i}" data-t="${t.t ?? ''}"><b>${esc(hosts[t.sp]?.name || t.sp)}</b><span class="en">${esc(t.text)}</span>${t.vi ? `<span class="vi">${esc(t.vi)}</span>` : ''}</p>`).join('')}</div></details>
       </section>
       <div class="in-grid">
@@ -581,6 +631,6 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !dlg.hidden) close(); });
   })();
 
-  window.DAILY = { S, route, playDate, IN, setEp, loadEd, hub, tkGet, tkSet, inKey, toast, store, esc, audio, viDate, mmss, ICON, loadIndex, seekBy, HUB };
+  window.DAILY = { S, L, tr, EN, dateL, route, playDate, IN, setEp, loadEd, hub, tkGet, tkSet, inKey, toast, store, esc, audio, viDate, mmss, ICON, loadIndex, seekBy, HUB };
   boot();
 })();

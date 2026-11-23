@@ -89,9 +89,10 @@
   const fmtD = s => { const [y, m, d] = String(s).split('-'); return `${+d}/${+m}`; };
   const ago = iso => { const m = Math.round((Date.now() - new Date(iso)) / 6e4); return m < 1 ? 'vừa xong' : m < 60 ? m + ' phút trước' : m < 1440 ? Math.round(m / 60) + ' giờ trước' : Math.round(m / 1440) + ' ngày trước'; };
   function page() {
-    return `<div class="rk"><div class="rk-head"><div><p class="ls-k">Thi đua học tiếng Anh</p><h1 class="ls-t">Bảng xếp hạng</h1>
-        <p class="rk-sub">Điểm mỗi bài = câu nghe đúng × 10 + điểm nói theo (tối đa 20) + 10 hoàn thành. Làm lại một bài chỉ tính lần cao nhất.</p></div>
-        <div class="ls2-sub rk-per">${[['week', 'Tuần này'], ['month', 'Tháng này']].map(([k, n]) => `<button type="button" data-rk="per" data-k="${k}" class="${period === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+    const L = (D.L || ((v) => v));
+    return `<div class="rk"><div class="rk-head"><div><p class="ls-k">${L('Thi đua học tiếng Anh', 'English learning challenge')}</p><h1 class="ls-t">${L('Bảng xếp hạng', 'Ranking')}</h1>
+        <p class="rk-sub">${L('Điểm mỗi bài = câu nghe đúng × 10 + điểm nói theo (tối đa 20) + 10 hoàn thành. Làm lại một bài chỉ tính lần cao nhất.', 'Points per episode = correct answers × 10 + speaking points (max 20) + 10 for finishing. Only your best try counts.')}</p></div>
+        <div class="ls2-sub rk-per">${[['week', L('Tuần này', 'This week')], ['month', L('Tháng này', 'This month')]].map(([k, n]) => `<button type="button" data-rk="per" data-k="${k}" class="${period === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
       <div id="rk-body"><div class="rk-empty">Đang tải…</div></div></div>`;
   }
   async function load() {

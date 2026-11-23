@@ -13,9 +13,9 @@ on:
   workflow_dispatch:
     inputs:
       kind: { description: 'daily = tin hằng ngày · site = chỉ đăng lại trang (không viết, không tạo giọng) · weekly = bản tin nội bộ · both = cả hai', required: false, default: 'daily' }
-      show: { description: 'Ép chương trình podcast (để trống = theo lịch)', required: false }
+      show: { description: 'Ép chương trình podcast (để trống = theo lịch): talk · clinicroom · lawdesk · aipulse · headlines · english · weekly', required: false }
       sources: { description: 'Chỉ lấy tin từ các báo này (tên miền, cách nhau dấu phẩy; trống = tất cả)', required: false }
-      topics: { description: 'Chủ đề (dental,eye,tender,insurance,policy,hospital,market,economy,politics,society; trống = tất cả)', required: false }
+      topics: { description: 'Chủ đề (dental,eye,tender,insurance,policy,hospital,market,economy,politics,society,ai; trống = tất cả; chỉ ai = số AI Pulse)', required: false }
       voice: { description: 'Giọng: edge (miễn phí) | eleven (ElevenLabs)', required: false, default: '' }
       voices: { description: 'Bộ giọng ElevenLabs (config.json ▸ voice.presets)', required: false }
       by: { description: 'Người bấm (hiện trên app)', required: false }

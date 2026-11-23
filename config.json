@@ -25,6 +25,13 @@
    "en": "Society",
    "quota": 2,
    "w": 0
+  },
+  "ai": {
+   "vi": "AI & Công nghệ",
+   "en": "AI & Tech",
+   "quota": 10,
+   "w": 0,
+   "keepDays": 10
   }
  },
  "trusted": {
@@ -108,7 +115,51 @@
   "bachmai.gov.vn": "BV Bạch Mai",
   "vos.org.vn": "Hội Nhãn khoa Việt Nam",
   "thuvienphapluat.vn": "Thư viện Pháp luật",
-  "vbpl.vn": "CSDL văn bản pháp luật"
+  "vbpl.vn": "CSDL văn bản pháp luật",
+  "openai.com": "OpenAI",
+  "anthropic.com": "Anthropic",
+  "deepmind.google": "Google DeepMind",
+  "blog.google": "Google",
+  "ai.meta.com": "Meta AI",
+  "about.fb.com": "Meta",
+  "huggingface.co": "Hugging Face",
+  "blogs.nvidia.com": "NVIDIA",
+  "nvidia.com": "NVIDIA",
+  "blogs.microsoft.com": "Microsoft",
+  "microsoft.com": "Microsoft",
+  "blog.samaltman.com": "Sam Altman (blog)",
+  "importai.substack.com": "Import AI — Jack Clark (Anthropic)",
+  "jack-clark.net": "Import AI — Jack Clark (Anthropic)",
+  "karpathy.bearblog.dev": "Andrej Karpathy (blog)",
+  "simonwillison.net": "Simon Willison",
+  "oneusefulthing.org": "One Useful Thing — Ethan Mollick",
+  "latent.space": "Latent Space",
+  "theverge.com": "The Verge",
+  "techcrunch.com": "TechCrunch",
+  "wired.com": "WIRED",
+  "arstechnica.com": "Ars Technica",
+  "technologyreview.com": "MIT Technology Review",
+  "venturebeat.com": "VentureBeat",
+  "theinformation.com": "The Information",
+  "axios.com": "Axios",
+  "businessinsider.com": "Business Insider",
+  "fortune.com": "Fortune",
+  "nytimes.com": "The New York Times",
+  "wsj.com": "The Wall Street Journal",
+  "semafor.com": "Semafor",
+  "the-decoder.com": "The Decoder",
+  "zdnet.com": "ZDNET",
+  "engadget.com": "Engadget",
+  "platformer.news": "Platformer",
+  "theguardian.com": "The Guardian",
+  "forbes.com": "Forbes",
+  "hbr.org": "Harvard Business Review",
+  "mckinsey.com": "McKinsey",
+  "hubspot.com": "HubSpot",
+  "salesforce.com": "Salesforce",
+  "martech.org": "MarTech",
+  "marketingaiinstitute.com": "Marketing AI Institute",
+  "youtube.com": "YouTube"
  },
  "feeds": [
   {
@@ -399,6 +450,199 @@
     "site:statnews.com (\"medical device\" OR medtech OR FDA) when:5d",
     "site:mani.co.jp when:30d",
     "(ophthalmic OR dental) (\"medical device\" OR surgery) (Japan OR Asia OR Vietnam) when:7d site:reuters.com"
+   ]
+  },
+  {
+   "id": "ai-labs",
+   "lang": "en",
+   "sec": "ai",
+   "kind": "lab",
+   "name": "AI labs — official blogs",
+   "urls": [
+    "https://openai.com/news/rss.xml",
+    "https://deepmind.google/blog/rss.xml",
+    "https://blog.google/technology/ai/rss/",
+    "https://huggingface.co/blog/feed.xml",
+    "https://blogs.nvidia.com/feed/",
+    "https://blogs.microsoft.com/ai/feed/"
+   ]
+  },
+  {
+   "id": "ai-voices",
+   "lang": "en",
+   "sec": "ai",
+   "kind": "voice",
+   "name": "AI leaders & builders — their own writing",
+   "urls": [
+    "https://blog.samaltman.com/posts.atom",
+    "https://importai.substack.com/feed",
+    "https://karpathy.bearblog.dev/feed/",
+    "https://simonwillison.net/atom/everything/",
+    "https://www.oneusefulthing.org/feed",
+    "https://www.latent.space/feed"
+   ]
+  },
+  {
+   "id": "gn-ai-people",
+   "lang": "en",
+   "sec": "ai",
+   "kind": "people",
+   "name": "What AI leaders say (X, Threads, interviews — via the press)",
+   "gnews": [
+    "\"Sam Altman\" when:3d",
+    "(\"Dario Amodei\" OR \"Daniela Amodei\" OR \"Jack Clark\" OR \"Mike Krieger\") when:4d",
+    "\"Mark Zuckerberg\" (AI OR superintelligence OR Llama OR \"Meta AI\") when:3d",
+    "(\"Jensen Huang\" OR \"Demis Hassabis\" OR \"Sundar Pichai\" OR \"Satya Nadella\") AI when:3d",
+    "(\"Andrej Karpathy\" OR \"Ilya Sutskever\" OR \"Yann LeCun\" OR \"Greg Brockman\" OR \"Mira Murati\" OR \"Alexandr Wang\" OR \"Mustafa Suleyman\") when:5d",
+    "(Altman OR Amodei OR Zuckerberg OR Karpathy OR Hassabis) (posted OR \"on X\" OR \"wrote on\" OR Threads OR podcast OR interview) AI when:4d"
+   ]
+  },
+  {
+   "id": "gn-ai-tech",
+   "lang": "en",
+   "sec": "ai",
+   "kind": "tech",
+   "name": "New AI models & technology",
+   "gnews": [
+    "(OpenAI OR Anthropic OR Claude OR ChatGPT OR Gemini OR \"Meta AI\" OR Llama OR Grok OR DeepSeek OR Qwen OR Mistral) (launch OR launches OR releases OR unveils OR \"new model\") when:2d",
+    "(\"AI agents\" OR agentic OR \"reasoning model\" OR \"context window\" OR multimodal OR \"open-weight\" OR \"on-device AI\") when:3d",
+    "(\"generative AI\" OR \"AI model\" OR \"AI tool\") (healthcare OR hospital OR medical OR dental OR ophthalmology OR FDA) when:4d"
+   ]
+  },
+  {
+   "id": "gn-ai-biz",
+   "lang": "en",
+   "sec": "ai",
+   "kind": "salesmkt",
+   "name": "AI in sales & marketing (worldwide)",
+   "gnews": [
+    "(\"AI\" OR \"generative AI\" OR \"AI agents\") (\"sales teams\" OR \"B2B sales\" OR salespeople OR CRM) when:5d",
+    "(\"generative AI\" OR \"AI agents\" OR \"AI tools\") (marketing OR marketers OR \"content creation\" OR advertising) when:4d",
+    "(Salesforce OR HubSpot OR LinkedIn) (Agentforce OR Breeze OR \"AI agents\" OR \"AI assistant\") when:7d"
+   ]
+  },
+  {
+   "id": "ai-mkt",
+   "lang": "en",
+   "sec": "ai",
+   "kind": "salesmkt",
+   "name": "Marketing & sales blogs (AI only)",
+   "urls": [
+    "https://www.marketingaiinstitute.com/blog/rss.xml",
+    "https://martech.org/feed/",
+    "https://blog.hubspot.com/marketing/rss.xml"
+   ]
+  },
+  {
+   "id": "yt-ai",
+   "lang": "en",
+   "sec": "ai",
+   "kind": "yt",
+   "name": "YouTube — AI channels with large audiences (no Vietnamese channels)",
+   "yt": [
+    {
+     "h": "@OpenAI",
+     "id": "UCXZCJLdBC09xxGZ6gcdrc6A",
+     "k": "lab"
+    },
+    {
+     "h": "@anthropic-ai",
+     "id": "UCrDwWp7EBBv4NwvScIpBDOA",
+     "k": "lab"
+    },
+    {
+     "h": "@Google_DeepMind",
+     "id": "UCP7jMXSY2xbc3KCAE0MHQ-A",
+     "k": "lab"
+    },
+    {
+     "h": "@NVIDIA",
+     "k": "lab"
+    },
+    {
+     "h": "@lexfridman",
+     "id": "UCSHZKyawb77ixDdsGog4iWA",
+     "k": "talk"
+    },
+    {
+     "h": "@DwarkeshPatel",
+     "k": "talk"
+    },
+    {
+     "h": "@ycombinator",
+     "id": "UCcefcZRL2oaA_uBNeo5UOWg",
+     "k": "talk"
+    },
+    {
+     "h": "@a16z",
+     "k": "talk"
+    },
+    {
+     "h": "@AndrejKarpathy",
+     "id": "UCXUPKJO5MZQN11PqgIvyuvQ",
+     "k": "voice"
+    },
+    {
+     "h": "@aiexplained-official",
+     "id": "UCNJ1Ymd5yFuUPtn21xtRbbw",
+     "k": "tech"
+    },
+    {
+     "h": "@TwoMinutePapers",
+     "id": "UCbfYPyITQ-7l4upoX8nvctg",
+     "k": "tech"
+    },
+    {
+     "h": "@mreflow",
+     "id": "UChpleBmo18P08aKCIgti38g",
+     "k": "tech"
+    },
+    {
+     "h": "@matthew_berman",
+     "id": "UCawZsQWqfGSbCI5yjkdVkTA",
+     "k": "tech"
+    },
+    {
+     "h": "@WesRoth",
+     "k": "tech"
+    },
+    {
+     "h": "@Fireship",
+     "id": "UCsBjURrPoezykLs9EqgamOA",
+     "k": "tech"
+    },
+    {
+     "h": "@aiadvantage",
+     "k": "salesmkt"
+    },
+    {
+     "h": "@LiamOttley",
+     "k": "salesmkt"
+    },
+    {
+     "h": "@JeffSu",
+     "k": "salesmkt"
+    },
+    {
+     "h": "@HubSpotMarketing",
+     "k": "salesmkt"
+    },
+    {
+     "h": "@neilpatel",
+     "k": "salesmkt"
+    },
+    {
+     "h": "@GaryVee",
+     "k": "salesmkt"
+    },
+    {
+     "h": "@GregIsenberg",
+     "k": "salesmkt"
+    },
+    {
+     "h": "@salesforce",
+     "k": "salesmkt"
+    }
    ]
   }
  ],
@@ -893,6 +1137,229 @@
    "bóng đá",
    "v-league",
    "world cup"
+  ],
+  "ai_core": [
+   "ai",
+   "artificial intelligence",
+   "generative ai",
+   "genai",
+   "llm",
+   "llms",
+   "large language model",
+   "chatgpt",
+   "openai",
+   "anthropic",
+   "claude",
+   "gemini",
+   "deepmind",
+   "llama",
+   "meta ai",
+   "copilot",
+   "grok",
+   "xai",
+   "deepseek",
+   "qwen",
+   "mistral",
+   "machine learning",
+   "neural network",
+   "agentic",
+   "gpt",
+   "gpt-5",
+   "sora",
+   "veo",
+   "midjourney",
+   "perplexity",
+   "chatbot",
+   "chatbots",
+   "prompting",
+   "foundation model",
+   "reasoning model",
+   "fine-tuning",
+   "multimodal",
+   "superintelligence",
+   "agi",
+   "model context protocol",
+   "mcp",
+   "ai agent",
+   "ai agents",
+   "ai model",
+   "ai models",
+   "ai tool",
+   "ai tools"
+  ],
+  "ai_people": [
+   "sam altman",
+   "altman",
+   "dario amodei",
+   "amodei",
+   "daniela amodei",
+   "jack clark",
+   "mike krieger",
+   "mark zuckerberg",
+   "zuckerberg",
+   "yann lecun",
+   "lecun",
+   "alexandr wang",
+   "jensen huang",
+   "demis hassabis",
+   "hassabis",
+   "sundar pichai",
+   "pichai",
+   "satya nadella",
+   "nadella",
+   "mustafa suleyman",
+   "andrej karpathy",
+   "karpathy",
+   "ilya sutskever",
+   "sutskever",
+   "greg brockman",
+   "mira murati",
+   "elon musk",
+   "kevin weil",
+   "fidji simo",
+   "andrew ng",
+   "ethan mollick",
+   "lisa su",
+   "marc benioff",
+   "benioff"
+  ],
+  "ai_model": [
+   "model",
+   "models",
+   "launch",
+   "launches",
+   "launched",
+   "release",
+   "releases",
+   "released",
+   "unveil",
+   "unveils",
+   "gpt",
+   "claude",
+   "gemini",
+   "llama",
+   "grok",
+   "deepseek",
+   "qwen",
+   "mistral",
+   "open-weight",
+   "open-source",
+   "open source",
+   "benchmark",
+   "benchmarks",
+   "context window",
+   "reasoning",
+   "multimodal",
+   "sora",
+   "veo",
+   "voice mode",
+   "on-device"
+  ],
+  "ai_agent": [
+   "agent",
+   "agents",
+   "agentic",
+   "computer use",
+   "browser",
+   "automation",
+   "automate",
+   "workflow",
+   "workflows",
+   "copilot",
+   "assistant",
+   "assistants",
+   "mcp",
+   "tool use",
+   "coding"
+  ],
+  "ai_biz": [
+   "sales",
+   "salespeople",
+   "sales teams",
+   "selling",
+   "marketing",
+   "marketers",
+   "crm",
+   "customer",
+   "customers",
+   "b2b",
+   "advertising",
+   "ads",
+   "content",
+   "seo",
+   "lead",
+   "leads",
+   "salesforce",
+   "hubspot",
+   "agentforce",
+   "ecommerce",
+   "productivity",
+   "workplace",
+   "enterprise",
+   "email",
+   "linkedin",
+   "presentation",
+   "presentations"
+  ],
+  "ai_med": [
+   "healthcare",
+   "health care",
+   "medical",
+   "medicine",
+   "hospital",
+   "hospitals",
+   "clinical",
+   "clinician",
+   "doctor",
+   "doctors",
+   "dental",
+   "dentist",
+   "ophthalmology",
+   "radiology",
+   "fda",
+   "drug discovery",
+   "patients",
+   "diagnosis"
+  ],
+  "ai_rules": [
+   "regulation",
+   "regulators",
+   "law",
+   "lawsuit",
+   "ai act",
+   "policy",
+   "safety",
+   "copyright",
+   "antitrust",
+   "ban",
+   "export controls",
+   "privacy",
+   "executive order",
+   "senate",
+   "congress"
+  ],
+  "ai_chips": [
+   "nvidia",
+   "gpu",
+   "gpus",
+   "chip",
+   "chips",
+   "data center",
+   "data centers",
+   "compute",
+   "tpu",
+   "semiconductor",
+   "semiconductors"
+  ],
+  "ai_research": [
+   "paper",
+   "research",
+   "study",
+   "researchers",
+   "breakthrough",
+   "alignment",
+   "interpretability",
+   "scientists"
   ]
  },
  "internal": {
@@ -1089,6 +1556,42 @@
     "worldbank.org",
     "adb.org"
    ]
+  },
+  {
+   "id": "ai",
+   "vi": "AI & công nghệ (quốc tế)",
+   "doms": [
+    "youtube.com",
+    "openai.com",
+    "anthropic.com",
+    "deepmind.google",
+    "blog.google",
+    "ai.meta.com",
+    "huggingface.co",
+    "blogs.nvidia.com",
+    "blogs.microsoft.com",
+    "blog.samaltman.com",
+    "importai.substack.com",
+    "karpathy.bearblog.dev",
+    "simonwillison.net",
+    "oneusefulthing.org",
+    "latent.space",
+    "theverge.com",
+    "techcrunch.com",
+    "wired.com",
+    "arstechnica.com",
+    "technologyreview.com",
+    "venturebeat.com",
+    "the-decoder.com",
+    "axios.com",
+    "businessinsider.com",
+    "fortune.com",
+    "semafor.com",
+    "hubspot.com",
+    "salesforce.com",
+    "martech.org",
+    "marketingaiinstitute.com"
+   ]
   }
  ],
  "topics": [
@@ -1097,14 +1600,16 @@
    "vi": "Nha khoa",
    "tags": [
     "dental"
-   ]
+   ],
+   "en": "Dentistry"
   },
   {
    "id": "eye",
    "vi": "Nhãn khoa",
    "tags": [
     "eye"
-   ]
+   ],
+   "en": "Ophthalmology"
   },
   {
    "id": "tender",
@@ -1112,21 +1617,24 @@
    "tags": [
     "tender",
     "device"
-   ]
+   ],
+   "en": "Tenders & devices"
   },
   {
    "id": "insurance",
    "vi": "BHYT & giá dịch vụ",
    "tags": [
     "insurance"
-   ]
+   ],
+   "en": "Health insurance & fees"
   },
   {
    "id": "policy",
    "vi": "Chính sách y tế",
    "tags": [
     "policy"
-   ]
+   ],
+   "en": "Health policy"
   },
   {
    "id": "hospital",
@@ -1135,34 +1643,47 @@
     "hospital",
     "surgery",
     "invest"
-   ]
+   ],
+   "en": "Hospitals & surgery"
   },
   {
    "id": "market",
    "vi": "Thị trường & Nhật Bản",
    "tags": [
     "market"
-   ]
+   ],
+   "en": "Market & Japan"
   },
   {
    "id": "economy",
    "vi": "Kinh tế",
    "secs": [
     "economy"
-   ]
+   ],
+   "en": "Economy"
   },
   {
    "id": "politics",
    "vi": "Chính trị",
    "secs": [
     "politics"
-   ]
+   ],
+   "en": "Politics"
   },
   {
    "id": "society",
    "vi": "Xã hội",
    "secs": [
     "society"
+   ],
+   "en": "Society"
+  },
+  {
+   "id": "ai",
+   "vi": "AI & Công nghệ",
+   "en": "AI & Tech",
+   "secs": [
+    "ai"
    ]
   }
  ],

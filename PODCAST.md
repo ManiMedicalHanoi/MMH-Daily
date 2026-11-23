@@ -34,6 +34,9 @@ Giọng đọc xoay vòng: một giọng nam · một giọng nữ · hai ngư�
 - Câu mở đầu, câu chào kết, cách chuyển tin **khác các số gần đây** (danh sách được gửi kèm mỗi lần viết). Có thể mở bằng một câu hỏi, một con số, một cảnh, hay thẳng vào tin hay nhất.
 - Không dùng lại các cụm "cửa miệng" đã lặp ở các số trước (danh sách gửi kèm).
 - Từ vựng (vocab) **không trùng** từ đã dạy trong 14 ngày gần nhất.
+- **Không đọc lại nội dung đã lên sóng** (24/11/2026, người dùng yêu cầu): sổ `data/aired.json` (30 ngày, `tools/aired.mjs`) ghi các tin / video mỗi số podcast đã nói (`podcast.covered`).
+  Mọi series (kể cả AI Pulse) chỉ được dùng tin CHƯA có trong sổ — so theo mã tin và theo tiêu đề gần giống (cùng sự kiện, báo khác đăng lại). Riêng Week in Review (CN) là số nhìn lại tuần nên được nhắc lại.
+  Claude viết qua Routine: trong `brief.mjs` tin có `"aired": true` KHÔNG đưa vào kịch bản; ghi `podcast.covered` = id các tin đã nói.
 
 ## 5. Nghe cuốn
 - Mỗi tin có một "điểm móc": chi tiết bất ngờ, con số lạ, câu hỏi người nghe đang nghĩ.
@@ -54,9 +57,10 @@ Xem thêm `WRITING.md` (chọn tin, giọng nói tự nhiên, phụ đề Việt
 ## 7. Series cố định, nhân vật cố định (người dùng duyệt 23/11/2026, `tools/shows.mjs`)
 | Ngày | Series | Nhân vật (giọng ElevenLabs riêng, không đổi) | Nội dung |
 |---|---|---|---|
-| T2, T5 | **MMH Talk** | Emma (dẫn chính, tò mò) · Daniel (từng làm mua sắm bệnh viện, hơi hoài nghi) | 2–3 chuyện quan trọng nhất với MMH, trao đổi, phản biện nhẹ |
+| T2 | **MMH Talk** | Emma (dẫn chính, tò mò) · Daniel (từng làm mua sắm bệnh viện, hơi hoài nghi) | 2–3 chuyện quan trọng nhất với MMH, trao đổi, phản biện nhẹ |
 | T3 | **The Clinic Room** | Dr. Sarah (giảng nhãn khoa, nha khoa) · Minh (sales trẻ MMH, hỏi như người nghe B1) | Bệnh, kỹ thuật, dụng cụ dùng ở bước nào |
 | T4 | **Law & Tender Desk** | Thomas (giải thích luật, giọng Anh, chậm rãi) | Cái gì đổi · ai bị ảnh hưởng · từ khi nào · MMH làm gì; phần học = tiếng Anh pháp lý |
+| T5 | **AI Pulse** | Liam (tech creator, kiểu YouTuber review công nghệ; giọng ElevenLabs Liam — "Energetic, Social Media Creator") | Tin AI quốc tế — xem mục 8 |
 | T6 | **Morning Headlines** | Andrew (MC thời sự) | 5–7 tin nóng, mỗi tin kết bằng "với MMH, …" |
 | T7 | **English at Work** | Ms. Olivia (giáo viên) · Minh (học viên) | Ôn từ / cụm / ngữ pháp của cả tuần, đóng vai tình huống MMH |
 | CN | **Week in Review** | Emma · Daniel | Nối các chuyện của tuần, việc cần theo dõi tuần sau |
@@ -64,4 +68,20 @@ Xem thêm `WRITING.md` (chọn tin, giọng nói tự nhiên, phụ đề Việt
 - Nhân vật giữ đúng tính cách, cách nói; không giới thiệu lại lý lịch mỗi số.
 - **Sổ ghi nhớ** `data/memory.json` (~5 tháng, mọi series): mỗi số Claude ghi 2–5 ý (`recap`). Sáng hôm sau máy tìm số cũ có chủ đề gần với tin hôm nay;
   **chỉ khoảng 1/3 số** được phép nhắc lại (ngẫu nhiên, `DAILY_RECALL_P`), tối đa **một lần, nửa câu**, chỉ khi tin hôm nay thật sự nối tiếp; không kể lại chuyện cũ. Bước soát kịch bản bỏ phần nhắc thừa.
+- T5 AI Pulse cần ≥ 3 tin AI chưa lên sóng; thiếu ⇒ MMH Talk. App ▸ Tổng hợp ngay ▸ chỉ chọn chủ đề "AI & Công nghệ" ⇒ ra số AI Pulse bất kỳ ngày nào.
+
+## 8. AI Pulse — series AI & công nghệ (24/11/2026, người dùng yêu cầu)
+- **Nguồn** (`config.json ▸ feeds`, `sec: "ai"`, CHỈ quốc tế, không lấy nguồn Việt Nam): blog chính thức OpenAI · Google DeepMind · Google AI · Hugging Face · NVIDIA · Microsoft;
+  bài do chính lãnh đạo / người xây AI viết (Sam Altman, Jack Clark — đồng sáng lập Anthropic, Andrej Karpathy, Simon Willison, Ethan Mollick, Latent Space);
+  phát biểu / bài đăng X, Threads, phỏng vấn của Altman, Amodei, Zuckerberg, Huang, Hassabis, Pichai, Nadella, Karpathy, LeCun… qua báo công nghệ (X / Threads không cho đọc tự động);
+  kênh YouTube lớn về AI (OpenAI, Anthropic, DeepMind, NVIDIA, Lex Fridman, Dwarkesh, Y Combinator, a16z, AI Explained, Two Minute Papers, Matt Wolfe, Matthew Berman…)
+  và **AI trong sales & marketing** (The AI Advantage, Liam Ottley, Jeff Su, HubSpot, Neil Patel, GaryVee, Greg Isenberg, Salesforce + MarTech, Marketing AI Institute).
+  Kênh YouTube khai báo bằng `@handle` (GitHub tự tra mã kênh, lưu `data/yt.json`); video Shorts và video không nói về AI bị bỏ. Lượt xem cộng điểm.
+- **Nội dung**: (1) câu mở = chuyện AI lớn nhất; (2) lãnh đạo nói / viết / đăng gì và tín hiệu là gì; (3) công nghệ mới — ĐI SÂU 2–3 mục: cái gì mới, chạy thế nào (lời thường + một hình ảnh đời thường),
+  làm được / chưa làm được gì, ai dùng được, khi nào; (4) AI tại nơi làm việc — sales & marketing, nêu tên kênh / nguồn; (5) tin nhanh; (6) **góc MMH tuỳ chọn**; (7) phần học (Tech Talk English) + chào.
+- Luôn tách "đã công bố" / "dùng được ngay", "tin đồn" / "đã xác nhận"; mọi ý ghi nguồn; không bịa tính năng, số liệu, giá, trích dẫn. Không dùng từ thổi phồng ("insane", "game-changer").
+- **Góc MMH** (60–120 từ, 2–3 ý, mỗi ý 1 câu): chỉ khi có ứng dụng thực tế cho việc hằng ngày — ghi chú đi địa bàn / CRM, hồ sơ thầu, dịch IFU / catalogue, tài liệu đào tạo,
+  email khách hàng, nghiên cứu thị trường, báo cáo liên phòng ban, phân tích phản hồi sản phẩm. Luân phiên: số AI Pulse trước có góc MMH ⇒ số này chỉ đưa khi ý thật sự mạnh (`history.json ▸ mmh`).
+- Phong cách YouTuber review công nghệ: hào hứng, nhanh, chuyển ý gọn ("Okay, next up…", "Quick reality check…"), mỗi phần kết bằng một câu chốt — vẫn tiếng Anh B1.
+- Bài kiểm tra nghe / bài học (Học bài này) dựng từ kịch bản như mọi số.
 
