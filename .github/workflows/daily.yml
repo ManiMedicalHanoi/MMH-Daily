@@ -12,7 +12,7 @@ on:
     paths: ['data/editions/**', 'data/inbox/**', 'data/requests/**']   # phiên Claude Code vừa viết số báo / bản tin nội bộ (đã khoá) ⇒ tạo giọng + đăng trang
   workflow_dispatch:
     inputs:
-      kind: { description: 'daily = tin hằng ngày · weekly = bản tin nội bộ · both = cả hai', required: false, default: 'daily' }
+      kind: { description: 'daily = tin hằng ngày · site = chỉ đăng lại trang (không viết, không tạo giọng) · weekly = bản tin nội bộ · both = cả hai', required: false, default: 'daily' }
       show: { description: 'Ép chương trình podcast (để trống = theo lịch)', required: false }
       sources: { description: 'Chỉ lấy tin từ các báo này (tên miền, cách nhau dấu phẩy; trống = tất cả)', required: false }
       topics: { description: 'Chủ đề (dental,eye,tender,insurance,policy,hospital,market,economy,politics,society; trống = tất cả)', required: false }
@@ -30,7 +30,7 @@ jobs:
       HAS_INKEY: ${{ secrets.DAILY_INTERNAL_KEY != '' }}
       GH_TOKEN: ${{ github.token }}
       IS_REQ: ${{ github.event_name == 'push' && (contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/')) }}
-      DO_DAILY: ${{ github.event.schedule == '45 22 * * *' || (github.event_name == 'workflow_dispatch' && inputs.kind != 'weekly') || (github.event_name == 'push' && (contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/'))) }}
+      DO_DAILY: ${{ github.event.schedule == '45 22 * * *' || (github.event_name == 'workflow_dispatch' && inputs.kind != 'weekly' && inputs.kind != 'site') || (github.event_name == 'push' && (contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/'))) }}
       DO_AUDIO: ${{ github.event_name == 'push' && !(contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/')) }}
       DAILY_VOICE: ${{ inputs.voice || vars.DAILY_VOICE || '' }}
       DAILY_VOICES: ${{ inputs.voices || vars.DAILY_VOICES || '' }}
