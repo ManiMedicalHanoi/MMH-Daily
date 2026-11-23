@@ -14,6 +14,10 @@ Tờ báo buổi sáng của MMH + podcast tiếng Anh mỗi ngày.
 - **Không lặp**: `data/aired.json` (`tools/aired.mjs`) — tin / video đã nói trong podcast (`podcast.covered`) không series nào dùng lại trong 30 ngày (so mã tin + tiêu đề gần giống). Week in Review được nhắc lại.
 - **VI · EN** đổi cả giao diện: mục, nhãn chủ đề, ngày, tên báo (tên tiếng Anh hoặc không dấu), hướng dẫn, chế độ học. Chữ giao diện mới: `L(vi, en)` / `data-en`.
 
+## Giao diện v14 + số mới đúng giờ (24/11/2026)
+- Điện thoại: thanh tab dưới đáy (Nghe · Học bài · Luyện nói · Bản tin · Xếp hạng), đầu trang gọn, thẻ podcast bìa nhỏ + nút phát ngay màn hình đầu, lời thoại cuộn trong khung. Máy tính: thẻ podcast có chiều sâu, khung điều khiển kính mờ.
+- Lịch cron GitHub (05:45) thường trễ 4–5 giờ ⇒ Training Hub (`RH_DailyKick.gs`, mmh-backend) tự gọi workflow từ 05:40 khi chưa có số hôm nay; lượt cron trễ thấy đã có số ⇒ bỏ qua. App báo "Số hôm nay đang được tạo" khi chưa có.
+
 ## Mỗi sáng (GitHub Actions `.github/workflows/daily.yml`, 05:45 giờ VN)
 
 1. `tools/collect.mjs`: gom tin từ ~45 kênh của báo chính thống Việt + Anh và Google News (Reuters, Bloomberg, Nikkei…), cùng văn bản mới trên vanban.chinhphu.vn.
