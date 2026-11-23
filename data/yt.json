@@ -1,0 +1,90 @@
+{
+ "@OpenAI": {
+  "id": "UCXZCJLdBC09xxGZ6gcdrc6A",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@anthropic-ai": {
+  "id": "UCrDwWp7EBBv4NwvScIpBDOA",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@NVIDIA": {
+  "id": "UCHuiy8bXnmK5nisYHUd1J5g",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@lexfridman": {
+  "id": "UCSHZKyawb77ixDdsGog4iWA",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@DwarkeshPatel": {
+  "id": "UCXl4i9dYBrFOabk0xGmbkRA",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@ycombinator": {
+  "id": "UCcefcZRL2oaA_uBNeo5UOWg",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@a16z": {
+  "id": "UC9cn0TuPq4dnbTY-CBsm8XA",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@AndrejKarpathy": {
+  "id": "UCXUPKJO5MZQN11PqgIvyuvQ",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@aiexplained-official": {
+  "id": "UCNJ1Ymd5yFuUPtn21xtRbbw",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@TwoMinutePapers": {
+  "id": "UCbfYPyITQ-7l4upoX8nvctg",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@mreflow": {
+  "id": "UChpleBmo18P08aKCIgti38g",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@matthew_berman": {
+  "id": "UCawZsQWqfGSbCI5yjkdVkTA",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@WesRoth": {
+  "id": "UCqcbQf6yw5KzRoDDcZ_wBSw",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@Fireship": {
+  "id": "UCsBjURrPoezykLs9EqgamOA",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@aiadvantage": {
+  "id": "UCHhYXsLBEVVnbvsq57n1MTQ",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@LiamOttley": {
+  "id": "UCui4jxDaMb53Gdh-AZUTPAg",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@JeffSu": {
+  "id": "UCwAnu01qlnVg1Ai2AbtTMaA",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@HubSpotMarketing": {
+  "id": "UCVeuau7DLrg7zlAjxxDbdww",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@neilpatel": {
+  "id": "UCl-Zrl0QhF66lu1aGXaTbfw",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@GaryVee": {
+  "id": "UCctXZhXmG-kf3tlIXgVZUlw",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@GregIsenberg": {
+  "id": "UCPjNBjflYl0-HQtUvOx0Ibw",
+  "at": "2026-11-23T18:32:19.856Z"
+ },
+ "@salesforce": {
+  "id": "UCUpquzY878NEaZm5bc7m2sQ",
+  "at": "2026-11-23T18:32:19.856Z"
+ }
+}
