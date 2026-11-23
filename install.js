@@ -15,6 +15,12 @@
   const SHARE = '<svg class="ii" viewBox="0 0 24 24"><path d="M12 15V3m0 0L8 7m4-4 4 4M6 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const PLUS = '<svg class="ii" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   const guide = () => {
+    if (window.DAILY?.S?.lang === 'en') {
+      if (inApp) return ['Tap <b>⋯</b> (top) ▸ <b>Open in browser</b> (Safari / Chrome).', 'In the browser, tap <b>Install app</b> again.'];
+      if (ios) return [`Tap <b>Share</b> ${SHARE} in the bottom bar (iPad: top).`, `Scroll down and choose <b>Add to Home Screen</b> ${PLUS}.`, 'Tap <b>Add</b>. The MMH Podcast icon appears on your home screen.'];
+      if (macSafari) return ['In the menu bar, choose <b>File</b> ▸ <b>Add to Dock</b>.', 'Tap <b>Add</b>. MMH Daily Podcast opens as its own app from the Dock / Launchpad.'];
+      return ['Open the browser menu <b>⋮</b> (top right).', 'Choose <b>Install app</b> / <b>Add to Home screen</b>.', 'Tap <b>Install</b>.'];
+    }
     if (inApp) return ['Bấm nút <b>⋯</b> (góc trên) ▸ <b>Mở bằng trình duyệt</b> (Safari / Chrome).', 'Trong trình duyệt, bấm lại <b>Cài app</b>.'];
     if (ios) return [`Bấm nút <b>Chia sẻ</b> ${SHARE} ở thanh dưới (iPad: góc trên).`, `Kéo xuống, chọn <b>Thêm vào MH chính</b> ${PLUS}.`, 'Bấm <b>Thêm</b>. Biểu tượng MMH Podcast xuất hiện trên màn hình chính.'];
     if (macSafari) return ['Trên thanh menu, bấm <b>Tệp</b> (File) ▸ <b>Thêm vào Dock</b>.', 'Bấm <b>Thêm</b>. MMH Daily Podcast mở như một ứng dụng riêng từ Dock / Launchpad.'];

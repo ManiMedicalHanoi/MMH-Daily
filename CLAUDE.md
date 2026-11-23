@@ -16,9 +16,12 @@ Phiên do app mở có khối `<routine-fire-payload>` chứa JSON `{kind, sourc
    `data/requests/daily.json` = `{"at":"<giờ hiện tại ISO>","sources":"…","topics":"…","show":""}`, commit + `git push origin HEAD:main` (GitHub tự gom tin, dựng số).
    Chờ xong (≈ 5 phút): lặp `git pull` tới khi `data/index.json ▸ updated` mới hơn lúc bắt đầu.
 2. `node tools/brief.mjs` ⇒ đọc chương trình hôm nay (người dẫn, kiểu: solo / duo / qa / desk / deep) + danh sách tin.
+   Tin `"aired": true` = đã lên sóng ở series khác ⇒ KHÔNG đưa vào kịch bản (luật không lặp, PODCAST.md ▸ 4). `show.ai: true` (AI Pulse, thường Thứ Năm)
+   ⇒ kịch bản CHỈ dùng tin `sec: "ai"`, theo PODCAST.md ▸ 8 (góc MMH tuỳ chọn, luân phiên theo `lastAiMmhCorner`).
 3. Đọc **WRITING.md** + **PODCAST.md** (kiểu chương trình theo nội dung, ngôn ngữ B1, phần học tiếng Anh, chống lặp) (chọn tin theo mức ảnh hưởng tới MMH + giọng nói tự nhiên). Viết file `/tmp/out.json` theo đúng mẫu ở đầu `tools/apply.mjs`:
    - **Mọi** tin trong brief: tiêu đề Anh + Việt, 1 dòng dẫn tiếng Anh, tóm tắt 2–3 câu Việt + Anh. KHÔNG cần "vì sao quan trọng" (người dùng bỏ — để `why_vi` trống).
    - Lời biên tập 60–90 từ (Anh + Việt); phân tích y tế 180–240 từ (Anh + Việt); 8 từ vựng có trong kịch bản.
+   - `podcast.covered` = id các tin đã nói trong kịch bản (ghi vào sổ đã lên sóng); AI Pulse thêm `podcast.mmh` = true nếu có góc MMH.
    - Kịch bản podcast 1.200–1.500 từ (8–10 phút), đúng người dẫn / kiểu chương trình; tin ảnh hưởng tới MMH trước và sâu nhất, tin chung chỉ điểm nhanh cuối chương trình; nói tự nhiên (rút gọn, câu ngắn, phản ứng,
      chuyển lời mượt), số viết để đọc; KHÔNG bịa số liệu / tên / trích dẫn ngoài brief; không vui vẻ khi tin về tai nạn / tử vong; mở đầu khác các số gần đây;
      mỗi lượt kèm phụ đề Việt tự nhiên (`vi`).
@@ -42,6 +45,8 @@ KHÔNG commit file nào trong /tmp; KHÔNG dán tên người / khách hàng và
 Không có mạng tới script.google.com ⇒ chạy workflow **MMH Daily** `kind=weekly` (bản mẫu tự động) và báo người dùng.
 
 ## Quy tắc
+- **24/11/2026**: nút VI · EN đổi CẢ giao diện (mục, nhãn chủ đề, ngày, tên báo không dấu / tên tiếng Anh) — chữ giao diện mới phải có 2 bản (`L(vi, en)` trong app.js, `data-en` trong index.html).
+  Mục **AI & Công nghệ** (`sec: "ai"`, nguồn quốc tế, giữ 10 ngày) + series **AI Pulse** (T5, Liam). Sổ **đã lên sóng** `data/aired.json` (30 ngày): không series nào đọc lại tin đã nói.
 - **Bối cảnh MMH cho Claude** (24/11/2026): `context/MMH.md` (hồ sơ ngắn: sản phẩm, chuỗi giá trị, điều gì ảnh hưởng MMH, cách dịch — luôn nằm trong lời dặn chung, được đệm lời nhắc) + `context/glossary.tsv` (≈1.400 thuật ngữ chuẩn Anh – Việt rút từ MMH Library ▸ glossary nhãn khoa / nha khoa + thuật ngữ thầu / BHYT; mỗi lượt chỉ gửi ≤ 60 thuật ngữ có trong tin hôm nay — `edition.mjs ▸ glossaryFor`). Không đưa số liệu nội bộ, tên NPP, giá vào 2 file này (kho công khai). Thuật ngữ trong MMH Library đổi ⇒ dựng lại glossary.tsv.
 - App tên **MMH Daily Podcast**. **Hỏi tin** + **Luyện nói** (`coach/`): app học nói tiếng Anh 3 mức (xem README ▸ Luyện nói). Đổi file trong `coach/` ⇒ tăng `?v=` trong `coach/index.html`; thêm file ⇒ thêm vào bước `cp` của workflow + danh sách đệm `sw.js`.
 - Chỉ sửa `data/` khi làm số báo; sửa code thì theo README.

@@ -49,6 +49,15 @@ export const SHOWS = {
         bio: 'Minh, the same young MMH sales rep from The Clinic Room, now as the student; makes the typical small mistakes of a Vietnamese B1 speaker and improves during the lesson.' }],
     color: '#8A5A00',
   },
+  /* ── 24/11/2026 (người dùng yêu cầu): series AI — phong cách YouTuber review công nghệ, tin AI quốc tế, góc ứng dụng cho MMH chỉ khi thực tế ── */
+  aipulse: {
+    name: 'AI Pulse', vi: 'Nhịp AI', style: 'solo', mode: 'm', rate: '-3%', series: true, ai: true,
+    desc: 'Liam, tech creator: what the people building AI are saying, the newest models and tools explained, and how sales & marketing teams use them.',
+    hosts: [
+      { id: 'A', name: 'Liam', voice: 'en-US-RogerNeural', el: 'TX3LPaxmHKxFdv7VOQHJ', role: 'Tech creator',
+        bio: 'Liam, a popular tech YouTuber who reviews AI every week. Energetic, quick, genuinely excited by good engineering but allergic to hype; always separates "announced" from "you can use it today" and "rumour" from "confirmed"; explains how things work with everyday images ("a context window is the model\'s desk — how many pages it can keep open at once"); credits who said or showed what; ends segments with a punchy one-line takeaway.' }],
+    color: '#3949AB',
+  },
   /* ── các chương trình cũ: giữ để mở lại số cũ (không còn trong lịch) ── */
   briefing: {
     mode: 'm', rate: '-6%',
@@ -140,8 +149,9 @@ export const SHOWS_INTERNAL = {
     hosts: [{ id: 'A', name: 'Andrew', voice: 'en-US-AndrewMultilingualNeural', role: 'Host' }], color: '#1F4E79' },
 };
 
-/* Lịch tuần (0 = CN): T2, T5 MMH Talk · T3 The Clinic Room · T4 Law & Tender Desk · T6 Morning Headlines · T7 English at Work · CN Week in Review. */
-export const SCHEDULE = ['weekly', 'talk', 'clinicroom', 'lawdesk', 'talk', 'headlines', 'english'];
+/* Lịch tuần (0 = CN): T2 MMH Talk · T3 The Clinic Room · T4 Law & Tender Desk · T5 AI Pulse · T6 Morning Headlines · T7 English at Work · CN Week in Review.
+   (24/11/2026: T5 đổi từ MMH Talk sang AI Pulse — người dùng yêu cầu thêm chủ đề AI, các series luân phiên.) */
+export const SCHEDULE = ['weekly', 'talk', 'clinicroom', 'lawdesk', 'aipulse', 'headlines', 'english'];
 const ROTATION = ['talk', 'clinicroom', 'lawdesk', 'headlines'];
 const DAILY_SHOWS = [...ROTATION];
 /* Cách trình bày từng chương trình (đưa vào lời dặn AI). */
@@ -161,7 +171,8 @@ export const HOW = {
   clinic: 'Two people who know the clinic: eye care and dentistry stories — the condition, the technique, the trend among doctors, and the link to MMH products (ophthalmic knives and sutures, micro forceps, endo files, diamond burs, composites).',
   story: 'One storyteller, narrative style: set the scene, what happened, why it matters, what to watch. The other stories only get one or two sentences at the end.',
   quickfive: 'Exactly five short stories. Each: 2–3 sentences, then a quick question to the listener ("Quick question: …?"), a short pause line, and the answer. Light and fast-paced in structure, but simple language.',
-  weekly: 'Sunday: Emma and Daniel look back on the week — the three stories that mattered most for MMH, then what to watch next week.'
+  weekly: 'Sunday: Emma and Daniel look back on the week — the three stories that mattered most for MMH, then what to watch next week.',
+  aipulse: 'AI Pulse: Liam alone, tech-YouTuber style, ONLY international AI stories (no Vietnamese sources). Order: (1) cold open with the single biggest AI story in one punchy line; (2) "What the builders are saying" — what leaders of OpenAI, Anthropic, Meta, Google DeepMind, NVIDIA, Microsoft said, wrote or posted, and what it signals; (3) "New tech, explained" — the 2–3 most important new models, features or techniques, each: what is new, how it works in plain words, what it can and cannot do yet, who can use it and when; (4) "AI at work" — how sales and marketing teams around the world use AI, from the creators and sources given; (5) quick hits; (6) OPTIONAL "MMH corner" (see the instructions); (7) learning segment and sign-off. Go deep on the technology, keep the MMH reflection short.'
 };
 /* Phần học tiếng Anh trong số (xoay theo ngày, xem PODCAST.md §3). */
 export const LEARN = {
@@ -170,9 +181,10 @@ export const LEARN = {
   spotlight: 'Word Spotlight: pick ONE useful word or phrase from today\'s stories; explain it simply and give two short example sentences from MMH work.',
   phrase: 'Phrase for Work: teach ONE sentence pattern useful in meetings, emails or presentations, inspired by today\'s news, with two examples.',
   repeat: 'Listen & Repeat: say "Say it with me." then three short sentences (max 10 words each) taken from today\'s stories; mark those three turns with rep=true.',
-  quiz: 'Quick Quiz: ask the listener two short questions about stories in this episode, give a beat ("Think about it…"), then answer each.'
+  quiz: 'Quick Quiz: ask the listener two short questions about stories in this episode, give a beat ("Think about it…"), then answer each.',
+  tech: 'Tech Talk English: pick TWO AI / tech terms heard today (e.g. "context window", "open-weight", "agent", "rolled out", "benchmark"); explain each in plain words and give one example sentence an MMH colleague could say at work.'
 };
-export const learnFor = (dateStr, show) => { if (show === 'english') return 'class'; if (show === 'lawdesk') return 'legal'; const k = ['spotlight', 'phrase', 'repeat', 'quiz']; return k[Math.floor(new Date(dateStr + 'T00:00:00Z') / 864e5) % k.length]; };
+export const learnFor = (dateStr, show) => { if (show === 'english') return 'class'; if (show === 'lawdesk') return 'legal'; if (show === 'aipulse') return 'tech'; const k = ['spotlight', 'phrase', 'repeat', 'quiz']; return k[Math.floor(new Date(dateStr + 'T00:00:00Z') / 864e5) % k.length]; };
 
 /* Chọn series: theo lịch tuần (SCHEDULE); nội dung đặc biệt được đổi chỗ — nhiều văn bản luật ⇒ Law & Tender Desk, nhiều tin nhãn / nha khoa ⇒ The Clinic Room —
    miễn series đó chưa phát trong 2 ngày gần nhất và không trùng hôm qua. T7 (English at Work) và CN (Week in Review) không đổi. */
@@ -185,6 +197,7 @@ export function pickShow(dateStr, picked, history = []) {
   const clinicN = has('eye') + has('dental');
   const recent = history.slice(0, 2).map(h => h.show), yday = history[0]?.show;
   const free = id => !recent.includes(id);
+  if (base === 'aipulse') return (picked.aiPod || []).length >= 3 ? 'aipulse' : 'talk';   // T5: đủ tin AI mới (chưa lên sóng) ⇒ AI Pulse, không thì MMH Talk
   if (base !== 'lawdesk' && legal >= 4 && free('lawdesk')) return 'lawdesk';
   if (base !== 'clinicroom' && clinicN >= 4 && free('clinicroom')) return 'clinicroom';
   if (base === yday) return ROTATION.find(id => id !== yday && free(id)) || base;

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { DAY, vnDay, iso } from './lib.mjs';
 import { SHOWS, showFor, pickShow, HOW, LEARN, learnFor, GLOSSARY } from './shows.mjs';
 import { translateStories, translate } from './translate.mjs';
+import { airedCheck, inferCovered, recordAired, loadAired, AIRED_F } from './aired.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CFG = JSON.parse(fs.readFileSync(path.join(ROOT, 'config.json'), 'utf8'));
@@ -52,6 +53,7 @@ function pick(pool) {
   cand.sort((a, b) => rank(b) - rank(a));
   const sections = {};
   for (const [sec, def] of Object.entries(CFG.sections)) {
+    if (sec === 'ai') continue;   // AI & Công nghệ chọn riêng bên dưới (tin quốc tế, giữ 10 ngày)
     const all = cand.filter(x => x.sec === sec);
     // trộn tiếng Việt + tiếng Anh: tối đa 60% một ngôn ngữ
     const out = [], cap = Math.ceil(def.quota * 0.6), n = { vi: 0, en: 0 };
@@ -64,7 +66,20 @@ function pick(pool) {
   for (const [g, ts] of Object.entries(DESK)) desk[g] = cand.filter(x => (x.sec === 'health' || g === 'market') && ts.some(t => x.tags?.includes(t))).slice(0, 6).map(x => x.id);
   const docs = cand.filter(x => x.docs?.length && (x.sec === 'health' || x.tags?.includes('invest') || x.kind === 'doc')).slice(0, 10);
   const lead = sections.health[0] || sections.economy[0];
-  return { sections, desk, docs, lead, cand };
+  // ── AI & Công nghệ (24/11/2026): tin / bài / video AI quốc tế trong 9 ngày; podcast AI Pulse chỉ lấy tin CHƯA lên sóng (data/aired.json) ──
+  const AIR = airedCheck(DATE);
+  let ai = pool.items.filter(x => x.sec === 'ai' && NOW - new Date(x.d) <= 9 * DAY && new Date(x.d) - NOW < DAY / 2);
+  if (FILTER.sources.length) { const ok = new Set(FILTER.sources); ai = ai.filter(x => ok.has(x.dom)); }
+  if (FILTER.topics.length && !FILTER.topics.includes('ai')) ai = [];
+  const aiRank = x => x.sc + (x.also?.length || 0) + Math.max(0, 2 - (NOW - new Date(x.d)) / (3.5 * DAY));
+  ai.sort((a, b) => aiRank(b) - aiRank(a));
+  const spread = (xs, n, perSrc, maxVid) => { const out = [], by = {}; let vid = 0;
+    for (const x of xs) { if (out.length >= n) break; const k = x.src || x.dom; if ((by[k] || 0) >= perSrc || (x.tags?.includes('video') && vid >= maxVid)) continue;
+      by[k] = (by[k] || 0) + 1; if (x.tags?.includes('video')) vid++; out.push(x); }
+    return out; };
+  sections.ai = spread(ai.filter(x => !used.has(x.id)), CFG.sections.ai?.quota || 10, 2, 4);
+  const aiPod = spread(ai.filter(x => !AIR.is(x)), 10, 2, 5);
+  return { sections, desk, docs, lead, cand, aiPod, AIR };
 }
 
 // ── chữ cho giọng đọc ──
@@ -91,7 +106,33 @@ function seedRand(seed) { let h = 2166136261; for (const c of seed) h = Math.imu
 const words = s => new Set(String(s || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 3));
 const similar = (a, b) => { const A = words(a), B = words(b); if (!A.size || !B.size) return false; let n = 0; for (const w of A) if (B.has(w)) n++; return n / Math.min(A.size, B.size) > 0.5; };
 
+/* AI Pulse bản miễn phí (không có AI viết): Liam đọc lần lượt tin AI quốc tế chưa lên sóng — tiêu đề, ý chính, nguồn. */
+function templateAI(ed, picked) {
+  const rnd = seedRand(DATE + 'ai');
+  const any = a => a[Math.floor(rnd() * a.length)];
+  const show = SHOWS[ed.podcast.show], A = show.hosts[0], turns = [];
+  const say = text => { const t = speech(text).replace(/\.\./g, '.').replace(/\s+([,.?!])/g, '$1'); if (t) turns.push({ sp: A.id, text: t }); };
+  const head = x => String(x.h_en || x.t).replace(/['"“”‘’]/g, '').replace(/\s*[|:]\s+/, '. ').replace(/[.!?]$/, '');
+  const gist = x => { const g = sentences(x.s_en || x.sum, 2); return g.split(/\s+/).length > 55 ? sentences(g, 1) : g; };
+  const xs = (picked.aiPod || []).filter(x => gist(x).length > 30).slice(0, 7);
+  const who = x => x.tags?.includes('video') ? `In a new video, ${x.src}` : x.fk === 'voice' ? `${x.src} wrote` : `According to ${x.src}`;
+  say(`${any(['Okay, AI news. Lots of it.', 'Big week in AI. Let\'s go.', 'Right, let\'s talk AI.'])} Hey, I'm ${A.name}, and this is ${show.name}, ${dateEn(DATE).replace(/^\w+, /, '')}.`);
+  xs.forEach((x, i) => {
+    say(`${i ? any(['Okay, next up.', 'Next one.', 'Moving on.', 'And here\'s another one.']) + ' ' : ''}${head(x)}.`);
+    say(`${who(x)}: ${gist(x)}`);
+    if (i < 3) say(any(['Here\'s why this matters. It changes what these tools can do at work.', 'Quick reality check: test it before you trust it.', 'Keep an eye on this one.', 'One to watch over the next few weeks.']));
+  });
+  if (!xs.length) say('We could not reach our AI sources this week. More next time.');
+  say(`${any(['That\'s the AI Pulse for this week.', 'And that\'s a wrap on AI this week.'])} The links are in today's paper, in the AI section. ${any(['See you next week.', 'Stay curious.', 'Catch you next time.'])}`);
+  picked.read = xs;
+  ed.podcast.turns = turns; ed.podcast.title = `${show.name} · ${dateEn(DATE)}`; ed.podcast.desc = show.desc;
+  ed.podcast.covered = xs.map(x => x.id);
+  ed.vocab = [];
+  ed.writer = 'template';
+}
+
 function templateWrite(ed, picked) {
+  if (SHOWS[ed.podcast.show]?.ai) return templateAI(ed, picked);
   // Bản miễn phí: ít tin, nói như hai đồng nghiệp — mỗi tin MMH có 1 câu "liên quan gì tới mình". Tin chung chỉ điểm nhanh.
   const rnd = seedRand(DATE + ed.podcast.show);
   const usedP = new Set();
@@ -115,7 +156,8 @@ function templateWrite(ed, picked) {
     return t;
   };
   const readHeads = [];
-  const usable = x => { const h = head(x); return h && h.length < 170 && gist(x).length >= 40 && !readHeads.some(r => similar(r, h)); };
+  const notAired = x => ed.podcast.show === 'weekly' || !picked.AIR?.is(x);   // không đọc lại tin đã lên sóng (data/aired.json)
+  const usable = x => { const h = head(x); return h && h.length < 170 && gist(x).length >= 40 && notAired(x) && !readHeads.some(r => similar(r, h)); };
   const takeOne = x => { picked.read.push(x); readHeads.push(head(x)); return x; };
   const BIZ = ['dental', 'eye', 'tender', 'device', 'insurance', 'market', 'surgery', 'policy', 'invest', 'hospital'];
   const tagOf = x => BIZ.find(t => x.tags?.includes(t)) || 'other';
@@ -197,6 +239,7 @@ function templateWrite(ed, picked) {
   ed.podcast.desc = show.desc;
   const text = turns.map(t => t.text).join(' ').toLowerCase();
   ed.vocab = GLOSSARY.filter(([en]) => text.includes(en.toLowerCase())).slice(0, 10).map(([en, vi]) => ({ en, vi }));
+  ed.podcast.covered = picked.read.map(x => x.id);
   ed.writer = 'template';
 }
 
@@ -205,7 +248,8 @@ async function claudeWrite(ed, picked) {
   const { askJson, S: J } = await import('./ai.mjs');
   const show = SHOWS[ed.podcast.show];
   const deskX = Object.values(picked.desk).flat().map(id => picked.cand.find(y => y.id === id)).filter(Boolean);
-  const all = [...new Map(Object.values(picked.sections).flat().concat(picked.docs, deskX).map(x => [x.id, x])).values()];
+  const AI_SHOW = !!show.ai;
+  const all = [...new Map(Object.values(picked.sections).flat().concat(picked.docs, deskX, AI_SHOW ? picked.aiPod || [] : []).map(x => [x.id, x])).values()];
   const list = all.map(x => ({ id: x.id, sec: x.sec, tags: x.tags, lang: x.lang, source: x.src, date: x.d.slice(0, 10), title: x.t, summary: (x.sum || '').slice(0, 450) }));
   const prev = (readJson(path.join(ROOT, 'data', 'index.json'), { editions: [] }).editions || []).slice(0, 5).map(e => `${e.date}: ${e.show} — ${e.lead}`);
   const AV = historyAvoid(readJson(HIST_F, []));
@@ -227,11 +271,14 @@ async function claudeWrite(ed, picked) {
 Then write: h_en (sharp English headline), h_vi (Vietnamese headline), dek_en (one-line English standfirst),
 s_vi (2–3 sentence Vietnamese summary), s_en (2–3 sentence English summary), why_vi (one Vietnamese sentence, REQUIRED when rel ≥ 1: how it affects MMH concretely —
 which product group, customer, tender step, cost or price; for rel = 1 spell out the chain, e.g. "Yên giảm ⇒ giá vốn hàng MANI nhập từ Nhật giảm ⇒ dư địa giá thầu tốt hơn"; empty when rel = 0).
-For rel = 0 you may leave the other fields short — the story will be dropped.${GL.text}\n\nStories (JSON):\n${JSON.stringify(list)}` });
+For rel = 0 you may leave the other fields short — the story will be dropped.
+Stories with sec = "ai" are international AI / tech news for the separate AI section: rate them too, but they are NEVER dropped; write why_vi only if there is a
+realistic use for MMH's daily work, else leave it empty. Keep AI product and model names exactly as written (GPT-5, Claude, Gemini, Llama…); s_vi in natural Vietnamese
+with the English technical term in brackets the first time (e.g. "cửa sổ ngữ cảnh (context window)").${GL.text}\n\nStories (JSON):\n${JSON.stringify(list)}` });
   const byId = new Map(st.stories.map(s => [s.id, s]));
   for (const x of all) { const s = byId.get(x.id); if (s) Object.assign(x, { h_en: s.h_en, h_vi: s.h_vi, dek: s.dek_en, s_vi: s.s_vi, s_en: s.s_en, why: s.why_vi || undefined, rel: s.rel }); }
   // Luật người dùng (23/11/2026): chỉ giữ tin có liên quan tới MMH (rel ≥ 1); tin không liên quan không tổng hợp, không vào podcast.
-  const rel = x => (x.rel == null ? 1 : x.rel), okRel = x => rel(x) >= 1;
+  const rel = x => (x.rel == null ? 1 : x.rel), okRel = x => x.sec === 'ai' || rel(x) >= 1;   // tin AI là mục riêng ⇒ không bỏ theo mức liên quan MMH
   if (all.filter(okRel).length >= 6) {
     for (const sec of Object.keys(picked.sections)) picked.sections[sec] = picked.sections[sec].filter(okRel).sort((a, b) => rel(b) - rel(a));
     picked.docs = picked.docs.filter(okRel);
@@ -244,17 +291,47 @@ For rel = 0 you may leave the other fields short — the story will be dropped.$
   }
 
   // 2. podcast + phụ đề + lời biên tập + phân tích y tế + từ vựng
-  const pick = sec => (picked.sections[sec] || []).slice(0, sec === 'health' ? 8 : 4).map(x => ({ id: x.id, tags: x.tags, source: x.src, headline: x.h_en || x.t, summary: x.s_en || x.sum, mmh_relevance: x.rel, mmh_impact: x.why || '' }));
+  // Không đọc lại tin đã lên sóng ở bất kỳ series nào (data/aired.json, 30 ngày). Week in Review (CN) là số nhìn lại tuần nên được phép.
+  const fresh = x => ed.podcast.show === 'weekly' || !picked.AIR?.is(x);
+  const pick = sec => (picked.sections[sec] || []).filter(fresh).slice(0, sec === 'health' ? 8 : 4).map(x => ({ id: x.id, tags: x.tags, source: x.src, headline: x.h_en || x.t, summary: x.s_en || x.sum, mmh_relevance: x.rel, mmh_impact: x.why || '' }));
+  const KIND = { yt: 'YouTube video', lab: 'official lab blog / video', voice: 'written or said by the person themselves', people: 'press report of what a leader said or posted', salesmkt: 'AI in sales & marketing', tech: 'tech press', talk: 'long interview / podcast' };
+  const aiList = (picked.aiPod || []).map(x => ({ id: x.id, tags: x.tags, source: x.src, kind: KIND[x.fk] || x.fk || '', date: x.d.slice(0, 10), views: x.views || undefined,
+    headline: x.h_en || x.t, summary: x.s_en || x.sum, mmh_use: x.why || '' }));
+  const lastAI = readJson(HIST_F, []).find(h => h.show === 'aipulse' && h.date < ed.date);
   const hosts = show.hosts.map(h => `${h.id} = ${h.name} (${h.role})`).join('; ');
-  const out = await askJson({ system: SYSTEM, effort: 'medium',
-    schema: J.obj({ note: J.obj({ en: J.str, vi: J.str }), health: J.obj({ en: J.str, vi: J.str }), vocab: J.arr(J.obj({ en: J.str, vi: J.str, ex: J.str })),
-      podcast: J.obj({ title: J.str, desc: J.str, recap: J.arr(J.obj({ topic: J.str, gist: J.str })), turns: J.arr(J.obj({ sp: { type: 'string', enum: show.hosts.map(h => h.id) }, text: J.str, vi: J.str, rep: { type: 'boolean' } })) }) }),
-    user: `Date: ${dateEn(DATE)} (${DATE}). Today's show: "${show.name}" — ${show.desc} Format: ${show.style}. Hosts: ${hosts}.
-Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'none'}.
-1. note: editor's note (60–90 words) in English and Vietnamese.
-2. health: analysis for MMH (180–240 words) in English and Vietnamese: dental, eye care, tenders, devices, insurance, market — what changed, who is affected, what MMH should watch.
-3. vocab: 8 useful English terms used in the script, with Vietnamese meaning and a short example from the script. Do NOT reuse these terms taught in the last 14 days: ${AV.vocab.join(', ') || 'none'}.
-4. podcast: title, one-line desc, recap (2–5 items for the series' memory: topic = 2–5 words, gist = one sentence on what the episode said or concluded, incl. anything to follow up), and turns for a 1,100–1,400 word script (about 8–10 minutes at a relaxed pace). Listener priorities, in this order: (1) the hottest, most-read health news;
+  const COMMON = `   LEARNING SEGMENT (60–90 seconds, near the end): ${LEARN[ed.podcast.learn]}
+   LANGUAGE FOR B1 LEARNERS: average 10–14 words per sentence, max about 18; everyday words; explain any industry term in plain words the first time; paraphrase each story's key point once; no hard idioms.
+   VARIETY: the opening line, the hand-offs and the sign-off must be different from recent episodes. Recent openings: ${AV.opens.map(o => '"' + o + '"').join(' | ') || 'none'}.
+   Recent sign-offs: ${AV.closes.map(o => '"' + o + '"').join(' | ') || 'none'}. Avoid these phrases that were overused recently: ${AV.phrases.join('; ') || 'none'}.
+   NO REPEATS ACROSS SHOWS: every story below is new to the listeners — none of them has been on any MMH series before. Do not retell earlier episodes.
+   Sound like real people talking, not reading: contractions, short sentences, natural reactions and hand-offs, a light personal touch; numbers written to be spoken;
+   no URLs or lists. Never sound cheerful about accidents or deaths. For every turn also give "vi": a natural Vietnamese subtitle of that turn, and "rep": true only for Listen & Repeat sentences (else false).
+   WRITE FOR THE VOICE (PODCAST.md ▸ 6): mix very short reactions (2–5 words) with medium sentences so the rhythm is never flat; each story has ONE key point said
+   with weight (a short sentence of its own, often after "Here's the thing." or a question); use "..." at most twice per story for a real pause.
+   Delivery tags for the voice engine, in square brackets inside "text": [curious] [surprised] [thoughtful] [warmly] [excited] [serious] [chuckles] [sighs].
+   At most one tag per turn, roughly one turn in three, placed where a real host would change tone; [serious] only for accidents, deaths, disease;
+   no tags in Listen & Repeat turns; never write tags in "vi".`;
+  const POD = AI_SHOW ? `4. podcast: title, one-line desc, recap (2–5 items: topic = 2–5 words, gist = one sentence), covered (ids of the AI stories you actually talk about),
+   mmh (true only if you include the MMH corner), and turns for a 1,100–1,400 word script (about 8–10 minutes).
+   THIS IS "${show.name}", THE AI & TECH EPISODE — NOT a health show. Use ONLY the stories under "ai" below (international sources). The health stories are only for item 2.
+   Priorities: (1) what the leaders and builders at OpenAI, Anthropic, Meta, Google DeepMind, NVIDIA, Microsoft said, wrote or posted, and what it signals;
+   (2) the newest models, features and techniques — GO DEEP: for the 2–3 biggest items explain what is new, HOW it works in plain words (reasoning models that "think" before
+   answering, context window, agents that use tools, open-weight vs closed, multimodal, on-device, pricing…), what it can and cannot do yet, who can use it and when;
+   (3) how sales and marketing teams around the world use AI — from the creators and sources given, name them ("In a video this week, … showed…");
+   (4) quick hits. Always separate "announced" from "available today" and "rumour" from "confirmed". Credit every claim to its source. Never invent features, numbers,
+   prices, dates or quotes — paraphrase only what the summaries say; if a summary is thin, say less. Prefer stories with kind "written or said by the person themselves".
+   MMH CORNER (OPTIONAL — it rotates, not every episode): only if there is a realistic, practical use for MMH's daily work — e.g. sales visit notes and CRM, tender documents
+   and checklists, translating IFUs / catalogues, training material, customer emails, market research, reports between departments, analysing product feedback —
+   add a short "MMH corner" near the end: 60–120 words, 2–3 concrete ideas, one sentence each. If nothing is practical, skip it.
+   ${lastAI?.mmh ? 'The previous AI Pulse HAD an MMH corner, so this time include one only if an idea is genuinely strong and new.' : 'The previous AI Pulse had no MMH corner — include one if there is a practical idea.'}
+   Outside that corner do NOT force links to MMH.
+   HOW TO PRESENT: ${HOW[ed.podcast.show] || ''}
+   STYLE: a popular tech YouTuber's weekly AI review — energetic, curious, quick hand-offs ("Okay, next up…", "Here's why this matters…", "Quick reality check…"),
+   one vivid everyday image per big tech item, a punchy one-line takeaway after each segment. Still B1 English. No hype words ("insane", "game-changer").
+   FIXED CAST (a running series — keep the personality, do not re-introduce the background every time): ${show.hosts.map(h => `${h.id} = ${h.bio || h.name}`).join(' | ')}
+   ${MEM.text}
+${COMMON}` : `4. podcast: title, one-line desc, recap (2–5 items for the series' memory: topic = 2–5 words, gist = one sentence on what the episode said or concluded, incl. anything to follow up),
+   covered (ids of the stories you actually talk about), mmh (false), and turns for a 1,100–1,400 word script (about 8–10 minutes at a relaxed pace). Listener priorities, in this order: (1) the hottest, most-read health news;
    (2) new laws, decrees and circulars on medical-device tenders and procurement, health insurance and hospitals; (3) treatment trends in ophthalmology and dentistry;
    (4) news from hospitals and medical societies. Stories that touch MMH's business come first and deepest.
    ALWAYS TIE IT TO MMH (house rule): this is MMH's own podcast. EVERY story you include must end with a concrete link to MMH — a product group (ophthalmic knives,
@@ -266,27 +343,35 @@ Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'n
    FIXED CAST (a running series — keep each character's personality and way of speaking exactly; do not re-introduce their background every time, just let it show):
    ${show.hosts.map(h => `${h.id} = ${h.bio || h.name + ' (' + h.role + ')'}`).join(' | ')}
    ${MEM.text}${ed.podcast.show === 'english' ? `\n   THIS WEEK'S LANGUAGE (build the class on these): ${WEEK.join(', ') || 'choose useful work English from today\'s stories'}` : ''}
-   LEARNING SEGMENT (60–90 seconds, near the end): ${LEARN[ed.podcast.learn]}
-   LANGUAGE FOR B1 LEARNERS: average 10–14 words per sentence, max about 18; everyday words; explain any industry term in plain words the first time; paraphrase each story's key point once; no hard idioms.
-   VARIETY: the opening line, the hand-offs and the sign-off must be different from recent episodes. Recent openings: ${AV.opens.map(o => '"' + o + '"').join(' | ') || 'none'}.
-   Recent sign-offs: ${AV.closes.map(o => '"' + o + '"').join(' | ') || 'none'}. Avoid these phrases that were overused recently: ${AV.phrases.join('; ') || 'none'}.
-   Sound like real people talking, not reading: contractions, short sentences, natural reactions and hand-offs, a light personal touch; numbers written to be spoken;
-   no URLs or lists. Never sound cheerful about accidents or deaths. For every turn also give "vi": a natural Vietnamese subtitle of that turn, and "rep": true only for Listen & Repeat sentences (else false).
-   WRITE FOR THE VOICE (PODCAST.md ▸ 6): mix very short reactions (2–5 words) with medium sentences so the rhythm is never flat; each story has ONE key point said
-   with weight (a short sentence of its own, often after "Here's the thing." or a question); use "..." at most twice per story for a real pause.
-   Delivery tags for the voice engine, in square brackets inside "text": [curious] [surprised] [thoughtful] [warmly] [excited] [serious] [chuckles] [sighs].
-   At most one tag per turn, roughly one turn in three, placed where a real host would change tone; [serious] only for accidents, deaths, disease;
-   no tags in Listen & Repeat turns; never write tags in "vi".
+${COMMON}`;
+  const out = await askJson({ system: SYSTEM, effort: 'medium',
+    schema: J.obj({ note: J.obj({ en: J.str, vi: J.str }), health: J.obj({ en: J.str, vi: J.str }), vocab: J.arr(J.obj({ en: J.str, vi: J.str, ex: J.str })),
+      podcast: J.obj({ title: J.str, desc: J.str, recap: J.arr(J.obj({ topic: J.str, gist: J.str })), covered: J.arr(J.str), mmh: { type: 'boolean' },
+        turns: J.arr(J.obj({ sp: { type: 'string', enum: show.hosts.map(h => h.id) }, text: J.str, vi: J.str, rep: { type: 'boolean' } })) }) }),
+    user: `Date: ${dateEn(DATE)} (${DATE}). Today's show: "${show.name}" — ${show.desc} Format: ${show.style}. Hosts: ${hosts}.
+Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'none'}.
+1. note: editor's note (60–90 words) in English and Vietnamese.
+2. health: analysis for MMH (180–240 words) in English and Vietnamese: dental, eye care, tenders, devices, insurance, market — what changed, who is affected, what MMH should watch.
+3. vocab: 8 useful English terms used in the script, with Vietnamese meaning and a short example from the script. Do NOT reuse these terms taught in the last 14 days: ${AV.vocab.join(', ') || 'none'}.
+${POD}
 
 ${GL.text}
-Stories — health: ${JSON.stringify(pick('health'))}
+${AI_SHOW ? `AI stories for the podcast — ai: ${JSON.stringify(aiList)}
+Health stories (for items 1–2 ONLY, not the podcast): ${JSON.stringify(pick('health').slice(0, 6))}` : `Stories — health: ${JSON.stringify(pick('health'))}
 economy: ${JSON.stringify(pick('economy'))}
 politics: ${JSON.stringify(pick('politics'))}
-society: ${JSON.stringify(pick('society'))}` });
+society: ${JSON.stringify(pick('society'))}`}` });
   ed.note = out.note; ed.healthDesk.analysis = out.health; ed.vocab = out.vocab;
   ed.podcast.title = out.podcast.title; ed.podcast.desc = out.podcast.desc; ed.podcast.recap = (out.podcast.recap || []).slice(0, 6);
   if (MEM.used.length) ed.podcast.recall = MEM.used.map(m => ({ date: m.date, show: m.show, topic: m.topic }));
   ed.podcast.turns = out.podcast.turns.map(t => voiceTurn({ sp: t.sp, text: t.text, vi: t.vi, rep: t.rep }));
+  // tin thật sự được nói trong kịch bản ⇒ sổ "đã lên sóng" (không series nào đọc lại)
+  const passed = AI_SHOW ? (picked.aiPod || []) : ['health', 'economy', 'politics', 'society'].flatMap(sec => (picked.sections[sec] || []).filter(fresh));
+  const okIds = new Set(passed.map(x => x.id));
+  let cov = (out.podcast.covered || []).filter(id => okIds.has(id));
+  if (!cov.length) cov = inferCovered(ed.podcast.turns, passed);
+  ed.podcast.covered = [...new Set(cov)];
+  if (AI_SHOW) ed.podcast.mmh = !!out.podcast.mmh;
   const { PROVIDER, usedModel } = await import('./ai.mjs');
   ed.writer = PROVIDER || 'claude'; ed.model = usedModel();
   try { await reviewScript(ed, SYSTEM); } catch (e) { console.log('Bỏ qua soát kịch bản: ' + e.message); }
@@ -302,8 +387,11 @@ async function reviewScript(ed, SYSTEM) {
   const out = await askJson({ system: SYSTEM, effort: 'low', maxTokens: 16000,
     schema: J.obj({ issues: J.arr(J.str), fixes: J.arr(J.obj({ turn: I, text: J.str, vi: J.str })), remove: J.arr(I) }),
     user: `Review this MMH Daily Podcast script before it is sent to the paid voice engine. Check against the house rules:
-(a) every story is clearly linked to MMH's business (products, customers, tenders, distributors, costs) — add a short concrete link where it is missing;
-(b) stories with no possible link to MMH are removed (list their turn numbers in "remove");
+${SHOWS[ed.podcast.show]?.ai ? `(a) this is the AI & tech episode: technical explanations are correct, plain and concrete; "announced" vs "available" and "rumour" vs "confirmed" are clear;
+every claim is credited to its source; do NOT add links to MMH outside the optional "MMH corner"; if the MMH corner exists it is short (≤ 120 words) and practical —
+fix it or remove it (list its turns in "remove") if it is vague or forced;
+(b) remove nothing else for "lack of MMH link"; remove hype ("insane", "game-changer");` : `(a) every story is clearly linked to MMH's business (products, customers, tenders, distributors, costs) — add a short concrete link where it is missing;
+(b) stories with no possible link to MMH are removed (list their turn numbers in "remove");`}
 (c) delivery tags: at most one per turn, only [curious] [surprised] [thoughtful] [warmly] [excited] [serious] [chuckles] [sighs], none in Listen & Repeat turns, never cheerful tags on sad news;
 (d) spoken rhythm: no three long sentences in a row, one clear key point per story; (e) nothing invented beyond what is already stated;
 (f) each character speaks in line with the fixed cast (personality, role); at most ONE brief, natural mention of an earlier episode — remove extra ones and any retelling of old content.
@@ -408,7 +496,8 @@ const MEM_P = +(process.env.DAILY_RECALL_P || 0.35);
 const kw = s => new Set(String(s || '').toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').split(/\s+/).filter(w => w.length > 3 && !STOPW.has(w)));
 function memRecall(picked, show, date) {
   const mem = readJson(MEM_F, []);
-  const today = [...(picked.sections?.health || []).slice(0, 8), ...(picked.docs || []).slice(0, 4), ...(picked.sections?.economy || []).slice(0, 3)];
+  const today = SHOWS[show]?.ai ? (picked.aiPod || []).slice(0, 10)
+    : [...(picked.sections?.health || []).slice(0, 8), ...(picked.docs || []).slice(0, 4), ...(picked.sections?.economy || []).slice(0, 3)];
   const W = kw(today.map(x => [x.h_en, x.t, x.s_en, (x.tags || []).join(' ')].join(' ')).join(' '));
   const day = d => Math.floor(new Date(d + 'T00:00:00Z') / 864e5), now = day(date);
   const cands = [];
@@ -439,16 +528,36 @@ function historyAvoid(hist) {
   return { opens: recent.map(h => h.open).filter(Boolean), closes: recent.map(h => h.close).filter(Boolean), phrases,
     vocab: [...new Set(hist.slice(0, 14).flatMap(h => h.vocab || []))].slice(0, 120) };
 }
+/* Lần đầu có sổ "đã lên sóng": ghi lại tin của các số podcast còn giữ (suy từ lời thoại). */
+function seedAired() {
+  if (fs.existsSync(AIRED_F)) return;
+  const rows = [];
+  for (const f of fs.existsSync(ED_DIR) ? fs.readdirSync(ED_DIR) : []) {
+    const d = f.replace(/\.json$/, ''); if (!/^\d{4}-\d{2}-\d{2}$/.test(d) || d >= DATE) continue;
+    const e = readJson(path.join(ED_DIR, f), null); if (!e?.podcast?.turns?.length) continue;
+    const st = Object.entries(e.stories || {}).map(([id, x]) => ({ ...x, id }));
+    const ids = e.podcast.covered?.length ? e.podcast.covered : inferCovered(e.podcast.turns, st);
+    const by = new Map(st.map(x => [x.id, x]));
+    rows.push({ date: d, show: e.podcast.show, ids, heads: ids.map(id => [by.get(id)?.h_en, by.get(id)?.t].filter(Boolean).join(' · ').slice(0, 260)) });
+  }
+  rows.sort((a, b) => b.date.localeCompare(a.date));
+  fs.writeFileSync(AIRED_F, JSON.stringify(rows));
+  console.log(`Sổ đã lên sóng: khởi tạo từ ${rows.length} số cũ (${rows.reduce((n, r) => n + r.ids.length, 0)} tin)`);
+}
 const KEEP_EDITIONS = +(process.env.DAILY_KEEP || 7);   // chỉ giữ 7 số / podcast gần nhất
 const slim = x => x && ({ id: x.id, t: x.t, u: x.u, src: x.src, d: x.d, lang: x.lang, sec: x.sec, tags: x.tags, mmh: x.mmh, docs: x.docs, img: x.img, also: x.also, kind: x.kind,
-  sum: x.sum, h_en: x.h_en, h_vi: x.h_vi, dek: x.dek, s_vi: x.s_vi, s_en: x.s_en, why: x.why, mt: x.mt });
+  sum: x.sum, h_en: x.h_en, h_vi: x.h_vi, dek: x.dek, s_vi: x.s_vi, s_en: x.s_en, why: x.why, mt: x.mt, fk: x.fk, views: x.views });
 
 async function main() {
   const pool = readJson(path.join(ROOT, 'data', 'pool.json'), null);
   if (!pool) throw new Error('Chưa có data/pool.json — chạy collect.mjs trước');
+  seedAired();
   const picked = pick(pool);
   const HIST = readJson(HIST_F, []).filter(h => h.date !== DATE);
-  let showId = (process.env.DAILY_SHOW && SHOWS[process.env.DAILY_SHOW]) ? process.env.DAILY_SHOW : pickShow(DATE, picked, HIST);
+  const onlyAI = FILTER.topics.length && FILTER.topics.every(t => t === 'ai');   // app ▸ Tổng hợp ngay chỉ chọn chủ đề AI ⇒ số AI Pulse
+  let showId = (process.env.DAILY_SHOW && SHOWS[process.env.DAILY_SHOW]) ? process.env.DAILY_SHOW : onlyAI ? 'aipulse' : pickShow(DATE, picked, HIST);
+  if (SHOWS[showId].ai) picked.sections.ai = [...new Map([...picked.aiPod, ...picked.sections.ai].map(x => [x.id, x])).values()].slice(0, 12);
+  console.log(`Tin AI: ${picked.sections.ai.length} trên báo · ${picked.aiPod.length} chưa lên sóng · sổ đã lên sóng ${picked.AIR.n} số / ${picked.AIR.ids.size} tin`);
   const useAI = !!(process.env.ANTHROPIC_API_KEY || process.env.GEMINI_API_KEY);
   const index = readJson(path.join(ROOT, 'data', 'index.json'), { editions: [] });
   const no = (index.editions.find(e => e.date === DATE)?.no) || (index.editions.length ? Math.max(...index.editions.map(e => e.no || 0)) + 1 : 1);
@@ -499,8 +608,11 @@ async function main() {
   for (const f of fs.readdirSync(ED_DIR)) { const d = f.replace(/\.json$/, ''); if (/^\d{4}-\d{2}-\d{2}$/.test(d) && !keepDates.has(d)) fs.unlinkSync(path.join(ED_DIR, f)); }
   index.updated = iso(NOW);
   fs.writeFileSync(path.join(ROOT, 'data', 'index.json'), JSON.stringify(index));
+  // sổ "đã lên sóng": tin podcast hôm nay đã nói ⇒ không series nào đọc lại trong 30 ngày
+  const look = new Map([...picked.cand, ...picked.aiPod, ...Object.values(picked.sections).flat(), ...picked.docs].map(x => [x.id, x]));
+  console.log(`Đã lên sóng hôm nay: ${recordAired(DATE, showId, (ed.podcast.covered || []).map(id => look.get(id)).filter(Boolean))} tin`);
   const T = ed.podcast.turns, all = T.map(t => t.text).join(' ');
-  const hrow = { date: DATE, show: showId, writer: ed.writer, open: (T[0]?.text || '').slice(0, 140), close: (T[T.length - 1]?.text || '').slice(0, 140),
+  const hrow = { date: DATE, show: showId, writer: ed.writer, mmh: ed.podcast.mmh || undefined, open: (T[0]?.text || '').slice(0, 140), close: (T[T.length - 1]?.text || '').slice(0, 140),
     vocab: [...(ed.vocab || []).map(v => v.en), ...(ed.study?.words || []).map(w => w.en)], phr: (ed.study?.phrases || []).map(p => p.en), grams: grams(all).slice(0, 700) };
   fs.writeFileSync(HIST_F, JSON.stringify([hrow, ...HIST].slice(0, 30)));
   if (ed.podcast.recap?.length) {

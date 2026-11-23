@@ -46,7 +46,7 @@ export function parseDate(s, fmt) {
 export function parseFeed(xml, fmt) {
   const blocks = xml.match(/<item[\s>][\s\S]*?<\/item>/gi) || xml.match(/<entry[\s>][\s\S]*?<\/entry>/gi) || [];
   return blocks.map(b => {
-    const rawDesc = cdata(tag(b, 'description') || tag(b, 'summary') || tag(b, 'content:encoded') || tag(b, 'content'));
+    const rawDesc = cdata(tag(b, 'description') || tag(b, 'summary') || tag(b, 'content:encoded') || tag(b, 'content') || tag(b, 'media:description'));
     const img = attr(b, 'enclosure', 'url') || attr(b, 'media:content', 'url') || attr(b, 'media:thumbnail', 'url') || attr(dec(rawDesc), 'img', 'src');
     return {
       title: strip(tag(b, 'title')),
@@ -56,6 +56,8 @@ export function parseFeed(xml, fmt) {
       img: /^https?:/.test(img) ? img : '',
       src: strip(tag(b, 'source')),
       srcUrl: attr(b, 'source', 'url'),
+      author: strip(tag(tag(b, 'author'), 'name') || tag(b, 'dc:creator')),
+      views: +(attr(b, 'media:statistics', 'views') || 0) || 0,            // YouTube: lượt xem (chấm điểm video)
     };
   });
 }

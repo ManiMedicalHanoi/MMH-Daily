@@ -24,6 +24,8 @@ Thứ tự ưu tiên:
 - Tin **không nối được** tới MMH (tai nạn, hình sự, giải trí, thể thao, chính trị nước ngoài không tác động kinh tế, tin địa phương không liên quan y tế / kinh doanh) ⇒ **bỏ, không tổng hợp**.
 - Máy chấm `rel` 0–3 cho từng tin (3 trực tiếp · 2 hệ thống y tế · 1 gián tiếp có chuỗi ảnh hưởng · 0 không liên quan ⇒ bỏ). `why_vi` = 1 câu ảnh hưởng tới MMH, BẮT BUỘC khi rel ≥ 1 — chỉ dùng làm ý cho podcast, KHÔNG hiện trên trang (người dùng bỏ 23/11/2026).
 - Trong PODCAST, mỗi tin kết bằng một câu "chuyện này liên quan gì tới MMH" — cụ thể, sinh động. Trước khi tạo giọng, kịch bản được soát lại (`reviewScript`) theo luật này.
+- **Ngoại lệ: mục AI & Công nghệ / series AI Pulse** (24/11/2026, người dùng yêu cầu): tin AI quốc tế KHÔNG bị bỏ theo `rel`, không ép câu "liên quan MMH" vào từng tin.
+  Chỉ có **góc MMH tuỳ chọn** cuối chương trình (60–120 từ, 2–3 ý ứng dụng thực tế), luân phiên — số trước có thì số này chỉ đưa khi ý thật sự mạnh (xem PODCAST.md ▸ 8).
 
 ## 2. Giọng nói — như hai đồng nghiệp nói chuyện, không như máy đọc tin
 - Câu ngắn. Rút gọn (it's, we're, that's). Mỗi lượt 1–3 câu; thỉnh thoảng một lượt chỉ 1–3 từ ("Wait, really?", "Huh.", "Fair.").

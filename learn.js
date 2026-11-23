@@ -28,14 +28,14 @@
   }
   function render() {
     const hosts = Object.fromEntries(ed.podcast.hosts.map(h => [h.id, h.name]));
-    ov.innerHTML = `<div class="lrn-top"><div><b>${esc(ed.podcast.title || ed.podcast.name)}</b><span>Chế độ học · chạm một câu để nghe lại</span></div>
+    ov.innerHTML = `<div class="lrn-top"><div><b>${esc(ed.podcast.title || ed.podcast.name)}</b><span>${(D.L || (v => v))('Chế độ học · chạm một câu để nghe lại', 'Study mode · tap a line to hear it again')}</span></div>
         <button type="button" class="lrn-ic" data-a="close" aria-label="Đóng">${IC.x}</button></div>
       <div class="lrn-list" id="lrn-list">${turns.map((t, i) => `<p data-i="${i}"><b>${esc(hosts[t.sp] || t.sp)}</b><span class="en">${vocabWrap(t.text)}</span>${t.vi ? `<span class="vi">${esc(t.vi)}</span>` : ''}</p>`).join('')}</div>
       <div class="lrn-bar">
         <div class="lrn-tog">
-          <label><input type="checkbox" data-p="en" ${P.en ? 'checked' : ''}> Tiếng Anh</label>
-          <label><input type="checkbox" data-p="vi" ${P.vi ? 'checked' : ''}> Tiếng Việt</label>
-          <label title="Tự dừng sau mỗi câu để bạn nói theo"><input type="checkbox" data-p="pause" ${P.pause ? 'checked' : ''}> Dừng sau mỗi câu</label>
+          <label><input type="checkbox" data-p="en" ${P.en ? 'checked' : ''}> ${(D.L || (v => v))('Tiếng Anh', 'English')}</label>
+          <label><input type="checkbox" data-p="vi" ${P.vi ? 'checked' : ''}> ${(D.L || (v => v))('Tiếng Việt', 'Vietnamese')}</label>
+          <label title="Tự dừng sau mỗi câu để bạn nói theo"><input type="checkbox" data-p="pause" ${P.pause ? 'checked' : ''}> ${(D.L || (v => v))('Dừng sau mỗi câu', 'Pause after each line')}</label>
         </div>
         <div class="lrn-ctl">
           <button type="button" class="lrn-ic" data-a="prev" aria-label="Câu trước" title="Câu trước (←)">${IC.prev}</button>
@@ -120,7 +120,8 @@
   // gắn nút "Chế độ học" vào trang Nghe và trang Nội bộ (mỗi lần trang vẽ lại)
   const inject = () => {
     const ctl = document.querySelector('#view .ls-ctl'); if (!ctl || ctl.querySelector('.learn-btn')) return;
-    ctl.insertAdjacentHTML('beforeend', '<button type="button" class="learn-btn" title="Phụ đề chạy theo từng câu, lặp câu, nói theo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5 12 3l9 3.5-9 3.5z M7 8.6V13c0 1.7 2.2 3 5 3s5-1.3 5-3V8.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Chế độ học</button>');
+    const L = D.L || (v => v);
+    ctl.insertAdjacentHTML('beforeend', '<button type="button" class="learn-btn" title="' + L('Phụ đề chạy theo từng câu, lặp câu, nói theo', 'Line-by-line subtitles, repeat a line, speak along') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5 12 3l9 3.5-9 3.5z M7 8.6V13c0 1.7 2.2 3 5 3s5-1.3 5-3V8.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>' + L('Chế độ học', 'Study mode') + '</button>');
     ctl.querySelector('.learn-btn').onclick = () => open(D.S.cur);
   };
   new MutationObserver(inject).observe(document.getElementById('view'), { childList: true, subtree: false });

@@ -49,7 +49,7 @@
       <div class="u2-seg" role="tablist">${[['daily', 'Tin tức & thị trường']].map(([k, l]) => `<button type="button" role="tab" data-kind="${k}" class="${sel.kind === k ? 'on' : ''}">${l}</button>`).join('')}</div>
       ${sel.kind === 'daily' ? `
       <section class="u2-sec"><h3>Chủ đề <small>bỏ trống = tất cả · số trong ngoặc = tin 48 giờ qua</small></h3>
-        <div class="u2-chips">${SRC.topics.map(t => `<button type="button" data-topic="${t.id}" class="${sel.topics.includes(t.id) ? 'on' : ''}">${esc(t.vi)} <i>${t.n}</i></button>`).join('')}</div></section>
+        <div class="u2-chips">${SRC.topics.map(t => `<button type="button" data-topic="${t.id}" class="${sel.topics.includes(t.id) ? 'on' : ''}">${esc(D.S.lang === 'en' && t.en ? t.en : t.vi)} <i>${t.n}</i></button>`).join('')}</div></section>
       <section class="u2-sec"><details ${store.get('mmh_daily_srcopen', false) ? 'open' : ''} id="u2-src"><summary><h3>Nguồn tin <small>${on}/${all} báo đang chọn</small></h3></summary>
         ${SRC.groups.map(g => { const k = g.outlets.filter(o => !sel.off.includes(o.dom)).length; return `<div class="u2-grp"><label class="u2-gh"><input type="checkbox" data-grp="${g.id}" ${k === g.outlets.length ? 'checked' : ''}> <b>${esc(g.vi)}</b> <span>${k}/${g.outlets.length}</span></label>
           <div class="u2-outs">${g.outlets.map(o => `<label class="${o.n ? '' : 'dim'}"><input type="checkbox" data-dom="${o.dom}" ${sel.off.includes(o.dom) ? '' : 'checked'}> ${esc(o.name)}${o.n ? ` <i>${o.n}</i>` : ''}</label>`).join('')}</div></div>`; }).join('')}

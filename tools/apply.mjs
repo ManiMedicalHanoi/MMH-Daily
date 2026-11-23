@@ -1,11 +1,13 @@
 // MMH Daily — ghi phần Claude Code viết vào số báo (kiểm tra định dạng trước khi ghi).
 //   node tools/apply.mjs <ngày> <file kết quả .json>
 // File kết quả: { stories:[{id,h_en,h_vi,dek_en,s_vi,s_en,why_vi}], note:{en,vi}, health:{en,vi}, vocab:[{en,vi,ex}],
-//                podcast:{title, desc, turns:[{sp:'A'|'B', text, vi}]} }
+//                podcast:{title, desc, covered:[id tin đã nói trong kịch bản], mmh:true|false (AI Pulse có góc MMH), turns:[{sp:'A'|'B', text, vi}]} }
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { lint } from './style.mjs';
+import { inferCovered, recordAired } from './aired.mjs';
+import { SHOWS } from './shows.mjs';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const [date, file] = process.argv.slice(2);
 const fp = path.join(ROOT, 'data', 'editions', date + '.json');
@@ -29,6 +31,17 @@ for (const s of out.stories) Object.assign(ed.stories[s.id], { h_en: s.h_en, h_v
 ed.note = out.note; ed.healthDesk.analysis = out.health; ed.vocab = out.vocab;
 Object.assign(ed.podcast, { title: out.podcast.title, desc: out.podcast.desc, turns: turns.map(t => { const raw = speech(t.text), text = raw.replace(TAG, ' ').replace(/\s+([,.?!])/g, '$1').replace(/\s+/g, ' ').trim();
   return Object.assign({ sp: t.sp, text, vi: String(t.vi).replace(TAG, ' ').trim() }, raw !== text && !t.rep ? { say: raw } : {}, t.rep ? { rep: true } : {}); }), words });
+// sổ "đã lên sóng" (data/aired.json): tin kịch bản này đã nói ⇒ không series nào đọc lại trong 30 ngày
+const isAI = !!SHOWS[ed.podcast.show]?.ai;
+const podStories = Object.entries(ed.stories).map(([id, x]) => ({ ...x, id })).filter(x => isAI ? x.sec === 'ai' : x.sec !== 'ai');
+const okIds = new Set(podStories.map(x => x.id));
+let cov = (out.podcast.covered || []).filter(id => okIds.has(id));
+if (!cov.length) cov = inferCovered(ed.podcast.turns, podStories);
+ed.podcast.covered = [...new Set(cov)];
+if (isAI) ed.podcast.mmh = !!out.podcast.mmh;
+const byId = new Map(podStories.map(x => [x.id, x]));
+recordAired(date, ed.podcast.show, ed.podcast.covered.map(id => byId.get(id)).filter(Boolean));
+try { const hp = path.join(ROOT, 'data', 'history.json'), h = JSON.parse(fs.readFileSync(hp, 'utf8')), r = h.find(x => x.date === date); if (r) { r.mmh = ed.podcast.mmh || undefined; fs.writeFileSync(hp, JSON.stringify(h)); } } catch { /* chưa có lịch sử */ }
 delete ed.podcast.audio;                      // GitHub sẽ tạo lại giọng đọc
 if (process.env.DAILY_VOICE) ed.podcast.voiceReq = { engine: process.env.DAILY_VOICE, preset: process.env.DAILY_VOICES || '' };
 ed.writer = 'claude-code'; ed.updated = new Date().toISOString();
