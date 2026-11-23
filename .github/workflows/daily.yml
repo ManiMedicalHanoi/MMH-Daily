@@ -54,6 +54,13 @@ jobs:
         uses: actions/cache@v4
         with: { path: data/pool.json, key: 'pool-${{ github.run_id }}', restore-keys: 'pool-' }
 
+      - name: Lịch GitHub chạy trễ — đã có số hôm nay thì bỏ qua
+        # Cron 05:45 giờ VN thường bị GitHub dời 4–5 giờ; Training Hub (dkTick_) đã gọi tạo số đúng giờ ⇒ lượt trễ không tạo trùng số thứ hai
+        if: github.event_name == 'schedule' && github.event.schedule == '45 22 * * *'
+        run: |
+          T=$(TZ=Asia/Ho_Chi_Minh date +%F)
+          L=$(node -e "try{console.log((require('./data/index.json').editions||[])[0].date)}catch(e){console.log('')}")
+          if [ "$L" = "$T" ]; then echo "DO_DAILY=false" >> $GITHUB_ENV; echo "Đã có số $T — bỏ qua lượt lịch trễ"; fi
       - name: Yêu cầu từ phiên Claude (data/requests/daily.json)
         if: env.IS_REQ == 'true'
         run: |

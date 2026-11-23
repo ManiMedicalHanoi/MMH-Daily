@@ -210,7 +210,11 @@
     const turns = (p.turns || []).filter(t => t.text);
     const hosts = Object.fromEntries(p.hosts.map(h => [h.id, h]));
     const recent = S.index.editions.slice(0, 14);
-    return `<div class="ls" style="--show:${p.color}">${window.STUDY ? STUDY.tabs(ed) : ''}
+    // sáng mở app mà số mới nhất chưa phải hôm nay ⇒ báo đang tạo (Training Hub tự gọi tạo số từ 05:40)
+    const vnNow = new Date(Date.now() + 7 * 36e5), today = vnNow.toISOString().slice(0, 10), latest = S.index.editions[0]?.date;
+    const pending = latest && latest < today && vnNow.getUTCHours() >= 5 && ed.date === latest
+      ? `<p class="ls-pend">${L('Số hôm nay đang được tạo tự động — trong lúc chờ, bạn đang nghe số ' + dateL(latest) + '.', 'Today\'s episode is being made — meanwhile you are listening to ' + dateL(latest) + '.')}</p>` : '';
+    return `<div class="ls" style="--show:${p.color}">${window.STUDY ? STUDY.tabs(ed) : ''}${pending}
       <section class="ls-hero"><div class="cv">${cover(p, ed.date, true)}</div><div>
         <div class="ls-k">Podcast · ${esc(dateL(ed.date))}</div>
         <h1 class="ls-t">${esc(p.name)}</h1>
@@ -359,6 +363,8 @@
     lastLine = -1;
     const key = r === 's' ? a : (r === 'e' || !r) ? 'front' : r;
     document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === key));
+    const tk = r === 'listen' ? 'listen' : r === 'rank' ? 'rank' : 'news';
+    document.querySelectorAll('#tabbar [data-tab-k]').forEach(x => x.classList.toggle('on', x.dataset.tabK === tk));
     $('#foot').innerHTML = footer(ed);
     if (r === 'listen') wireListen(ed);
     if (r === 'rank' && window.RANK) RANK.load();
@@ -413,6 +419,12 @@
     document.dispatchEvent(new CustomEvent('mmh-lang', { detail: S.lang }));
   };
   window.addEventListener('hashchange', route);
+  // thanh tab dưới đáy (điện thoại): "Học bài" mở bài học 4 bước của podcast đang xem (chưa ở trang Nghe ⇒ vào trang Nghe rồi mở)
+  document.querySelector('#tabbar [data-tab-k=study]')?.addEventListener('click', async () => {
+    if (!/^#\/listen/.test(location.hash)) { location.hash = '#/listen'; await new Promise(r => setTimeout(r, 450)); }
+    if (window.STUDY && S.cur?.study) STUDY.open(S.cur); else toast(L('Số này chưa có bài học', 'No lesson for this episode yet'));
+  });
+  new MutationObserver(() => document.body.classList.toggle('has-mini', !$('#mini').hidden)).observe($('#mini'), { attributes: true, attributeFilter: ['hidden'] });
   document.addEventListener('keydown', e => {
     if (e.target.closest('input,textarea')) return;
     if (e.code === 'Space' && S.ep) { e.preventDefault(); audio.paused ? audio.play() : audio.pause(); }
