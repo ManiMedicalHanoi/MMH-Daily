@@ -185,14 +185,27 @@
 
   /* ── Gemini (key miễn phí của người dùng, gọi thẳng từ trình duyệt) ── */
   const GEM = 'https://generativelanguage.googleapis.com/v1beta';
-  function gemErr(status) {
+  /* fetch có giới hạn thời gian: Google không trả lời ⇒ báo lỗi thay vì quay mãi */
+  async function tfetch(url, opt = {}, ms = 30000) {
+    const c = new AbortController(), outer = opt.signal;
+    const t = setTimeout(() => c.abort('timeout'), ms);
+    if (outer) outer.addEventListener('abort', () => c.abort(outer.reason), { once: true });
+    try { return await fetch(url, { ...opt, signal: c.signal }); }
+    catch (e) { if (c.signal.reason === 'timeout') throw new Error(`Google chưa trả lời sau ${Math.round(ms / 1000)} giây. Kiểm tra mạng rồi thử lại.`); throw e; }
+    finally { clearTimeout(t); }
+  }
+  function gemErr(status, body) {
+    const m = String(body || '').match(/"message"\s*:\s*"([^"]{0,160})/);
+    if (/location is not supported|not available in your country/i.test(body || '')) return new Error('Gemini API chưa hỗ trợ vùng mạng này. Thử mạng khác (4G / Wi-Fi khác).');
+    if (status === 400 && /API key not valid|API_KEY_INVALID/i.test(body || '')) return new Error('Gemini key không đúng. Copy lại key trong AI Studio rồi dán lại.');
+    if (status === 403 && /SERVICE_DISABLED|has not been used|disabled/i.test(body || '')) return new Error('Dự án của key chưa bật Gemini API. Đợi 1–2 phút sau khi tạo key rồi thử lại.');
     return new Error(status === 429 ? 'Gemini: hết lượt miễn phí tạm thời. Đợi khoảng 1 phút rồi thử lại.'
       : (status === 400 || status === 401 || status === 403) ? 'Gemini key chưa đúng hoặc chưa được bật. Kiểm tra trong Cài đặt.'
-        : 'Gemini đang lỗi (' + status + '). Thử lại sau.');
+        : 'Gemini đang lỗi (' + status + (m ? ': ' + m[1] : '') + '). Thử lại sau.');
   }
   async function gemModels() {
-    const r = await fetch(GEM + '/models?pageSize=200', { headers: { 'x-goog-api-key': CFG.gkey } });
-    if (!r.ok) throw gemErr(r.status);
+    const r = await tfetch(GEM + '/models?pageSize=200', { headers: { 'x-goog-api-key': CFG.gkey } }, 15000);
+    if (!r.ok) throw gemErr(r.status, await r.text().catch(() => ''));
     const d = await r.json();
     return (d.models || []).filter(m => (m.supportedGenerationMethods || []).includes('generateContent') && /gemini/i.test(m.name)
       && !/(tts|image|embed|live|audio|veo|imagen|learnlm|robotics|computer|native|thinking-exp)/i.test(m.name))
@@ -202,21 +215,28 @@
     const sc = m => { const v = parseFloat((m.id.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || 0); return v * 10 + (/flash/.test(m.id) ? 30 : 0) - (/lite/.test(m.id) ? 8 : 0) - (/pro/.test(m.id) ? 5 : 0) - (/preview|exp/.test(m.id) ? 12 : 0) - (/\d{3,}$/.test(m.id) ? 2 : 0); };
     return list.slice().sort((a, b) => sc(b) - sc(a))[0];
   }
+  async function ensureModel() {
+    if (CFG.gmodel) return CFG.gmodel;
+    const b = bestModel(await gemModels());
+    if (!b) throw new Error('Key này chưa dùng được mẫu Gemini nào. Tạo lại key trong AI Studio.');
+    CFG.gmodel = b.id; saveCfg(); return b.id;
+  }
   async function gem(sys, user) {
     if (!CFG.gkey) throw new Error('NOKEY');
+    await ensureModel();
     let model = CFG.gmodel || 'gemini-2.5-flash', think = !CFG.noThink;
     for (let n = 0; n < 3; n++) {
       const gc = { responseMimeType: 'application/json', temperature: 0.3 }; if (think) gc.thinkingConfig = { thinkingBudget: 0 };
-      const r = await fetch(`${GEM}/models/${encodeURIComponent(model)}:generateContent`, {
+      const r = await tfetch(`${GEM}/models/${encodeURIComponent(model)}:generateContent`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': CFG.gkey },
         body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents: [{ role: 'user', parts: [{ text: user }] }], generationConfig: gc })
-      });
+      }, 45000);
       if (r.status === 400 && think) { think = false; CFG.noThink = true; saveCfg(); continue; }
       if (r.status === 404 && n < 2) {
         const b = bestModel(await gemModels());
         if (b) { model = CFG.gmodel = b.id; saveCfg(); continue; }
       }
-      if (!r.ok) throw gemErr(r.status);
+      if (!r.ok) throw gemErr(r.status, await r.text().catch(() => ''));
       const d = await r.json();
       const txt = (d.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join('').trim();
       return JSON.parse(txt.replace(/^```(?:json)?\s*|\s*```$/g, ''));
@@ -709,16 +729,17 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
 
   async function gemStream(sys, contents, onText, signal) {
     if (!CFG.gkey) throw new Error('NOKEY');
+    await ensureModel();
     let model = CFG.gmodel || 'gemini-2.5-flash', think = !CFG.noThink;
     for (let n = 0; n < 3; n++) {
       const gc = { temperature: 0.3 }; if (think) gc.thinkingConfig = { thinkingBudget: 0 };
-      const r = await fetch(`${GEM}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`, {
+      const r = await tfetch(`${GEM}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`, {
         method: 'POST', signal, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': CFG.gkey },
         body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents, generationConfig: gc })
-      });
+      }, 30000);
       if (r.status === 400 && think) { think = false; CFG.noThink = true; saveCfg(); continue; }
       if (r.status === 404 && n === 0) { const b = bestModel(await gemModels()); if (b) { model = CFG.gmodel = b.id; saveCfg(); continue; } }
-      if (!r.ok) throw gemErr(r.status);
+      if (!r.ok) throw gemErr(r.status, await r.text().catch(() => ''));
       const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', all = '';
       for (;;) {
         const { value, done } = await rd.read(); if (done) break;
@@ -920,9 +941,19 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
       case 'gtest': {
         CFG.gkey = $('#gkey').value.trim(); CFG.gmodel = $('#gmodel').value || CFG.gmodel; saveCfg();
         if (!CFG.gkey) { $('#gmsg').textContent = 'Đã xoá key.'; return; }
-        $('#gmsg').innerHTML = '<span class="spin"></span> Đang thử…';
-        try { const r = await gem('Return JSON {"ok":true,"hi":"one short Vietnamese greeting"}', 'ping'); $('#gmsg').textContent = 'Chạy tốt' + (r.hi ? ': ' + r.hi : '') + ' · mẫu ' + (CFG.gmodel || ''); }
-        catch (er) { $('#gmsg').textContent = er.message; }
+        const t0 = Date.now(); let step = 'Đang kiểm tra key';
+        const tick = setInterval(() => { const g = $('#gmsg'); if (g) g.innerHTML = `<span class="spin"></span> ${step}… ${Math.round((Date.now() - t0) / 1000)} giây`; }, 500);
+        try {
+          const ms = await gemModels();
+          const b = bestModel(ms);
+          if (!b) throw new Error('Key đúng nhưng chưa thấy mẫu Gemini nào dùng được.');
+          if (!ms.some(m => m.id === CFG.gmodel)) { CFG.gmodel = b.id; saveCfg(); }
+          step = 'Key đúng · đang thử mẫu ' + CFG.gmodel;
+          const r = await gem('Return JSON {"ok":true,"hi":"one short Vietnamese greeting"}', 'ping');
+          $('#gmsg').textContent = `Chạy tốt${r.hi ? ': ' + r.hi : ''} · mẫu ${CFG.gmodel} · ${((Date.now() - t0) / 1000).toFixed(1)} giây`;
+          $('#gmodel').innerHTML = ms.map(m => `<option value="${esc(m.id)}"${m.id === CFG.gmodel ? ' selected' : ''}>${esc(m.label)} · ${esc(m.id)}</option>`).join('');
+        } catch (er) { $('#gmsg').textContent = er.message === 'Failed to fetch' ? 'Không kết nối được tới Google. Kiểm tra mạng, tắt VPN / chặn quảng cáo rồi thử lại.' : er.message; }
+        finally { clearInterval(tick); }
         return;
       }
       case 'vsave':
