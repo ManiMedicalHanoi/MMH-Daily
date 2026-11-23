@@ -187,6 +187,7 @@
       </div>
       <div class="nowsub" id="nowsub" aria-live="off"><span class="en"></span><span class="vi"></span></div>
       <div class="seek"><span id="ls-cur">0:00</span><div class="tr" id="ls-tr"><i id="ls-prog" style="width:0"></i></div><span id="ls-dur">${a ? mmss(a.dur) : '--:--'}</span></div>
+      ${window.STUDY ? STUDY.html(ed) : ''}
       <div class="ls-grid">
         <div class="ls-box"><h3>Lời thoại<small>bấm một câu để nghe từ đó</small></h3>
           <div class="subsel" id="subsel" role="group" aria-label="Phụ đề">${[['both', 'Anh + Việt'], ['en', 'Tiếng Anh'], ['vi', 'Tiếng Việt']].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div>
@@ -196,7 +197,6 @@
           ${ed.vocab?.length ? `<div style="margin-top:20px">${vocabHtml(ed, true)}</div>` : ''}
         </div>
       </div>
-      ${window.STUDY ? STUDY.html(ed) : ''}
       <h2 class="ls-sh">Các series trong tuần</h2>
       <div class="shows">${SERIES.map(([id, day]) => `<div class="show${id === p.show ? ' today' : ''}" style="--show:${showColor(id)}"><div class="cv">${cover({ name: showName(id), color: showColor(id) })}</div><b>${esc(showName(id))}</b><span>${esc(day)} · ${esc(SHOWDESC[id])}</span></div>`).join('')}</div>
     </div>`;
