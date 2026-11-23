@@ -213,7 +213,9 @@ async function claudeWrite(ed, picked) {
   const WEEK = [...new Set(readJson(HIST_F, []).filter(h => h.date !== ed.date).slice(0, 6).flatMap(h => [...(h.vocab || []), ...(h.phr || [])]))].slice(0, 40);
   if (MEM.used.length) console.log('Sổ ghi nhớ: gợi ý nhắc lại ' + MEM.used.map(m => m.date + ' ' + m.topic).join(' · '));
   const SYSTEM = `You are the editor of MMH Daily Podcast, a morning news podcast for staff of MANI Medical Hanoi (MMH) who are learning English (level B1). Follow these house guides exactly
-(they are in Vietnamese; write stories and scripts in English with Vietnamese where asked):\n\n${fs.readFileSync(path.join(ROOT, 'WRITING.md'), 'utf8')}\n\n${fs.readFileSync(path.join(ROOT, 'PODCAST.md'), 'utf8')}`;
+(they are in Vietnamese; write stories and scripts in English with Vietnamese where asked):\n\n${fs.readFileSync(path.join(ROOT, 'context', 'MMH.md'), 'utf8')}\n\n${fs.readFileSync(path.join(ROOT, 'WRITING.md'), 'utf8')}\n\n${fs.readFileSync(path.join(ROOT, 'PODCAST.md'), 'utf8')}`;
+  const GL = glossaryFor(all);   // chỉ thuật ngữ xuất hiện trong tin hôm nay (tiết kiệm token)
+  if (GL.n) console.log(`Thuật ngữ MMH gửi kèm: ${GL.n}`);
   // 1. tin song ngữ
   const st = await askJson({ system: SYSTEM, effort: 'low', schema: J.obj({ stories: J.arr(J.obj({ id: J.str, rel: { type: 'integer', enum: [0, 1, 2, 3] }, h_en: J.str, h_vi: J.str, dek_en: J.str, s_vi: J.str, s_en: J.str, why_vi: J.str })) }),
     user: `For EVERY story below first rate rel = how much it matters to MMH's business (WRITING.md ▸ "Luôn gắn với MMH"):
@@ -225,7 +227,7 @@ async function claudeWrite(ed, picked) {
 Then write: h_en (sharp English headline), h_vi (Vietnamese headline), dek_en (one-line English standfirst),
 s_vi (2–3 sentence Vietnamese summary), s_en (2–3 sentence English summary), why_vi (one Vietnamese sentence, REQUIRED when rel ≥ 1: how it affects MMH concretely —
 which product group, customer, tender step, cost or price; for rel = 1 spell out the chain, e.g. "Yên giảm ⇒ giá vốn hàng MANI nhập từ Nhật giảm ⇒ dư địa giá thầu tốt hơn"; empty when rel = 0).
-For rel = 0 you may leave the other fields short — the story will be dropped.\n\nStories (JSON):\n${JSON.stringify(list)}` });
+For rel = 0 you may leave the other fields short — the story will be dropped.${GL.text}\n\nStories (JSON):\n${JSON.stringify(list)}` });
   const byId = new Map(st.stories.map(s => [s.id, s]));
   for (const x of all) { const s = byId.get(x.id); if (s) Object.assign(x, { h_en: s.h_en, h_vi: s.h_vi, dek: s.dek_en, s_vi: s.s_vi, s_en: s.s_en, why: s.why_vi || undefined, rel: s.rel }); }
   // Luật người dùng (23/11/2026): chỉ giữ tin có liên quan tới MMH (rel ≥ 1); tin không liên quan không tổng hợp, không vào podcast.
@@ -276,6 +278,7 @@ Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'n
    At most one tag per turn, roughly one turn in three, placed where a real host would change tone; [serious] only for accidents, deaths, disease;
    no tags in Listen & Repeat turns; never write tags in "vi".
 
+${GL.text}
 Stories — health: ${JSON.stringify(pick('health'))}
 economy: ${JSON.stringify(pick('economy'))}
 politics: ${JSON.stringify(pick('politics'))}
@@ -383,6 +386,19 @@ Stories (JSON): ${JSON.stringify(list)}` });
     briefs: (out.briefs || []).map(b => { const q = BRIEFS.find(z => z.id === b.id || z[0] === b.id); return q && b.en.length ? { id: q[0], q: q[1], src: b.src.filter(i => ids.has(i)), en: b.en, vi: b.vi, pestel: b.pestel, mmh: b.mmh, words: b.words } : null; }).filter(Boolean)
   };
   console.log(`Soạn sẵn: ${Object.keys(ed.coach.lessons).length} bài luyện nói · ${ed.coach.briefs.length} bản tóm tắt chủ đề`);
+}
+
+/* Bộ thuật ngữ chuẩn MMH (context/glossary.tsv, rút từ MMH Library ▸ glossary nhãn khoa / nha khoa + thuật ngữ thầu / BHYT):
+   KHÔNG gửi cả bộ (~1.400 dòng) — chỉ những thuật ngữ thật sự có trong tin hôm nay, tối đa 60 ⇒ vài trăm token / lượt. */
+let GLOSS = null;
+function glossaryFor(stories) {
+  if (!GLOSS) GLOSS = (() => { try { return fs.readFileSync(path.join(ROOT, 'context', 'glossary.tsv'), 'utf8').split('\n').slice(1).map(l => l.split('\t')).filter(r => r[0] && r[1]); } catch { return []; } })();
+  const text = ' ' + stories.map(x => [x.t, x.sum, x.h_en, x.h_vi, x.s_en, x.s_vi].filter(Boolean).join(' ')).join(' ').toLowerCase().replace(/\s+/g, ' ') + ' ';
+  const esc = w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const hit = GLOSS.filter(([en, vi]) => { const e = en.toLowerCase(), v = vi.toLowerCase().replace(/\s*\(.*?\)/g, '');
+    return (e.length >= 4 && new RegExp(`(^|[^a-z])${esc(e)}(s|es)?([^a-z]|$)`).test(text)) || (v.length >= 5 && text.includes(' ' + v)); })
+    .sort((a, b) => b[0].length - a[0].length).slice(0, 60);
+  return { n: hit.length, text: hit.length ? `\nGLOSSARY (MMH standard terms — use these Vietnamese renderings in "vi", s_vi, h_vi): ${hit.map(([en, vi]) => `${en} = ${vi}`).join('; ')}` : '' };
 }
 
 /* Sổ ghi nhớ của các series — data/memory.json (~5 tháng): mỗi số = chủ đề + ý chính (recap do Claude viết).

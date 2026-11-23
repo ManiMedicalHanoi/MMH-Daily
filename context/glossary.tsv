@@ -1,0 +1,1389 @@
+en	vi	domain
+tender	đấu thầu	biz
+bidding	đấu thầu	biz
+procurement	mua sắm	biz
+procuring entity	bên mời thầu	biz
+investor	chủ đầu tư	biz
+bidder	nhà thầu	biz
+contractor selection plan	kế hoạch lựa chọn nhà thầu (KHLCNT)	biz
+invitation to bid	thông báo mời thầu (TBMT)	biz
+bidding documents	hồ sơ mời thầu (HSMT)	biz
+bid opening	mở thầu	biz
+award decision	quyết định phê duyệt kết quả lựa chọn nhà thầu	biz
+framework agreement	thỏa thuận khung	biz
+centralized procurement	mua sắm tập trung	biz
+direct appointment	chỉ định thầu	biz
+shortened direct appointment	chỉ định thầu rút gọn	biz
+distributor	nhà phân phối (NPP)	biz
+dealer	đại lý	biz
+medical device	thiết bị y tế	biz
+medical consumables	vật tư y tế tiêu hao	biz
+circulation registration	số lưu hành	biz
+import license	giấy phép nhập khẩu	biz
+health insurance	bảo hiểm y tế (BHYT)	biz
+health insurance fund	quỹ bảo hiểm y tế	biz
+medical service price	giá dịch vụ kỹ thuật	biz
+hospital autonomy	tự chủ bệnh viện	biz
+public hospital	bệnh viện công lập	biz
+private clinic	phòng khám tư nhân	biz
+decree	nghị định	biz
+circular	thông tư	biz
+Ministry of Health	Bộ Y tế	biz
+Department of Health	Sở Y tế	biz
+take effect	có hiệu lực	biz
+exchange rate	tỷ giá	biz
+yen	đồng yên	biz
+import duty	thuế nhập khẩu	biz
+ophthalmology	nhãn khoa	biz
+dentistry	nha khoa	biz
+odonto-stomatology	răng hàm mặt	biz
+eye hospital	bệnh viện mắt	biz
+ophthalmic knife	dao phẫu thuật nhãn khoa	biz
+ophthalmic suture	chỉ khâu nhãn khoa	biz
+skin stapler	kìm đính da (Manipler)	biz
+endodontic file	trâm nội nha	biz
+diamond bur	mũi khoan kim cương	biz
+gum	lợi	biz
+Resolution	nghị quyết (văn bản) · độ phân giải (kỹ thuật)	biz
+Comprehensive Eye Exams	Khám mắt tổng quát toàn diện	eye
+Foreign Body Removal	Lấy dị vật	eye
+Minor Procedures	Các thủ thuật nhỏ	eye
+Anterior Chamber	Tiền phòng	eye
+Aqueous Humor	Thủy dịch	eye
+Ciliary Body	Thể mi	eye
+Conjunctiva	Kết mạc	eye
+Cornea	Giác mạc	eye
+Crystalline Lens	Thủy tinh thể	eye
+Extraocular Muscles	Cơ vận nhãn	eye
+Eyelashes	Lông mi	eye
+Eyelid	Mi mắt	eye
+Iris	Mống mắt	eye
+Lacrimal Duct System	Hệ thống lệ đạo	eye
+Lacrimal Gland	Tuyến lệ	eye
+Macula	Hoàng điểm	eye
+Optic Nerve	Dây thần kinh thị giác	eye
+Orbit	Hốc mắt	eye
+Posterior Chamber	Hậu phòng	eye
+Pupil	Đồng tử	eye
+Retina	Võng mạc	eye
+Sclera	Củng mạc	eye
+Vitreous	Dịch kính	eye
+Cataract	Đục thủy tinh thể (Cườm khô)	eye
+Chalazion	Chắp	eye
+Conjunctivitis	Viêm kết mạc (Đau mắt đỏ)	eye
+Diabetic Retinopathy	Bệnh võng mạc tiểu đường	eye
+Dry Eye Syndrome	Hội chứng khô mắt	eye
+Endophthalmitis	Viêm nội nhãn	eye
+Glaucoma	Glôcôm (Thiên đầu thống, Cườm nước)	eye
+Keratitis	Viêm giác mạc	eye
+Macular Degeneration	Thoái hóa điểm vàng	eye
+Pterygium	Mộng thịt	eye
+Ptosis	Sụp mi	eye
+Refractive Errors	Tật khúc xạ	eye
+Retinal Detachment	Bong võng mạc	eye
+Strabismus	Lác (Lé)	eye
+Stye (Hordeolum)	Lẹo	eye
+Uveitis	Viêm màng bồ đào	eye
+Eyeless Needles	Kim không mắt xỏ chỉ (Eyeless, chỉ liền kim)	eye
+ILM (Internal Limiting Membrane) Forceps	Kìm bóc màng giới hạn trong (ILM)	eye
+Micro Forceps	Kìm vi phẫu	eye
+Manipler Staplers	Dụng cụ dập ghim Manipler	eye
+Ophthalmic Knives	Dao phẫu thuật nhãn khoa (dao nhãn khoa)	eye
+Ophthalmic Sutures	Chỉ khâu nhãn khoa	eye
+Trabeculotomy Hook	Móc mở vùng bè	eye
+Blepharoplasty	Tạo hình mi mắt	eye
+Corneal Transplantation (Keratoplasty)	Ghép giác mạc	eye
+Dacryocystorhinostomy (DCR)	Phẫu thuật nối túi lệ mũi	eye
+Enucleation	Khoét bỏ nhãn cầu	eye
+Evisceration	Múc nội nhãn	eye
+Incision and Drainage	Rạch và dẫn lưu	eye
+Intraocular Lens (IOL) Implantation	Cấy ghép thủy tinh thể nội nhãn	eye
+Laser Photocoagulation	Quang đông laser	eye
+Limbal Relaxing Incision (LRI)	Rạch thư giãn vùng rìa giác mạc	eye
+Phacoemulsification	Phẫu thuật Phaco	eye
+Pterygium Excision	Cắt bỏ mộng thịt	eye
+Scleral Buckling	Độn củng mạc	eye
+Trabeculectomy	Cắt bè củng giác mạc	eye
+Vitrectomy	Cắt dịch kính	eye
+YAG Laser Capsulotomy	Mở bao sau bằng laser YAG	eye
+Corneal Topography	Bản đồ giác mạc	eye
+Fluorescein Angiography (FA)	Chụp mạch huỳnh quang	eye
+Gonioscopy	Soi góc tiền phòng	eye
+Ophthalmoscopy (Funduscopy)	Soi đáy mắt	eye
+Optical Coherence Tomography (OCT)	Chụp cắt lớp quang học	eye
+Pachymetry	Đo độ dày giác mạc	eye
+Refraction Test	Đo khúc xạ	eye
+Slit Lamp Examination	Khám sinh hiển vi (Đèn khe)	eye
+Tonometry	Đo nhãn áp	eye
+Ultrasound B-scan	Siêu âm B-scan	eye
+Visual Acuity Test	Đo thị lực	eye
+Visual Field Test	Đo thị trường	eye
+Contact Lens Fitting	Lắp kính áp tròng	eye
+Cryotherapy	Liệu pháp đông lạnh	eye
+Intravitreal Injections	Tiêm nội nhãn	eye
+Laser Therapy	Liệu pháp laser	eye
+Oral Medications	Thuốc uống	eye
+Orthoptics	Tập luyện thị giác	eye
+Photodynamic Therapy (PDT)	Liệu pháp quang động	eye
+Punctal Plugs	Nút điểm lệ	eye
+Topical Medications	Thuốc nhỏ mắt	eye
+Alpha-2 Agonists	Thuốc chủ vận alpha-2	eye
+Anti-VEGF Agents	Thuốc kháng VEGF	eye
+Antibiotics	Kháng sinh	eye
+Antifungals	Kháng nấm	eye
+Antivirals	Kháng virus	eye
+Beta-Blockers	Thuốc chẹn beta	eye
+Carbonic Anhydrase Inhibitors (CAIs)	Thuốc ức chế carbonic anhydrase	eye
+Corticosteroids	Corticosteroid (Steroid)	eye
+Local Anesthetics	Thuốc gây tê tại chỗ	eye
+Miotics	Thuốc co đồng tử	eye
+Mydriatics	Thuốc giãn đồng tử	eye
+NSAIDs (Non-Steroidal Anti-Inflammatory Drugs)	Thuốc chống viêm không	eye
+Prostaglandin Analogs	Đồng vận prostaglandin	eye
+Astigmatism	Loạn thị	eye
+Corneal Edema	Phù giác mạc	eye
+Diplopia	Song thị (Nhìn đôi)	eye
+Hemorrhage	Xuất huyết (Chảy máu)	eye
+Increased Intraocular Pressure (IOP)	Tăng nhãn áp	eye
+Infection	Nhiễm trùng	eye
+Vision Loss	Mất thị lực	eye
+Intraocular Pressure Control	Kiểm soát nhãn áp	eye
+Quality of Life (QOL) Improvement	Cải thiện chất lượng cuộc sống	eye
+Visual Acuity Improvement	Cải thiện thị lực	eye
+Bevel Shape	Công nghệ tạo mặt vát	eye
+Blade Material	Vật liệu lưỡi dao	eye
+Color-Coded Handles	Cán được mã hoá màu	eye
+Crosslapped Edge	Cạnh cắt mài ngang	eye
+Laser Drilled Swage	Lỗ đột chỉ bằng laser	eye
+Needle Curvature	Độ cong kim	eye
+Non-Glare Treatment	Xử lý chống chói	eye
+Suture Gauge (Size)	Kích thước chỉ khâu	eye
+MST (Straight Knife)	Dao thẳng	eye
+MVR / MPK (MVR Knife / Port Knife)	Dao MVR / dao tạo cổng	eye
+MGL (Golf Knife / Scleral Knife)	Dao golf / dao cắt mộng	eye
+MSL / MSS (Slit Knife / Straight Slit Knife)	Dao rạch / dao rạch lưỡi thẳng	eye
+MSP (Side Port Knife)	Dao tạo cổng bên	eye
+MRS (R Slit Knife / Implant Knife)	Dao rạch R (cấy ghép)	eye
+MLR (LRI Knife)	Dao LRI	eye
+MDP (Depth Knife)	Dao tạo rãnh	eye
+MANIPLER AZ	Kìm đính da dùng một lần Manipler AZ	eye
+MST00	Dao thẳng đầu tròn (Ophthalmic Knife MST00)	eye
+MST15	Dao thẳng đầu tròn (Ophthalmic Knife MST15)	eye
+Nylon (Ethilon)	Chỉ Nylon (Ethilon): không tiêu	eye
+Polypropylene (Prolene)	Chỉ Polypropylene (Prolene): không tiêu	eye
+Polyester (Ethibond, Mersilene)	Chỉ Polyester (Ethibond, Mersilene): không tiêu	eye
+Silk	Chỉ lụa (Silk): không tiêu	eye
+Virgin Silk	Chỉ lụa nguyên bản (Virgin Silk): không tiêu	eye
+PGA (Polyglycolic Acid)	Chỉ PGA (axit polyglycolic): tiêu	eye
+Myopia	Cận thị	eye
+Hyperopia	Viễn thị	eye
+Presbyopia	Lão thị	eye
+LASIK	Phẫu thuật khúc xạ LASIK	eye
+PRK	Phẫu thuật khúc xạ PRK	eye
+Intraocular Lens (IOL)	Thủy tinh thể nhân tạo (kính nội nhãn)	eye
+Posterior Capsular Opacification (PCO)	Đục bao sau	eye
+Intraocular Pressure (IOP)	Nhãn áp	eye
+Panretinal Photocoagulation (PRP)	Quang đông toàn võng mạc	eye
+Pars Plana Vitrectomy (PPV)	Cắt dịch kính qua pars plana	eye
+Pars Plana	Vùng pars plana (phẳng thể mi)	eye
+Pneumatic Retinopexy	Bơm khí nội nhãn cố định võng mạc	eye
+Minimally Invasive Glaucoma Surgery (MIGS)	Phẫu thuật glôcôm xâm lấn tối thiểu	eye
+Selective Laser Trabeculoplasty (SLT)	Cắt bè laser chọn lọc	eye
+Flieringa Ring	Vòng Flieringa	eye
+Tenon's Capsule	Bao Tenon	eye
+Meibomian Gland	Tuyến Meibomian	eye
+Trichiasis	Lông mi mọc ngược	eye
+Snellen Chart	Bảng thị lực Snellen	eye
+Goldmann Applanation Tonometry	Áp kế Goldmann (đo nhãn áp áp phẳng)	eye
+Herpes Zoster Ophthalmicus	Zona mắt (Herpes zoster mắt)	eye
+Herpes Simplex Keratitis	Viêm giác mạc do Herpes simplex	eye
+Ab Externo	Kỹ thuật Ab Externo (từ ngoài vào)	eye
+Ab Interno	Kỹ thuật Ab Interno (từ trong ra)	eye
+Trocar	Hệ thống trocar	eye
+Micro-incision	Vết mổ siêu nhỏ	eye
+Sclerocornea	Vùng rìa giác-củng mạc	eye
+Crescent Knife	Dao lưỡi liềm	eye
+Straight Knife	Dao thẳng	eye
+Slit Knife	Dao rạch (MSL)	eye
+Bleb	Bọng thấm (bleb)	eye
+Anti-VEGF	Thuốc kháng VEGF	eye
+MANI Original Hard Fiber Stainless Steel	Thép không gỉ bó sợi cứng nguyên bản của MANI	eye
+Austenite stainless steel	Thép không gỉ austenit	eye
+Sharpness	Độ sắc bén	eye
+Laser Drilled Swage / Laser Drilled End	Lỗ đột chỉ bằng laser	eye
+Drilled Swage	Lỗ đột	eye
+Channel Swage	Rãnh đột	eye
+Atraumatic Needle	Kim ít gây chấn thương mô	eye
+Eyeless Needle	Kim không mắt xỏ chỉ (kim liền chỉ)	eye
+Superior in Safety	An toàn vượt trội	eye
+Ductility	Độ dẻo	eye
+Bending Strength	Khả năng chịu uốn	eye
+Corrosion resistance	Khả năng chống ăn mòn	eye
+Tip strength	Độ bền đầu kim	eye
+Tissue damage / trauma	Tổn thương mô / chấn thương mô	eye
+Flat Needle Body for Easy Grasping	Thân kim dẹt giúp kẹp dễ dàng	eye
+Insertion: grasp 2/3 from the tip	Khi đưa kim vào: kẹp ở vị trí 2/3 tính từ mũi kim	eye
+Pulling out: grasp 1 mm from the tip to avoid damaging the edge	Khi rút kim ra: kẹp cách mũi 1 mm để tránh làm hỏng cạnh cắt	eye
+Wide Range of Needle Options	Đa dạng lựa chọn kim	eye
+Suture Gauge	Kích thước chỉ khâu	eye
+Needle Structure	Cấu trúc kim khâu	eye
+Point	Đầu kim	eye
+Curvature	Độ cong	eye
+Swage	Lỗ đột chỉ	eye
+Diameter (needle)	Đường kính kim	eye
+Length (needle)	Chiều dài kim	eye
+Needle Chart	Bảng phân loại kim khâu	eye
+Legends of MANI needle code	Giải thích mã kim MANI	eye
+Needle code	Mã kim	eye
+Needle curvature (code)	Độ cong kim (mã)	eye
+Symbol	Kí hiệu	eye
+Edge mark	Vết rách trên mô	eye
+Cross section	Mặt cắt ngang	eye
+Single-armed	Một đầu kim	eye
+Double-armed / Paired suture	Cặp chỉ 2 đầu kim	eye
+Loop suture (attached to needle)	Chỉ khâu có vòng sẵn (gắn vào kim)	eye
+Flat Needle Body	Thân kim dẹt	eye
+Nontraumatic / Atraumatic	Ít gây tổn thương mô	eye
+Trape spatula (Z)	Kim hình thang (Z)	eye
+Reverse cut / Reverse Cutting (R)	Kim tam giác ngược (R)	eye
+Dia spatula (X)	Kim lục giác (X)	eye
+Lancet (P)	Kim chích (P)	eye
+Taper point (T)	Kim tròn (T)	eye
+Taper Point Rectangular (OV)	Kim tròn (thân hình chữ nhật) (OV)	eye
+Cut taper (Y)	Kim tròn đầu cắt (Y)	eye
+Spatula side cut (V)	Kim hình thang cạnh cắt (V)	eye
+1/4 Circle 90 deg. (K)	1/4 vòng (90°): mã K	eye
+5/16 Circle 113 deg. (I)	5/16 vòng (113°): mã I	eye
+3/8 Circle 135 deg. (E)	3/8 vòng (135°): mã E	eye
+7/16 Circle 158 deg. (G)	7/16 vòng (158°): mã G	eye
+1/2 Circle 180 deg. (H)	1/2 vòng (180°): mã H	eye
+Bi-Curve (B)	Kim cong kép: mã B	eye
+Straight (S)	Kim thẳng: mã S	eye
+Suture Materials	Vật liệu chỉ khâu	eye
+Absorption	Khả năng tiêu	eye
+Hydrolysis	Thủy phân	eye
+Handling	Khả năng thao tác	eye
+Possibility of Tissue Reaction	Khả năng gây phản ứng mô	eye
+Suture Color	Màu chỉ	eye
+Monofilament	Sợi đơn	eye
+Multifilament	Đa sợi	eye
+Braided	Bện	eye
+Twisted	Xoắn	eye
+Loops	Vòng chỉ	eye
+Size	Cỡ chỉ	eye
+Package Sticker Color	Màu nhãn	eye
+Equivalency	Sản phẩm tương đương	eye
+Non Absorbable	Chỉ không tiêu	eye
+Absorbable	Chỉ tự tiêu	eye
+Synthetic Absorbable (Braided)	Chỉ tổng hợp tự tiêu sợi bện	eye
+Nylon	Chỉ Nylon	eye
+Polyester	Chỉ tổng hợp Polyester	eye
+Polypropylene	Chỉ Polypropylene	eye
+12 pcs. / box	12 sợi/hộp	eye
+Available / Not available	Có sẵn / Không sẵn	eye
+For laboratory use	Cho phòng thí nghiệm	eye
+Ethilon / Nurolon	(Ethicon) tương đương chỉ Nylon	eye
+Perma-Hand Silk	(Ethicon) tương đương chỉ lụa	eye
+Mersilene / Ethibond	(Ethicon) tương đương chỉ Polyester	eye
+Prolene	(Ethicon) tương đương chỉ Polypropylene	eye
+Vicryl	(Ethicon) tương đương PGA	eye
+BioSorb	(Alcon) tương đương PGA	eye
+PolySyn / PGA	(Sharpoint) tương đương PGA	eye
+Polyviolene	(Alcon) tương đương chỉ Polyester	eye
+MANI Suture List by Operation	Danh mục chỉ khâu theo phẫu thuật	eye
+Anterior	Phẫu thuật bán phần trước	eye
+Posterior	Phẫu thuật bán phần sau	eye
+Oculoplasty	Phẫu thuật tạo hình mi mắt	eye
+Cataract Surgery	Phẫu thuật đục thủy tinh thể	eye
+IOL Fixation	Cố định IOL	eye
+Scleral Fixation IOL-Cat. Surgery	Treo IOL củng mạc	eye
+Corneal transplant (KP)	Ghép giác mạc	eye
+Pterygium & Conjunctivochalasis (CCh)	Mộng thịt & Hội chứng giãn kết mạc	eye
+Sty (Hordeolum) & Chalazion	Lẹo & Chắp mí	eye
+Iris Reconstruction	Tái tạo mống mắt	eye
+Vitreous surgery	Dịch kính	eye
+Retinal detachment (Sclera Buckling)	Bong võng mạc	eye
+Glaucoma Surgery (Sclera Flap & Conjunctiva)	Phẫu thuật Glaucoma (khâu kết mạc và sau khi tạo vạt củng mạc)	eye
+Double Eyelid Surgery & Trichiasis (Ingrowing eyelashes)	Tạo mí đôi & Quặm mi	eye
+Ptosis (Drooping eyelid)	Sụp mi	eye
+Suture for IOL suspension technique	Chỉ phẫu thuật cho kỹ thuật treo IOL	eye
+Main Application	Ứng dụng chính	eye
+Order No.	Mã đặt hàng	eye
+UPS (USP)	Cỡ chỉ	eye
+Description	Mô tả sợi chỉ	eye
+Image & symbol	Kiểu đầu kim & kí hiệu	eye
+Sclera Flap	Khâu sau khi tạo vạt củng mạc	eye
+Conjunctiva / Sclera	Khâu kết mạc / củng mạc	eye
+Control Suture	Mũi khâu kiểm soát	eye
+Control	Mũi khâu kiểm soát	eye
+IOL Secondary implantation	Đặt IOL thứ phát	eye
+Iris Reconstruction / IOL Fixation	Tái tạo mống mắt / Treo IOL	eye
+Suturing back of eyelid	Khâu cố định bờ mi	eye
+Reposition of palpebral furrow	Định hình nếp mí	eye
+Skin	Khâu da	eye
+Muscle	Khâu cơ vận nhãn	eye
+Buckling	Khâu cố định đai củng mạc	eye
+Closing MVR port	Khâu đóng cổng MVR (đường rạch củng mạc)	eye
+Closing MVR port Conjunctiva	Khâu đóng kết mạc tại cổng MVR	eye
+Holding Infusion Cannula	Giữ canuyn truyền dịch	eye
+Flame of Surgical Lens	Mấu chặn của thấu kính phẫu thuật	eye
+Blade	Lưỡi dao	eye
+Tip	Mũi dao	eye
+Cutting edge	Cạnh cắt	eye
+Bevel	Mặt vát	eye
+Handle	Cán dao	eye
+Blade width	Bề rộng lưỡi (E)	eye
+Blade thickness	Độ dày lưỡi (D)	eye
+Angle	Góc gập (C)	eye
+Angle length	Chiều dài phần gập góc (B)	eye
+Short head (SH)	Đầu ngắn	eye
+Safety type (SK)	Dao an toàn	eye
+Bevel up / Bevel down / Double bevel	Vát lên / vát xuống / vát hai mặt	eye
+Exposed blade length	Chiều dài lưỡi lộ ra	eye
+Gauge	Cỡ G (gauge)	eye
+MANI bevel (patented)	Mặt vát MANI	eye
+Hard fiber stainless steel	Thép không gỉ bó sợi cứng	eye
+Penetration resistance	Lực cản xuyên	eye
+Main incision	Đường rạch chính	eye
+Side port	Cổng bên	eye
+Clear corneal incision	Đường rạch giác mạc trong	eye
+Self-sealing incision	Vết rạch tự đóng	eye
+Scleral groove	Rãnh củng mạc	eye
+Scleral tunnel	Đường hầm củng mạc	eye
+Scleral flap	Vạt củng mạc	eye
+Sclerotomy	Đường cắt củng mạc	eye
+Paracentesis	Chọc tiền phòng	eye
+Stromal hydration	Bơm phù nhu mô	eye
+IOL injector	Súng bơm IOL	eye
+Cannula / trocar	Ống dẫn	eye
+Corneal stroma	Nhu mô giác mạc	eye
+Limbus	Rìa giác mạc	eye
+Enophthalmos / deep-set eye	Hốc mắt sâu	eye
+Palpebral fissure	Khe mi	eye
+Eyeless needle suture	Chỉ liền kim	eye
+Running suture	Khâu vắt	eye
+Interrupted suture	Khâu mũi rời	eye
+U-shaped suture	Mũi khâu chữ U	eye
+Temporary fixing	Cố định tạm	eye
+Double-armed, paired needle	Cặp chỉ 2 đầu kim	eye
+Needle with loop suture	Chỉ có vòng gắn vào kim	eye
+Conjunctival graft	Mảnh ghép kết mạc	eye
+Scleral buckle	Vật liệu độn củng mạc	eye
+MVR port, sclerotomy	Cổng MVR	eye
+Infusion cannula	Canuyn truyền dịch	eye
+Levator aponeurosis	Cân cơ nâng mi	eye
+Tarsal plate	Sụn mi	eye
+Palpebral furrow	Nếp mí	eye
+Forceps tip	Đầu kìm	eye
+Shaft (forceps)	Thân kìm	eye
+Reinforced sleeve	Ống gia cố	eye
+Slider	Nút trượt	eye
+Tip shapes	Dạng đầu kìm	eye
+Wide Grip	Tay cầm bản rộng	eye
+Slim Grip	Tay cầm mảnh	eye
+Minimum / maximum exposed shaft length	Chiều dài phần thân kìm lộ ra tối thiểu / tối đa	eye
+Equivalent to 23G	Tương đương mức 23G	eye
+Axial length	Trục nhãn cầu	eye
+Grip force	Lực bóp	eye
+Hook tip (curved)	Đầu móc bo cong	eye
+Hook shaft	Thân móc	eye
+Large handle	Cán cầm to	eye
+Side port incision	Đường rạch cổng bên	eye
+Outer wall of Schlemm's canal	Thành ngoài ống Schlemm	eye
+Sufficiently wide incision	Dải rạch đủ rộng	eye
+Polished inner surface	Mặt trong được đánh bóng	eye
+Anti-glare side surfaces	Hai mặt bên chống lóa	eye
+Silicone coating	Phủ silicone	eye
+Hard fiber stainless steel (MANI original)	Thép không gỉ bó sợi cứng (nguyên bản) của MANI	eye
+Scleral depth incision	Rạch rãnh củng mạc (đúng độ sâu)	eye
+Perforation (into anterior chamber)	Xuyên vào tiền phòng	eye
+Enlarging the wound	Mở rộng vết rạch	eye
+Membrane dissection	Bóc tách màng trước võng mạc	eye
+Trabeculotomy (ab interno)	Mở vùng bè (từ phía trong tiền phòng)	eye
+Alveolar Bone	Xương ổ răng	dental
+Amalgam Carrier	Dụng cụ đưa amalgam	dental
+Analgesics	Thuốc giảm đau	dental
+Anti-inflammatory Drugs	Thuốc kháng viêm	dental
+Apex	Chóp răng	dental
+Aphthous Ulcer	Loét áp tơ	dental
+Bite Registration	Lấy dấu khớp cắn	dental
+Bond Strength	Lực dán	dental
+Bridge Preparation	Sửa soạn cùi răng làm cầu răng	dental
+Burnisher	Cây đánh bóng	dental
+Caries Detection Dye	Thuốc nhuộm phát hiện sâu răng	dental
+Carver	Cây điêu khắc	dental
+Cementum	Cement chân răng	dental
+Composite Bonding	Dán composite	dental
+Condenser/Plugger	Cây nhồi trám	dental
+Cone Beam Computed Tomography (CBCT)	Chụp cắt lớp vi tính chùm tia hình nón	dental
+Cotton Pliers/Forceps	Kẹp gắp bông	dental
+Crown	Thân răng	dental
+Crown Preparation	Sửa soạn cùi răng làm mão	dental
+Curing Light	Đèn quang trùng hợp	dental
+Cusp	Múi răng	dental
+Dental Bridge	Cầu răng	dental
+Dental Caries	Sâu răng	dental
+Dental Crown	Mão răng	dental
+Dental Explorer	Thăm trâm nha khoa	dental
+Dental Filling (Restoration)	Trám răng (Phục hồi)	dental
+Dental Implant	Implant nha khoa	dental
+Dental Implant Placement	Cấy ghép Implant nha khoa	dental
+Dental Mirror	Gương nha khoa	dental
+Dental Prophylaxis	Lấy cao răng và đánh bóng	dental
+Dental Radiography	Chụp X-quang nha khoa	dental
+Dentin	Ngà răng	dental
+Dentures (Removable)	Hàm giả tháo lắp	dental
+Desensitizing Treatment	Điều trị giảm ê buốt	dental
+Direct Restoration	Trám trực tiếp	dental
+Dry Socket (Alveolar Osteitis)	Viêm ổ răng khô	dental
+Enamel	Men răng	dental
+Fissure	Rãnh răng	dental
+Fluoride	Fluoride	dental
+Fluoride Application	Bôi Fluoride	dental
+Gingiva	Lợi	dental
+Gingivitis	Viêm lợi	dental
+Halitosis	Hôi miệng	dental
+High-Speed Handpiece	Tay khoan siêu tốc	dental
+Incision and Drainage (I&D)	Rạch và dẫn lưu	dental
+Indirect Restoration	Phục hình gián tiếp	dental
+Interproximal Surface	Mặt bên	dental
+Local Anesthetic	Thuốc tê tại chỗ	dental
+Low-Speed Handpiece	Tay khoan tốc độ chậm	dental
+Malocclusion	Sai khớp cắn	dental
+Mandible	Xương hàm dưới	dental
+Matrix Band	Đai trám	dental
+Maxilla	Xương hàm trên	dental
+Mobility Test	Thử độ lung lay	dental
+Mouthguard	Máng bảo vệ răng	dental
+Nerve Damage	Tổn thương thần kinh	dental
+Occlusal Adjustment	Điều chỉnh khớp cắn	dental
+Occlusal Surface	Mặt nhai	dental
+Oral Cancer	Ung thư miệng	dental
+Oral Candidiasis	Nấm miệng	dental
+Oral Examination	Khám miệng tổng quát	dental
+Oral Mucosa	Niêm mạc miệng	dental
+Orthodontic Treatment	Điều trị chỉnh nha	dental
+Palpation Test	Thử sờ nắn	dental
+Patient Satisfaction	Mức độ hài lòng của bệnh nhân	dental
+Percussion Test	Thử gõ	dental
+Periapical Abscess	Áp xe quanh chóp	dental
+Periodontal Ligament (PDL)	Dây chằng quanh răng	dental
+Periodontal Probe	Trâm đo túi quanh răng	dental
+Periodontitis	Viêm quanh răng	dental
+Pit and Fissure Sealant	Trám bít hố rãnh	dental
+Post-operative Pain	Đau sau phẫu thuật	dental
+Pulp	Tủy răng	dental
+Pulp Vitality Test	Thử tủy sống	dental
+Pulpitis	Viêm tủy răng	dental
+Recurrence Rate	Tỷ lệ tái phát	dental
+Root	Chân răng	dental
+Root Canal Therapy (RCT)	Điều trị tủy răng	dental
+Salivary Glands	Tuyến nước bọt	dental
+Splinting	Nẹp răng	dental
+Spoon Excavator	Nạo ngà	dental
+Study Models	Mẫu nghiên cứu	dental
+Suture Placement	Khâu vết thương	dental
+Swelling	Sưng	dental
+Teeth Whitening (Bleaching)	Tẩy trắng răng	dental
+Temporomandibular Joint (TMJ)	Khớp thái dương hàm	dental
+Temporomandibular Joint Disorder (TMD)	Rối loạn khớp thái dương hàm	dental
+Tofflemire Retainer	Kẹp giữ đai trám Tofflemire	dental
+Tongue	Lưỡi	dental
+Tooth Abrasion	Mòn răng do chải răng sai cách	dental
+Tooth Attrition	Mòn răng do ăn nhai	dental
+Tooth Erosion	Mòn răng do axit	dental
+Tooth Extraction	Nhổ răng	dental
+Tooth Fracture	Gãy răng	dental
+Transillumination	Chiếu sáng xuyên qua	dental
+Treatment Success Rate	Tỷ lệ thành công điều trị	dental
+Wedge	Chêm	dental
+Allergic Reaction	Phản ứng dị ứng	dental
+Antimicrobial Rinses	Nước súc miệng kháng khuẩn	dental
+Applicator Brush/Microbrush	Cọ/Cọ siêu nhỏ	dental
+Bacterial Count Test	Xét nghiệm số lượng vi khuẩn	dental
+Bleeding on Probing (BOP)	Chảy máu khi thăm dò	dental
+Caries Detection Devices	Thiết bị phát hiện sâu răng	dental
+Caries Increment	Tỷ lệ gia tăng sâu răng	dental
+Caries Risk Assessment	Đánh giá nguy cơ sâu răng	dental
+Casein Phosphopeptide-Amorphous Calcium Phosphate (CPP-ACP)	Casein Phosphopeptide-Amorphous Calcium Phosphate	dental
+Chlorhexidine Gluconate	Chlorhexidine Gluconate	dental
+Chlorhexidine Rinsing	Súc miệng Chlorhexidine	dental
+Dental Abscess	Áp xe răng	dental
+Dental Arch	Cung răng	dental
+Dental Calculus (Tartar)	Cao răng (Vôi răng)	dental
+Dental Floss	Chỉ nha khoa	dental
+Dental Fluorosis	Nhiễm Fluor răng	dental
+Dental Health Education	Giáo dục sức khỏe răng miệng	dental
+Dental Trauma	Chấn thương răng	dental
+Dietary Counseling	Tư vấn chế độ ăn uống	dental
+Dietary Modification	Thay đổi chế độ ăn uống	dental
+Disposable Syringe	Bơm tiêm dùng một lần	dental
+Early Childhood Caries (ECC)	Sâu răng sữa sớm	dental
+Early Detection	Phát hiện sớm	dental
+Education and Motivation	Giáo dục và tạo động lực	dental
+Enamel Surface	Bề mặt men răng	dental
+Filler Content	Hàm lượng hạt độn	dental
+Fluorosis	Nhiễm fluoride	dental
+Frenum	Phanh môi/lưỡi	dental
+Gingival Index Reduction	Giảm chỉ số viêm lợi	dental
+Gingival Margin	Viền lợi	dental
+Gingival Recession	Tụt lợi	dental
+Gingival Trauma	Chấn thương lợi	dental
+Halitosis (Oral Origin)	Hôi miệng (nguyên nhân từ miệng)	dental
+Hand Scaler/Curette	Dụng cụ lấy cao răng thủ công	dental
+Immunization	Tiêm chủng (liên quan đến miệng)	dental
+Interdental Brush	Bàn chải kẽ răng	dental
+Interproximal Space	Khoảng kẽ răng	dental
+Light-Curing Unit	Đèn quang trùng hợp	dental
+Mouthguard Fabrication	Chế tạo máng bảo vệ răng	dental
+Occlusion	Khớp cắn	dental
+Oral Appliance Therapy	Điều trị bằng khí cụ miệng	dental
+Oral Biofilm (Dental Plaque)	Màng sinh học răng miệng (Mảng bám răng)	dental
+Oral Cavity	Khoang miệng	dental
+Oral Hygiene Instruction (OHI)	Hướng dẫn vệ sinh răng miệng	dental
+Oral Microbiome	Hệ vi sinh vật miệng	dental
+Oral Mucositis	Viêm niêm mạc miệng	dental
+Oral pH	Độ pH miệng	dental
+Oral Thrush	Tưa miệng (Nấm miệng)	dental
+Oral Vestibule	Tiền đình miệng	dental
+Palate	Vòm miệng	dental
+Periodontal Maintenance	Duy trì nha chu	dental
+Photographic Documentation	Chụp ảnh tư liệu	dental
+Pit and Fissure	Hố và rãnh	dental
+Pit and Fissure Sealing	Trám bít hố rãnh	dental
+Plaque Index	Chỉ số mảng bám	dental
+Plaque Score Reduction	Giảm chỉ số mảng bám	dental
+Probiotic Use	Sử dụng Probiotic	dental
+Professional Fluoride Varnish Application	Bôi Vecni Fluoride chuyên nghiệp	dental
+Professional Tooth Cleaning	Làm sạch răng chuyên nghiệp	dental
+Prophy Paste	Bột đánh bóng	dental
+Radiographic Examination	Khám X-quang	dental
+Recall System	Hệ thống tái khám	dental
+Reduced Patient Compliance	Giảm tuân thủ của bệnh nhân	dental
+Remineralization Therapy	Liệu pháp tái khoáng hóa	dental
+Rubber Cup	Chén cao su đánh bóng	dental
+Saliva	Nước bọt	dental
+Saliva Buffering Capacity Test	Kiểm tra khả năng đệm của nước bọt	dental
+Saliva Flow Rate Test	Kiểm tra tốc độ dòng nước bọt	dental
+Scaling and Polishing	Lấy cao răng và đánh bóng	dental
+Smoking Cessation Counseling	Tư vấn cai thuốc lá	dental
+Smooth Surface	Bề mặt nhẵn	dental
+Sodium Fluoride (NaF)	Natri Fluoride	dental
+Staining	Nhiễm màu	dental
+Stannous Fluoride (SnF2)	Thiếc Fluoride	dental
+Tactile Examination	Khám bằng xúc giác	dental
+Taste Buds	Nụ vị giác	dental
+Tongue Scraper/Cleaner	Dụng cụ làm sạch lưỡi	dental
+Tooth Hypersensitivity	Nhạy cảm ngà	dental
+Tooth Surface	Bề mặt răng	dental
+Toothbrush	Bàn chải đánh răng	dental
+Topical Fluoride Application	Bôi fluoride tại chỗ	dental
+Traumatic Ulcer	Loét do chấn thương	dental
+Triclosan	Triclosan	dental
+Ultrasonic Scaler	Máy siêu âm lấy cao răng	dental
+Visual Examination	Khám bằng mắt thường	dental
+Water Flosser (Oral Irrigator)	Máy tăm nước	dental
+Xerostomia (Dry Mouth)	Khô miệng	dental
+Xylitol Containing Products	Sản phẩm chứa Xylitol	dental
+Xylitol Use	Sử dụng Xylitol	dental
+Access Cavity Preparation	Mở tủy	dental
+Accessory Canal	Ống tủy phụ	dental
+Acute Apical Periodontitis	Viêm quanh cuống răng cấp tính	dental
+Amoxicillin	Amoxicillin	dental
+Anatomical Apex	Chóp giải phẫu	dental
+Apex Locator	Máy đo chiều dài ống tủy	dental
+Apexification	Gây đóng chóp	dental
+Apexogenesis	Tạo chóp	dental
+Apical Abscess	Áp xe quanh chóp	dental
+Apical Constriction	Chỗ thắt chóp	dental
+Apical Foramen	Lỗ chóp	dental
+Apical Stop	Điểm chặn chóp	dental
+Apical Surgery (Apicoectomy)	Phẫu thuật cắt chóp	dental
+Bicuspidization	Chia đôi răng tiền hàm	dental
+Calcification	Vôi hóa ống tủy	dental
+Calcium Hydroxide	Hydroxit Canxi	dental
+Chronic Apical Periodontitis	Viêm quanh cuống răng mạn tính	dental
+Cingulum	Vành đai	dental
+Cold Test	Thử lạnh	dental
+Condensing Osteitis	Viêm xương đặc	dental
+Coronal Flaring	Loa rộng phần vành	dental
+Coronal Pulp	Tủy thân răng	dental
+Cyst (Radicular Cyst)	Nang chân răng	dental
+Delta Apical	Chóp Delta	dental
+Dentin Wall	Thành ngà	dental
+EDTA (Ethylenediaminetetraacetic Acid)	EDTA	dental
+Electric Pulp Test (EPT)	Thử tủy điện	dental
+Endodontic Explorer	Thăm trâm nội nha	dental
+Endodontic Motor	Mô-tơ nội nha	dental
+Endodontic Sealer	Chất trám bít ống tủy	dental
+Extrusion of Obturating Material	Vật liệu trám bít tràn ra ngoài chóp	dental
+Flare-up	Cơn bùng phát cấp tính	dental
+Formocresol	Formocresol	dental
+Furcation	Chẽ chân răng	dental
+Glide Path	Đường trượt	dental
+Gutta-percha Point	Côn Gutta-percha	dental
+Heat Test	Thử nóng	dental
+Hemisection	Cắt đôi chân răng	dental
+Ibuprofen	Ibuprofen	dental
+Intentional Replantation	Tái cấy ghép có chủ ý	dental
+Internal Bleaching	Tẩy trắng nội tủy	dental
+Irreversible Pulpitis	Viêm tủy không hồi phục	dental
+Irrigation	Bơm rửa ống tủy	dental
+Isthmus	Eo tủy	dental
+K-File	Trâm K	dental
+Lateral Canal	Ống tủy bên	dental
+Lateral Condensation	Nén ngang lạnh	dental
+Mechanical Instrumentation	Sửa soạn cơ học	dental
+MTA (Mineral Trioxide Aggregate)	MTA	dental
+NiTi Rotary File	Trâm máy NiTi	dental
+Non-surgical Root Canal Treatment	Điều trị nội nha không phẫu thuật	dental
+Obturating Syringe	Bơm trám bít	dental
+Obturation	Trám bít ống tủy	dental
+Over-instrumentation	Sửa soạn quá chóp	dental
+Paper Point	Côn giấy	dental
+Perforation	Thủng sàn/thành ống tủy	dental
+Periapical Healing	Lành thương quanh chóp	dental
+Plugger	Trâm nén	dental
+Post and Core	Chốt và cùi giả	dental
+Procedural Error	Sai sót trong quá trình thực hiện	dental
+Pulp Chamber	Buồng tủy	dental
+Pulp Horn	Sừng tủy	dental
+Pulp Necrosis	Hoại tử tủy	dental
+Radicular Pulp	Tủy chân răng	dental
+Radiographic Apex	Chóp X-quang	dental
+Radiographic Examination (Periapical X-ray)	Chụp X-quang quanh chóp	dental
+Resorption (Internal/External)	Tiêu chân răng (trong/ngoài)	dental
+Retreatment	Điều trị nội nha lại	dental
+Retreatment Failure	Thất bại điều trị nội nha lại	dental
+Revascularization/Regeneration	Tái tạo mạch máu/tái sinh tủy	dental
+Reversible Pulpitis	Viêm tủy có hồi phục	dental
+Root Canal	Ống tủy	dental
+Root Perforation	Thủng chân răng	dental
+Root Resection	Cắt chân răng	dental
+Rubber Dam	Đê cao su	dental
+Rubber Dam Clamp	Kẹp đê cao su	dental
+Selective Anesthesia	Gây tê chọn lọc	dental
+Separated Instrument	Gãy dụng cụ trong ống tủy	dental
+Single-Cone Technique	Kỹ thuật côn đơn	dental
+Sodium Hypochlorite (NaOCl)	Natri Hypochlorite	dental
+Spreader	Trâm giãn	dental
+Success Rate	Tỷ lệ thành công	dental
+Surgical Root Canal Retreatment	Điều trị nội nha lại bằng phẫu thuật	dental
+Survival Rate	Tỷ lệ tồn tại của răng	dental
+Taper	Độ thuôn (độ côn)	dental
+Test Cavity	Thử khoan	dental
+Tooth Restoration after RCT	Phục hồi răng sau điều trị nội nha	dental
+Vertical Root Fracture	Gãy dọc chân răng	dental
+Vital Pulp Therapy	Điều trị bảo tồn tủy sống	dental
+Warm Vertical Compaction	Nén dọc nóng	dental
+Working Length Determination	Xác định chiều dài làm việc	dental
+Abscess (Periodontal/Gingival)	Áp xe (nha chu/lợi)	dental
+Aggressive Periodontitis	Viêm quanh răng tấn công	dental
+Alveolar Crest	Mào xương ổ răng	dental
+Attached Gingiva	Lợi dính	dental
+Bacterial Culture/DNA Probe	Cấy khuẩn/Định danh DNA vi khuẩn	dental
+Bioactivity	Hoạt tính sinh học	dental
+Bone Chisel/Osteotome	Đục xương/Dụng cụ cắt xương	dental
+Bone File	Dũa xương	dental
+Bone Loss	Tiêu xương	dental
+Bone Marrow	Tủy xương	dental
+Chronic Periodontitis	Viêm quanh răng mạn tính	dental
+Clinical Attachment Level (CAL)	Mức độ bám dính lâm sàng	dental
+Crown Lengthening	Kéo dài thân răng lâm sàng	dental
+Curette (Gracey/Universal)	Nạo (Gracey/Đa năng)	dental
+Dental Trauma (to periodontium)	Chấn thương nha chu	dental
+Electrosurgery Unit	Thiết bị điện phẫu thuật	dental
+Flap Surgery (Periodontal Flap Surgery)	Phẫu thuật vạt lợi	dental
+Free Gingiva	Lợi tự do	dental
+Frenectomy	Cắt phanh môi/lưỡi	dental
+Furcation Involvement	Tổn thương chẽ chân răng	dental
+Gain in Clinical Attachment Level	Tăng mức độ bám dính lâm sàng	dental
+Gingival Crevicular Fluid (GCF)	Dịch rãnh lợi	dental
+Gingival Hyperplasia/Enlargement	Phì đại/Sưng lợi	dental
+Gingival Index	Chỉ số viêm lợi	dental
+Gingival Sulcus	Rãnh lợi	dental
+Gingivectomy	Cắt lợi	dental
+Gingivoplasty	Tạo hình lợi	dental
+Guided Bone Regeneration (GBR)	Tái tạo xương có hướng dẫn	dental
+Guided Tissue Regeneration (GTR)	Tái tạo mô có hướng dẫn	dental
+Hand Scaler	Dụng cụ cạo vôi trên lợi	dental
+Host Modulation Therapy	Liệu pháp điều hòa đáp ứng chủ	dental
+Interdental Papilla	Gai lợi	dental
+Junctional Epithelium	Biểu mô liên kết	dental
+Lamina Dura	Lá cứng	dental
+Laser Periodontal Therapy	Liệu pháp Laser nha chu	dental
+Local Drug Delivery	Đặt thuốc tại chỗ	dental
+Metronidazole	Metronidazole	dental
+Mucogingival Junction (MGJ)	Đường nối niêm mạc lợi	dental
+Mucogingival Surgery	Phẫu thuật niêm mạc lợi	dental
+Necrotizing Periodontal Diseases (NPD)	Bệnh quanh răng hoại tử	dental
+Needle Holder	Kẹp kim	dental
+Non-Steroidal Anti-Inflammatory Drugs (NSAIDs)	Thuốc kháng viêm không steroid	dental
+Non-surgical Periodontal Therapy	Điều trị nha chu không phẫu thuật	dental
+Nutrient Canals	Kênh dinh dưỡng	dental
+Occlusal Trauma	Chấn thương khớp cắn	dental
+Open Flap Debridement	Mở vạt để làm sạch	dental
+Orthodontic-Periodontic Treatment	Điều trị chỉnh nha-nha chu kết hợp	dental
+Osseous Surgery	Phẫu thuật xương ổ răng	dental
+Peri-implantitis	Viêm quanh implant	dental
+Pericoronitis	Viêm quanh thân răng	dental
+Periodontal Abscess Treatment	Điều trị áp xe nha chu	dental
+Periodontal Charting	Lập biểu đồ nha chu	dental
+Periodontal File	Trâm nha chu	dental
+Periodontal Ligament Space (PDL space)	Khoảng dây chằng quanh răng	dental
+Periodontal Pocket	Túi quanh răng	dental
+Periosteal Elevator	Cây bóc tách màng xương	dental
+Post-operative Bleeding	Chảy máu sau phẫu thuật	dental
+Post-operative Swelling/Pain	Sưng/Đau sau phẫu thuật	dental
+Probing Depth (PD)	Độ sâu túi quanh răng	dental
+Reduction in Bleeding on Probing	Giảm chảy máu khi thăm dò	dental
+Reduction in Probing Depth	Giảm độ sâu túi quanh răng	dental
+Relapse	Tái phát bệnh	dental
+Restorative-Periodontic Interface	Giao diện phục hình-nha chu	dental
+Root Sensitivity	Nhạy cảm chân răng	dental
+Root Surface	Bề mặt chân răng	dental
+Scaling and Root Planing (SRP)	Cạo vôi và làm láng gốc răng	dental
+Scalpel Handle and Blades	Cán dao và lưỡi dao mổ	dental
+Soft Tissue Grafting	Ghép mô mềm	dental
+Surgical Periodontal Therapy	Điều trị nha chu bằng phẫu thuật	dental
+Surgical Scissors	Kéo phẫu thuật	dental
+Sutures	Chỉ khâu	dental
+Tetracycline/Doxycycline	Tetracycline/Doxycycline	dental
+Tissue Forceps	Kẹp mô	dental
+Tooth Mobility	Lung lay răng	dental
+Treatment of Peri-implantitis	Điều trị viêm quanh implant	dental
+Abnormal Tooth Wear	Mòn răng bất thường	dental
+Abutment Connection	Gắn trụ phục hình implant	dental
+Abutment Tooth	Răng trụ	dental
+Acrylic Resin	Nhựa Acrylic	dental
+Angular Cheilitis	Viêm khóe miệng	dental
+Anodontia	Mất răng bẩm sinh toàn bộ	dental
+Articulator	Khớp cắn giả	dental
+Bonding Agent	Chất dán/keo dán	dental
+Buccal Vestibule	Tiền đình má	dental
+Caries	Sâu răng	dental
+Casting Alloys (Metal)	Hợp kim đúc (Kim loại)	dental
+Complete Denture (CD)	Hàm giả toàn bộ	dental
+Composite Resin	Nhựa composite	dental
+Compressive Strength	Độ bền nén	dental
+Crown Fabrication	Chế tác mão răng	dental
+Debonding/Decementation	Sút/Rớt phục hình	dental
+Delivery/Cementation	Gắn/Gắn xi măng	dental
+Dental Amalgam	Amalgam nha khoa	dental
+Dental Burs	Mũi khoan nha khoa	dental
+Dental Cement	Xi măng nha khoa	dental
+Dental Wax	Sáp nha khoa	dental
+Denture Adhesive	Keo dán hàm giả	dental
+Denture Cleanser	Dung dịch vệ sinh hàm giả	dental
+Denture Repair	Sửa chữa hàm giả	dental
+Desensitizing Agents	Thuốc giảm ê buốt	dental
+Diagnostic Casts/Models	Mẫu chẩn đoán/Mẫu nghiên cứu	dental
+Diagnostic Wax-up	Sáp chẩn đoán	dental
+Direct Veneer	Veneer trực tiếp	dental
+Edentulous Ridge	Xương hàm mất răng	dental
+Esthetic Failure	Thất bại thẩm mỹ	dental
+Facebow	Cung mặt	dental
+Facebow Record	Ghi dấu cung mặt	dental
+Fixed Partial Denture (FPD) / Dental Bridge	Cầu răng cố định	dental
+Fovea Palatini	Hố khẩu cái	dental
+Fracture (of prosthesis/tooth)	Gãy (phục hình/răng)	dental
+Fractured Tooth	Răng gãy/Nứt	dental
+Full Mouth Rehabilitation	Phục hồi toàn hàm	dental
+Gypsum/Dental Stone	Thạch cao nha khoa	dental
+Hyperplasia (Epulis Fissuratum)	Phì đại mô mềm (U xơ kẽ)	dental
+Implant Placement	Cấy ghép implant	dental
+Implant-Supported Prosthesis	Phục hình trên implant	dental
+Impression Material	Vật liệu lấy dấu	dental
+Impression Taking	Lấy dấu	dental
+Incisive Papilla	Nhú cửa	dental
+Inlay/Onlay Preparation	Sửa soạn xoang Inlay/Onlay	dental
+Inlays/Onlays	Inlay/Onlay	dental
+Interocclusal Space (Freeway Space)	Khoảng nghỉ tự do	dental
+Lingual Frenum	Phanh lưỡi	dental
+Longevity/Survival Rate	Tuổi thọ/Tỷ lệ tồn tại	dental
+Marginal Leakage	Hở kẽ viền	dental
+Masseter Muscle	Cơ cắn	dental
+Mental Foramen	Lỗ cằm	dental
+Missing Teeth	Mất răng	dental
+Mylohyoid Ridge	Gờ hàm móng	dental
+Occlusal Analysis	Phân tích khớp cắn	dental
+Occlusal Plane	Mặt phẳng nhai	dental
+Occlusal Splint Therapy	Liệu pháp máng nhai	dental
+Occlusal Stability	Ổn định khớp cắn	dental
+Open Contacts	Hở điểm tiếp xúc	dental
+Parafunction	Loạn chức năng	dental
+Partial Anodontia (Hypodontia)	Thiểu sản răng	dental
+Periodontal Disease	Bệnh quanh răng	dental
+Periotest	Kiểm tra độ lung lay implant/răng	dental
+Photographic Analysis	Phân tích ảnh chụp	dental
+Polishing Pastes	Pasta đánh bóng	dental
+Porcelain/Ceramic	Sứ/Vật liệu gốm sứ	dental
+Pre-prosthetic Surgery	Phẫu thuật tiền phục hình	dental
+Provisional Restoration (Diagnostic Provisional)	Phục hình tạm chẩn đoán	dental
+Provisional Restoration Placement	Đặt phục hình tạm	dental
+Pterygomandibular Raphe	Dải chân bướm hàm dưới	dental
+Relining/Rebasing	Đệm lại/Thay nền hàm giả	dental
+Removable Partial Denture (RPD)	Hàm giả tháo lắp từng phần	dental
+Residual Ridge	Mào xương còn lại	dental
+Resorption of Alveolar Bone	Tiêu xương ổ răng	dental
+Retromolar Pad	Đệm sau răng hàm	dental
+Sedatives/Anxiolytics	Thuốc an thần/giải lo âu	dental
+Shade Matching	Chọn màu răng	dental
+Shade Selection	Lựa chọn màu sắc	dental
+Single Crown Restoration	Phục hình mão đơn lẻ	dental
+Temporomandibular Disorder (TMD)	Rối loạn khớp thái dương hàm	dental
+Try-in (Wax Try-in)	Thử hàm trên sáp (Hàm sáp thử)	dental
+Tuberosity	Củ hàm trên	dental
+Veneer Preparation	Sửa soạn răng làm veneer	dental
+Veneers	Veneer	dental
+Vertical Dimension of Occlusion (VDO)	Chiều cao tầng mặt dưới khi cắn khít	dental
+Wax-up	Sáp mẫu	dental
+Xerostomia	Khô miệng	dental
+Anchorage	Neo chặn	dental
+Archwire	Dây cung	dental
+Band	Khâu	dental
+Bonding (Bracket Bonding)	Gắn mắc cài	dental
+Bracket	Mắc cài	dental
+Bracket Slot Size	Kích thước khe mắc cài	dental
+Buccal Tube	Ống buccal	dental
+Canine	Răng nanh	dental
+Cephalometric Analysis	Phân tích Ceph	dental
+Cephalometric Landmarks	Điểm mốc trên phim Ceph	dental
+Cephalometric Radiograph (Cephalogram)	Phim X-quang sọ nghiêng	dental
+Chlorhexidine Mouthrinse	Nước súc miệng Chlorhexidine	dental
+Class I Malocclusion	Sai khớp cắn loại I	dental
+Class II Correction	Điều trị sai khớp cắn Class II	dental
+Class II Malocclusion	Sai khớp cắn loại II	dental
+Class III Correction	Điều trị sai khớp cắn Class III	dental
+Class III Malocclusion	Sai khớp cắn loại III	dental
+Clear Aligner	Khay trong suốt	dental
+Clinical Examination	Khám lâm sàng	dental
+Coil Spring	Lò xo co/đẩy	dental
+Correction of Overbite/Openbite	Sửa chữa cắn sâu/cắn hở	dental
+Correction of Overjet/Underjet	Sửa chữa độ cắn chìa/cắn ngược	dental
+Crossbite	Cắn chéo	dental
+Crowding	Chen chúc răng	dental
+Debonding	Tháo mắc cài	dental
+Debonding (Bracket Debonding)	Sút mắc cài	dental
+Diastema	Khe thưa	dental
+Digital Impressions/Scans	Lấy dấu kỹ thuật số/Quét răng	dental
+Distalization	Di xa	dental
+Ectopic Eruption	Mọc lạc chỗ	dental
+Fixed Appliance Therapy	Điều trị bằng khí cụ cố định	dental
+Fluoride Varnish/Gel	Vecni/gel Fluoride	dental
+Functional Analysis	Phân tích chức năng	dental
+Functional Appliance Therapy	Điều trị bằng khí cụ chức năng	dental
+Gingival	Lợi	dental
+Gingival Inflammation	Viêm lợi	dental
+Growth Centers	Trung tâm tăng trưởng	dental
+Growth Modification	Điều hòa tăng trưởng	dental
+Hand-Wrist Radiograph	Phim X-quang bàn tay-cổ tay	dental
+Headgear	Khí cụ ngoài mặt	dental
+Impacted Canine Exposure	Bộc lộ răng nanh ngầm	dental
+Impacted Tooth	Răng ngầm	dental
+Incisor	Răng cửa	dental
+Interdisciplinary Treatment	Điều trị đa chuyên khoa	dental
+Interproximal Reduction (IPR) / Stripping	Mài kẽ răng	dental
+Leveling and Alignment	Làm phẳng và sắp thẳng hàng	dental
+Ligature Tie	Dây buộc (chun/thép)	dental
+Ligature/Archwire Placement	Buộc dây/Đặt dây cung	dental
+Mesialization	Di gần	dental
+Midpalatal Suture	Khớp khẩu cái giữa	dental
+Molar	Răng hàm (Răng hàm)	dental
+O-ring/Elastic Ligature	Chun buộc	dental
+Occlusal Index	Chỉ số khớp cắn	dental
+Open Bite	Cắn hở	dental
+Orthodontic Extractions	Nhổ răng chỉnh nha	dental
+Orthognathic Surgery	Phẫu thuật hàm mặt	dental
+Overbite (Deep Bite)	Cắn sâu	dental
+Overjet	Độ cắn chìa	dental
+Pain Relievers (NSAIDs)	Thuốc giảm đau (NSAIDs)	dental
+Palatal Expander (RPE)	Khí cụ nong rộng hàm trên	dental
+Panoramic Radiograph	Phim X-quang toàn cảnh	dental
+Photographic Records	Hồ sơ ảnh chụp	dental
+Power Chain	Chuỗi chun	dental
+Premolar	Răng tiền cối (Răng hàm nhỏ)	dental
+Removable Appliance Therapy	Điều trị bằng khí cụ tháo lắp	dental
+Retainer (Fixed/Removable)	Hàm duy trì (Cố định/Tháo lắp)	dental
+Retention	Duy trì	dental
+Retention Phase	Giai đoạn duy trì	dental
+Root Apex	Chóp chân răng	dental
+Root Resorption	Tiêu chân răng	dental
+Separator	Chun tách kẽ	dental
+Skeletal Base	Nền xương sọ mặt	dental
+Soft Tissues (Lips, Tongue, Cheeks)	Mô mềm (Môi, Lưỡi, Má)	dental
+Space Closure	Đóng khoảng	dental
+Spacing	Răng thưa	dental
+Surgical Orthodontics (Orthognathic Surgery)	Chỉnh nha phẫu thuật (Phẫu thuật hàm mặt)	dental
+Temporary Anchorage Device (TAD)/Miniscrew	Mini vít chỉnh nha	dental
+Temporary Anchorage Devices (TADs) / Miniscrews	Mini vít chỉnh nha	dental
+Tooth Crown	Thân răng	dental
+Topical Anesthetic	Thuốc tê bôi tại chỗ	dental
+Transposition	Đảo vị trí răng	dental
+Treatment Time	Thời gian điều trị	dental
+White Spot Lesions (WSLs)	Tổn thương đốm trắng	dental
+Alveolar Osteitis (Dry Socket)	Viêm ổ răng khô	dental
+Analgesics (Opioids/Non-opioids)	Thuốc giảm đau (Opioid/Không opioid)	dental
+Arthrocentesis/Arthroscopy (TMJ)	Chọc rửa khớp/Nội soi khớp thái dương hàm	dental
+Biopsy	Sinh thiết	dental
+Biopsy (Incisional/Excisional)	Sinh thiết (Cắt một phần/Cắt toàn bộ)	dental
+Bone Grafting	Ghép xương	dental
+Bone Grafting Instruments	Dụng cụ ghép xương	dental
+Buccal Space	Khoang má	dental
+Cephalometric Radiograph	Phim X-quang sọ nghiêng	dental
+Cleft Lip and Palate	Khe hở môi và vòm miệng	dental
+Complication Rate	Tỷ lệ biến chứng	dental
+Computed Tomography (CT Scan)	Chụp cắt lớp vi tính (CT)	dental
+Corticotomy/Osteotomy	Cắt vỏ xương/Cắt xương	dental
+Cyst (Odontogenic/Non-odontogenic)	Nang (Nha sinh/Không nha sinh)	dental
+Cyst Enucleation	Bóc tách nang	dental
+Dental Forceps	Kìm nhổ răng	dental
+Dental Photography	Chụp ảnh nha khoa	dental
+Dentoalveolar Surgery	Phẫu thuật răng ổ răng	dental
+Esthetic Outcome	Kết quả thẩm mỹ	dental
+Excision of Lesion	Cắt bỏ tổn thương	dental
+Facial Artery	Động mạch mặt	dental
+Facial Reconstruction	Tái tạo khuôn mặt	dental
+Fracture (Maxillofacial)	Gãy xương hàm mặt	dental
+Fracture Relapse	Tái phát gãy xương	dental
+Functional Outcome	Kết quả chức năng	dental
+General Anesthetics	Thuốc gây mê toàn thân	dental
+Hard Palate	Khẩu cái cứng	dental
+Hemostat/Artery Forceps	Kẹp cầm máu	dental
+Impacted Tooth Removal	Lấy răng ngầm	dental
+Impaction Elevator	Cây bẩy răng ngầm	dental
+Inferior Alveolar Nerve (IAN)	Dây thần kinh răng dưới	dental
+Irrigation Syringe	Bơm rửa phẫu thuật	dental
+Lingual Nerve	Dây thần kinh lưỡi	dental
+Magnetic Resonance Imaging (MRI)	Chụp cộng hưởng từ (MRI)	dental
+Material (Sutures/Plates)	Vật liệu (Chỉ khâu/Nẹp vít)	dental
+Mental Nerve	Dây thần kinh cằm	dental
+Nerve Paresthesia/Dysesthesia	Tê bì/Loạn cảm thần kinh	dental
+Odontectomy	Cắt bỏ răng	dental
+Odontogenic Keratocyst (OKC)	Nang sừng nha sinh	dental
+Oral Infection/Abscess	Nhiễm trùng/Áp xe miệng	dental
+Oral Squamous Cell Carcinoma	Ung thư biểu mô tế bào vảy miệng	dental
+Orbital Floor	Sàn ổ mắt	dental
+Oromaxillofacial Region	Vùng miệng - hàm mặt	dental
+Orthognathic Deformity	Biến dạng xương hàm	dental
+Osteomyelitis	Viêm tủy xương hàm	dental
+Parotid Gland	Tuyến mang tai	dental
+Pterygomandibular Space	Khoang chân bướm hàm	dental
+Reconstruction	Tái tạo	dental
+Retractor	Banhe	dental
+Rongeur Forceps	Kìm gặm xương	dental
+Salivary Gland Disorders	Rối loạn tuyến nước bọt	dental
+Sialography	Chụp cản quang tuyến nước bọt	dental
+Sialolithotomy	Cắt bỏ sỏi tuyến nước bọt	dental
+Sinus Lift	Nâng xoang hàm	dental
+Sleep Apnea Surgery	Phẫu thuật ngưng thở khi ngủ	dental
+Soft Palate	Khẩu cái mềm	dental
+Sublingual Gland	Tuyến dưới lưỡi	dental
+Sublingual Space	Khoang dưới lưỡi	dental
+Submandibular Gland	Tuyến dưới hàm	dental
+Submandibular Space	Khoang dưới hàm	dental
+Suction Tip	Đầu hút phẫu thuật	dental
+Surgical Extraction	Nhổ răng phẫu thuật	dental
+Surgical Handpiece and Burs	Tay khoan phẫu thuật và mũi khoan	dental
+Suture Needle Holder	Kẹp kim khâu	dental
+Temporomandibular Joint Dysfunction (TMD)	Rối loạn chức năng khớp thái dương hàm	dental
+TMJ Surgery	Phẫu thuật khớp thái dương hàm	dental
+Trauma Management (Fracture Fixation)	Xử lý chấn thương (Cố định gãy xương)	dental
+Trigeminal Neuralgia	Đau dây thần kinh sinh ba	dental
+Trismus	Khó há miệng	dental
+Tumor (Benign/Malignant)	U (Lành tính/Ác tính)	dental
+Vestibuloplasty	Tạo hình tiền đình	dental
+Zygoma/Zygomatic Arch	Xương gò má/Cung gò má	dental
+Aesthetic Crowns (Primary Teeth)	Mão thẩm mỹ (Răng sữa)	dental
+Amelogenesis Imperfecta	Khiếm khuyết men răng bẩm sinh	dental
+Ankylosis (Primary Teeth)	Dính khớp (Răng sữa)	dental
+Apex Locator (Pediatric)	Máy đo chiều dài ống tủy (Trẻ em)	dental
+Aspiration/Swallowing of Objects	Hít sặc/Nuốt dụng cụ/vật liệu	dental
+Behavior Management	Quản lý hành vi	dental
+Behavior Management Aids	Dụng cụ hỗ trợ quản lý hành vi	dental
+Behavioral Assessment	Đánh giá hành vi	dental
+Behavioral Sedation	An thần hành vi	dental
+Bruxism (in Children)	Nghiến răng (ở trẻ em)	dental
+Caries Incidence Reduction	Giảm tỷ lệ mắc sâu răng	dental
+Caries Risk Assessment (CRA)	Đánh giá nguy cơ sâu răng	dental
+Child Sedation	An thần trẻ em	dental
+Congenitally Missing Teeth	Thiếu răng bẩm sinh	dental
+Damage to Permanent Tooth Bud	Tổn thương mầm răng vĩnh viễn	dental
+Dental Age Assessment	Đánh giá tuổi răng	dental
+Dental Arches	Cung răng	dental
+Dental Burs (Pediatric)	Mũi khoan nha khoa (Trẻ em)	dental
+Dental Cysts (in Children)	Nang răng (ở trẻ em)	dental
+Dental Elevators	Cây bẩy răng	dental
+Dental Follicle	Nang răng	dental
+Dental Radiography (for Children)	Chụp X-quang nha khoa (cho trẻ em)	dental
+Dental Trauma (in Children)	Chấn thương răng (ở trẻ em)	dental
+Dentin (Primary Teeth)	Ngà răng (Răng sữa)	dental
+Dentinogenesis Imperfecta	Khiếm khuyết ngà răng bẩm sinh	dental
+Developing Root Apex	Chóp chân răng đang phát triển	dental
+Dietary Analysis	Phân tích chế độ ăn uống	dental
+Enamel (Primary Teeth)	Men răng (Răng sữa)	dental
+Fear/Anxiety (Dental Phobia)	Sợ hãi/Lo lắng (Sợ nha khoa)	dental
+Fluoride Release	Giải phóng Fluoride	dental
+Fluoride Therapy	Liệu pháp fluoride	dental
+Fluoride Trays	Máng fluoride	dental
+Growth and Development Assessment	Đánh giá tăng trưởng và phát triển	dental
+Habit Breaking Appliances	Khí cụ bỏ thói quen xấu	dental
+Habit Breaking Therapy	Liệu pháp bỏ thói quen xấu	dental
+Interceptive Orthodontics	Chỉnh nha can thiệp sớm	dental
+Labial Frenum	Phanh môi	dental
+Matrix Bands (Pediatric)	Đai trám (Trẻ em)	dental
+Mixed Dentition	Bộ răng hỗn hợp	dental
+Nitrous Oxide	Khí Nitrous Oxide (Khí cười)	dental
+Nitrous Oxide Sedation	An thần bằng khí Nitrous Oxide	dental
+Occlusion (Primary/Mixed)	Khớp cắn (Răng sữa/Hỗn hợp)	dental
+Oral Cancer Screening (Pediatric)	Sàng lọc ung thư miệng (Trẻ em)	dental
+Oral Hygiene Education (for Parents/Children)	Giáo dục vệ sinh răng miệng (cho phụ huynh/trẻ em)	dental
+Orthodontic Appliances (Removable)	Khí cụ chỉnh nha (tháo lắp)	dental
+Pediatric Forceps	Kìm nhổ răng trẻ em	dental
+Periapical Abscess (Primary Teeth)	Áp xe quanh chóp (Răng sữa)	dental
+Periodontal Probe (Modified)	Trâm đo túi quanh răng (cải tiến)	dental
+Permanent Dentition	Bộ răng vĩnh viễn	dental
+Positive Dental Experience	Trải nghiệm nha khoa tích cực	dental
+Primary Dentition (Deciduous Teeth)	Bộ răng sữa	dental
+Protective Restorations	Phục hình bảo vệ	dental
+Pulp Horns (Primary Teeth)	Sừng tủy (Răng sữa)	dental
+Pulp Therapy (Pulpotomy/Pulpectomy)	Điều trị tủy (Lấy tủy buồng/Lấy tủy toàn phần)	dental
+Pulp Vitality Testing (Pediatric)	Thử tủy sống (Trẻ em)	dental
+Pulpectomy	Lấy tủy toàn phần (Răng sữa)	dental
+Pulpitis (Primary Teeth)	Viêm tủy (Răng sữa)	dental
+Pulpotomy	Lấy tủy buồng (Răng sữa)	dental
+Radiographic Examination (Bitewing/Periapical/Panoramic)	Khám X-quang (Cắn cánh/Quanh chóp/Toàn cảnh)	dental
+Relapse of Habits	Tái phát thói quen xấu	dental
+Restoration (Primary Teeth)	Trám răng (Răng sữa)	dental
+Restorative Dentistry (for Primary Teeth)	Nha khoa phục hồi (cho răng sữa)	dental
+Retention of Primary Teeth	Duy trì răng sữa	dental
+Root Canal System (Primary Teeth)	Hệ thống ống tủy (Răng sữa)	dental
+Root Resorption (Physiological)	Tiêu chân răng (Sinh lý)	dental
+Silver Diamine Fluoride (SDF)	Bạc Diamine Fluoride	dental
+Space Maintainer	Khí cụ giữ khoảng	dental
+Space Maintenance	Giữ khoảng	dental
+Stainless Steel Crown (SSC)	Mão thép không gỉ	dental
+Stainless Steel Crown Placement	Đặt mão thép không gỉ	dental
+Successor Tooth	Răng vĩnh viễn mọc thế chỗ	dental
+Supernumerary Teeth	Răng thừa	dental
+Thumb Sucking/Finger Sucking	Mút ngón tay cái/ngón tay	dental
+Tongue Thrust	Đẩy lưỡi	dental
+Tooth Loss (Premature)	Mất răng (Sớm)	dental
+Trauma Management	Xử lý chấn thương	dental
+All-Ceramic Crown Placement	Đặt mão toàn sứ	dental
+All-Ceramic Crowns	Mão toàn sứ	dental
+Amelogenesis Imperfecta (Esthetic Concerns)	Khiếm khuyết men răng bẩm sinh (Vấn đề thẩm mỹ)	dental
+Axial Inclination	Độ nghiêng trục răng	dental
+Black Triangles	Tam giác đen	dental
+Bleaching Gel/Agent	Gel/Chất tẩy trắng	dental
+Bonding Failure	Thất bại dán	dental
+Buccal Corridor	Khoảng hành lang má	dental
+Carbamide Peroxide	Carbamide Peroxide	dental
+Cervical Area	Vùng cổ răng	dental
+Chipped/Fractured Teeth	Răng sứt mẻ/Gãy	dental
+Composite Veneers	Veneer composite	dental
+Crown Lengthening (Esthetic)	Kéo dài thân răng lâm sàng (Thẩm mỹ)	dental
+Dental Bonding (Direct Restoration)	Trám thẩm mỹ (Trám trực tiếp)	dental
+Dental Burs (for Esthetic)	Mũi khoan nha khoa (cho thẩm mỹ)	dental
+Dental Caries (Esthetic Zone)	Sâu răng (Vùng thẩm mỹ)	dental
+Dental Etchant (Phosphoric Acid)	Axit khắc etchant (Axit phosphoric)	dental
+Dental Fluorosis (Esthetic Concerns)	Nhiễm fluoride răng (Vấn đề thẩm mỹ)	dental
+Dental Implants (Esthetic Zone)	Cấy ghép Implant (Vùng thẩm mỹ)	dental
+Dental Loupes/Microscope	Kính lúp nha khoa/Kính hiển vi	dental
+Dentinogenesis Imperfecta (Esthetic Concerns)	Khiếm khuyết ngà răng bẩm sinh (Vấn đề thẩm mỹ)	dental
+Desensitizing Toothpaste	Kem đánh răng giảm ê buốt	dental
+Diagnostic Mock-up	Mẫu thử chẩn đoán	dental
+Diastema Closure	Đóng khe thưa	dental
+Digital Smile Design (DSD)	Thiết kế nụ cười kỹ thuật số	dental
+Embrasures	Tam giác lợi/khe hở viền	dental
+Enamel Translucency	Độ trong mờ của men răng	dental
+Esthetic Analysis	Phân tích thẩm mỹ	dental
+Esthetic Integration	Hòa nhập thẩm mỹ	dental
+Excessive Gingival Display	Lộ lợi quá mức	dental
+Facial Midline	Đường giữa mặt	dental
+Filler Particle Size	Kích thước hạt độn	dental
+Gingival Contour	Đường viền lợi	dental
+Gingival Evaluation	Đánh giá lợi	dental
+Gingival Recession (Esthetic Concerns)	Tụt lợi (Vấn đề thẩm mỹ)	dental
+Gingival Recontouring	Tạo hình lại lợi	dental
+Gingival Retraction Cord	Dây co lợi	dental
+Gingival Zenith Symmetry	Đối xứng đỉnh lợi	dental
+Gingival Zeniths	Đỉnh lợi	dental
+Gingivectomy/Gingivoplasty (Esthetic)	Cắt lợi/Tạo hình lợi (Thẩm mỹ)	dental
+Golden Proportion	Tỷ lệ vàng	dental
+Gum Grafting	Ghép lợi	dental
+Gum Irritation	Kích ứng lợi	dental
+Gummy Smile	Cười hở lợi	dental
+Hydrogen Peroxide	Hydrogen Peroxide	dental
+Implants in Esthetic Zone	Implant vùng thẩm mỹ	dental
+Incisal Edge	Rìa cắn	dental
+Incisal Transparency	Độ trong ở rìa cắn	dental
+Inlays/Onlays (Esthetic)	Inlay/Onlay (Thẩm mỹ)	dental
+Intraoral Camera	Camera trong miệng	dental
+Intraoral Scan/Digital Impression	Quét trong miệng/Lấy dấu kỹ thuật số	dental
+Invisalign/Clear Aligner Therapy	Điều trị khay trong suốt Invisalign	dental
+Irregular Tooth Shape	Hình dạng răng không đều	dental
+Lip Line (High/Medium/Low)	Đường môi (Cao/Trung bình/Thấp)	dental
+Microabrasion	Mài vi mòn	dental
+Microabrasion Slurry	Dung dịch mài vi mòn	dental
+Misaligned Teeth	Răng lệch lạc	dental
+Mock-up	Mẫu thử	dental
+Mouthguard for Whitening	Máng tẩy trắng	dental
+Oral Commisure	Khóe miệng	dental
+Orthodontic Alignment	Sắp thẳng hàng bằng chỉnh nha	dental
+Orthodontic Tooth Movement	Di chuyển răng bằng chỉnh nha	dental
+Over-reduction/Under-reduction	Mài quá mức/Mài không đủ	dental
+Polishing Burs/Discs/Cups	Mũi khoan/Đĩa/Chén đánh bóng	dental
+Porcelain Veneer Placement	Gắn veneer sứ	dental
+Porcelain Veneers	Veneer sứ	dental
+Porcelain/Ceramic Veneers	Veneer sứ	dental
+Shade Guide	Bảng màu răng	dental
+Shade Mismatch	Lệch màu	dental
+Short Clinical Crowns	Thân răng lâm sàng ngắn	dental
+Silicone Key/Index	Khóa/chìa khóa silicone	dental
+Smile Design Software	Phần mềm thiết kế nụ cười	dental
+Smile Line	Đường cười	dental
+Tooth Abrasion/Erosion	Mòn răng do mài mòn/ăn mòn	dental
+Tooth Discoloration	Nhiễm màu răng	dental
+Tooth Long Axis	Trục dài của răng	dental
+Tooth Morphology	Hình thể răng	dental
+Tooth Recontouring/Enameloplasty	Tạo hình men răng/Mài chỉnh hình thể răng	dental
+Tooth Sensitivity	Nhạy cảm răng	dental
+Tooth Shade	Màu sắc răng	dental
+Tooth Shade Evaluation	Đánh giá màu sắc răng	dental
+Tooth Texture	Cấu trúc bề mặt răng	dental
+Tooth Whitening	Tẩy trắng răng	dental
+Video Analysis	Phân tích video	dental
+3D Reconstruction	Tái tạo hình ảnh 3D	dental
+Allergic Reaction (to Contrast)	Phản ứng dị ứng (với thuốc cản quang)	dental
+Anatomical Landmark	Điểm mốc giải phẫu	dental
+Barium Sulfate	Bari Sulfat	dental
+Bisecting Angle Technique	Kỹ thuật phân giác	dental
+Bitewing Radiograph (BW)	Phim X-quang cắn cánh	dental
+Bone Loss (Periodontal)	Tiêu xương (Nha chu)	dental
+CBCT Imaging	Chụp CBCT	dental
+Cementoma/Periapical Cemento-Osseous Dysplasia	U cement/Loạn sản cement-xương quanh chóp	dental
+Cephalometric X-ray Unit	Máy X-quang sọ nghiêng	dental
+Collimator	Bộ chuẩn trực	dental
+Computer-Aided Diagnosis (CAD)	Chẩn đoán có hỗ trợ máy tính	dental
+Cone Beam Computed Tomography (CBCT) Unit	Máy cắt lớp vi tính chùm tia hình nón	dental
+Contrast	Độ tương phản	dental
+Contrast Media	Thuốc cản quang	dental
+Coronoid Process	Mỏm vẹt	dental
+Darkroom	Phòng tối	dental
+Density	Mật độ (Độ đen)	dental
+Dental Caries (Radiograph)	Sâu răng (X-quang)	dental
+Dental X-ray Film	Phim X-quang nha khoa	dental
+Dentin (Radiograph)	Ngà răng (X-quang)	dental
+Diagnostic Yield	Hiệu suất chẩn đoán	dental
+Digital Image Enhancement	Cải thiện hình ảnh kỹ thuật số	dental
+Digital Radiography	X-quang kỹ thuật số	dental
+Digital Sensor	Cảm biến kỹ thuật số	dental
+Distortion	Biến dạng	dental
+Dose Reduction	Giảm liều xạ	dental
+Enamel (Radiograph)	Men răng (X-quang)	dental
+Exposure Factors	Các yếu tố phơi sáng	dental
+External Oblique Ridge	Gờ chéo ngoài	dental
+Film Holder/Sensor Holder	Kẹp giữ phim/Cảm biến	dental
+Film Processor	Máy rửa phim tự động	dental
+Foreign Body	Dị vật	dental
+Fracture (Radiograph)	Gãy xương (X-quang)	dental
+Genial Tubercles	Củ cằm	dental
+Geometric Distortion	Biến dạng hình học	dental
+Image Acquisition	Thu nhận hình ảnh	dental
+Image Artifacts	Nhiễu ảnh	dental
+Image Interpretation	Đọc phim/Giải thích hình ảnh	dental
+Image Processing	Xử lý hình ảnh	dental
+Image Quality	Chất lượng hình ảnh	dental
+Impacted Tooth (Radiograph)	Răng ngầm (X-quang)	dental
+Incisive Foramen	Lỗ răng cửa	dental
+Internal Oblique Ridge (Mylohyoid Ridge)	Gờ chéo trong (Gờ hàm móng)	dental
+Intraoral Scan	Quét trong miệng	dental
+Intraoral X-ray Unit	Thiết bị X-quang trong miệng	dental
+Iodinated Contrast	Thuốc cản quang chứa Iốt	dental
+Kilovoltage Peak (kVp)	Điện áp đỉnh (kVp)	dental
+Lead Apron	Tấm chì bảo vệ	dental
+Lead Equivalent	Tương đương chì	dental
+Magnification	Phóng đại	dental
+Mandibular Canal	Ống răng dưới	dental
+Maxillary Sinus	Xoang hàm trên	dental
+Nasal Fossa	Hốc mũi	dental
+Occlusal Radiograph	Phim X-quang cắn	dental
+Odontogenic Cyst	Nang nha sinh	dental
+Osteomyelitis (Radiograph)	Viêm tủy xương (X-quang)	dental
+Osteoradionecrosis (ORN)	Hoại tử xương do xạ trị	dental
+Overlapping (on Bitewings)	Chồng hình (trên phim cắn cánh)	dental
+Panoramic Radiograph (Panorex/OPG)	Phim X-quang toàn cảnh	dental
+Panoramic X-ray Unit (OPG/Panorex)	Máy X-quang toàn cảnh	dental
+Parallel Technique	Kỹ thuật song song	dental
+Patient Movement	Chuyển động của bệnh nhân	dental
+Patient Positioning	Định vị bệnh nhân	dental
+Periapical Radiograph (PA)	Phim X-quang quanh chóp	dental
+Periapical Radiolucency	Vùng thấu quang quanh chóp	dental
+Periapical Radiopacity (Condensing Osteitis)	Vùng cản quang quanh chóp (Viêm xương đặc)	dental
+Phosphor Plate (PSP)	Tấm cảm biến quang phát quang	dental
+PID (Position Indicating Device) / Cone	Ống định vị tia/Ống côn	dental
+Pulp Chamber (Radiograph)	Buồng tủy (X-quang)	dental
+Radiation Dose	Liều chiếu xạ	dental
+Radiation Exposure	Phơi nhiễm bức xạ	dental
+Radiation Protection	Bảo vệ bức xạ	dental
+Radiographic Diagnosis	Chẩn đoán bằng X-quang	dental
+Radiolucent	Thấu quang	dental
+Radiopaque	Cản quang	dental
+Resorption (External/Internal)	Tiêu chân răng (Ngoài/Trong)	dental
+Retained Root Fragment	Mảnh chân răng sót	dental
+Root Canal (Radiograph)	Ống tủy (X-quang)	dental
+Root Resorption (Orthodontic)	Tiêu chân răng (Chỉnh nha)	dental
+Sedatives	Thuốc an thần	dental
+Sialolith (Salivary Gland Stone)	Sỏi tuyến nước bọt	dental
+Submandibular Fossa	Hố dưới hàm	dental
+Superimposition	Chồng hình	dental
+TMJ Radiography	Chụp X-quang khớp thái dương hàm	dental
+Tomography	Chụp cắt lớp	dental
+Trabecular Bone	Xương bè (Xốp)	dental
+X-ray Machine	Máy X-quang	dental
+X-ray Tube Head	Đầu ống X-quang	dental
+Zygomatic Arch	Cung gò má	dental
+Ameloblastoma	U nguyên bào men	dental
+Antifungal Medication	Thuốc kháng nấm	dental
+Antiviral Medication	Thuốc kháng virus	dental
+Aphthous Ulcer (Canker Sore)	Loét áp tơ	dental
+Biopsy Punch	Kìm bấm sinh thiết	dental
+Brush Biopsy	Sinh thiết bằng bàn chải	dental
+Buccal Mucosa	Niêm mạc má	dental
+Chemotherapy	Hóa trị	dental
+Clinical Photography	Chụp ảnh lâm sàng	dental
+Cover Slips	Lá kính	dental
+Coverslipping	Phủ lá kính	dental
+Cytology (Exfoliative)	Tế bào học (Tóc tróc)	dental
+Cytospin	Ly tâm tế bào	dental
+Differential Diagnosis	Chẩn đoán phân biệt	dental
+Disease-Free Survival	Thời gian sống không bệnh	dental
+Embedding	Đúc khối	dental
+Erythroplakia	Hồng sản	dental
+Excisional Biopsy	Sinh thiết cắt bỏ toàn bộ	dental
+Exfoliative Cytology	Tế bào học bong tróc	dental
+Fibroma (Oral)	U xơ (Miệng)	dental
+Follow-up / Recurrence Monitoring	Tái khám / Theo dõi tái phát	dental
+Forceps (Biopsy)	Kìm (Sinh thiết)	dental
+Formalin	Formalin	dental
+Frozen Section	Cắt lát lạnh tức thì	dental
+Functional Impairment	Suy giảm chức năng	dental
+Geographic Tongue (Benign Migratory Glossitis)	Lưỡi bản đồ	dental
+Gross Examination	Đại thể	dental
+Herpes Simplex Virus (HSV) Infection	Nhiễm virus Herpes Simplex	dental
+Histology Stains (H&E)	Thuốc nhuộm mô học (H&E)	dental
+Histopathological Examination	Xét nghiệm mô bệnh học	dental
+Immunohistochemistry (IHC)	Hóa mô miễn dịch	dental
+Immunosuppressants	Thuốc ức chế miễn dịch	dental
+Incisional Biopsy	Sinh thiết cắt bỏ một phần	dental
+Jaws (Maxilla/Mandible)	Xương hàm (Hàm trên/Hàm dưới)	dental
+Labial Mucosa	Niêm mạc môi	dental
+Laser Ablation	Phẫu thuật laser	dental
+Leukoplakia	Bạch sản	dental
+Lichen Planus (Oral)	Lichen phẳng (Miệng)	dental
+Lymph Nodes (Head and Neck)	Hạch bạch huyết (Vùng đầu cổ)	dental
+Malignant Transformation	Chuyển dạng ác tính	dental
+Medical Consultation	Hội chẩn y khoa	dental
+Metastasis	Di căn	dental
+Microscope (Pathology)	Kính hiển vi (Giải phẫu bệnh)	dental
+Microscope Slides	Lam kính	dental
+Microtomy	Cắt lát mỏng	dental
+Molecular Diagnostics	Chẩn đoán phân tử	dental
+Mounting (on slide)	Dán (lên lam kính)	dental
+Mucocele	Nang nhầy	dental
+Mucosa-Bone Interface	Giao diện niêm mạc - xương	dental
+Odontoma	U răng	dental
+Oral Candidiasis (Thrush)	Nấm miệng	dental
+Oral Pharynx	Hầu miệng	dental
+Osteonecrosis of the Jaw (ONJ)	Hoại tử xương hàm	dental
+Palate (Hard/Soft)	Khẩu cái (Cứng/Mềm)	dental
+Periodontium	Mô quanh răng	dental
+Pharynx	Hầu	dental
+Quality of Life (QoL)	Chất lượng cuộc sống	dental
+Radiation Therapy	Xạ trị	dental
+Radiographic Interpretation	Đọc phim X-quang	dental
+Ranula	Nang nhầy dưới lưỡi	dental
+Rate of Malignant Transformation	Tỷ lệ chuyển dạng ác tính	dental
+Recurrence	Tái phát	dental
+Salivary Glands (Major/Minor)	Tuyến nước bọt (Chính/Phụ)	dental
+Scalpel	Dao mổ	dental
+Sialolithiasis	Sỏi tuyến nước bọt	dental
+Specimen Jar	Lọ đựng bệnh phẩm	dental
+Squamous Cell Carcinoma (SCC)	Ung thư biểu mô tế bào vảy	dental
+Staining (H&E)	Nhuộm (H&E)	dental
+Sublingual Area	Vùng dưới lưỡi	dental
+Surgical Excision	Cắt bỏ phẫu thuật	dental
+Symptomatic Treatment	Điều trị triệu chứng	dental
+Tissue Fixation	Cố định mô	dental
+Tissue Processing	Xử lý mô	dental
+Toluidine Blue	Toluidine Blue	dental
+Tonsils	Amiđan	dental
+Tooth Structures (Enamel, Dentin, Pulp, Cementum)	Cấu trúc răng (Men, Ngà, Tủy, Cement)	dental
+Topical Corticosteroids	Corticosteroid bôi tại chỗ	dental
+Vestibule	Tiền đình miệng	dental
+ViziLite/Velscope	Thiết bị sàng lọc ánh sáng	dental
+Dentinal tubule	Ống ngà	dental
+Periodontal ligament	Dây chằng quanh răng	dental
+Canal orifice	Miệng ống tủy	dental
+Patency	Thăm dò	dental
+Shaping	Tạo hình	dental
+Centering ability	Khả năng định tâm	dental
+Canal transportation	Chuyển dịch ống tủy	dental
+Screw-in effect	Hiệu ứng vặn vít	dental
+Cyclic fatigue resistance	Kháng mỏi chu kỳ	dental
+Ledge	Bậc giả	dental
+Straight-line access	Mở lối vào thẳng	dental
+Vertical compaction	Lèn dọc	dental
+Pulp capping	Che tủy	dental
+Selective cutting	Cắt chọn lọc	dental
+Hybrid layer	Lớp lai	dental
+Self-etch	Tự xoi mòn	dental
+Selective-etch	Xoi mòn chọn lọc	dental
+Total-etch	Xoi mòn toàn bộ	dental
+Light-cure	Quang trùng hợp	dental
+Dual-cure	Lưỡng trùng hợp	dental
+Self-cure	Hóa trùng hợp	dental
+Polymerization shrinkage	Co ngót trùng hợp	dental
+Abfraction	Tổn thương hình chêm	dental
+Finish line	Đường hoàn tất	dental
+Rounded shoulder	Bờ vai tròn	dental
+Depth marker	Đánh dấu độ sâu	dental
+Tooth sectioning	Chia cắt răng (chia răng)	dental
+Inferior alveolar canal	Ống răng dưới	dental
+Electronic apex locator	Máy đo chiều dài ống tủy	dental
+Guided bone regeneration	Tái tạo xương có hướng dẫn	dental
+Halfway chucking	Kẹt nửa chừng	dental
+Runout	Rung lắc chuôi	dental
+Working part	Phần cắt	dental
+Friction Grip (FG) shank	Chuôi FG	dental
+Grit color ring	Vòng màu hạt mài	dental
+Max. diameter	Đường kính tối đa	dental
+Overall length (OL)	Chiều dài tổng	dental
+ISO working shape	Mã hình dạng ISO	dental
+Max. allowable speed	Tốc độ tối đa cho phép	dental
+Chamfer	Chamfer	dental
+Shoulder	Bờ vai	dental
+Retention form	Lưu giữ	dental
+Depth orientation groove	Rãnh định hướng độ sâu	dental
+Endodontic access	Mở tủy	dental
+Interproximal reduction (IPR)	Mài kẽ răng	dental
+Contact point	Điểm tiếp xúc	dental
+Air turbine handpiece	Tay khoan turbine	dental
+Contra-angle handpiece	Tay khoan contra-angle	dental
+Premature contact	Điểm chạm sớm	dental
+Axial wall	Thành trục	dental
+JIZAI	JIZAI (giữ nguyên tên)	dental
+Orifice Opener (JIZAI)	Orifice Opener (giữ nguyên)	dental
+Radial land	Vùng đệm	dental
+Cross-section	Thiết diện cắt ngang	dental
+Calcified canal	Ống tủy vôi hoá	dental
+Cutting load	Lực cắt	dental
+Sectioning bur for an impacted tooth	Mũi khoan chia cắt răng ngầm	dental
+Spiral-shaped blades	Lưỡi cắt dạng xoắn	dental
+Cross cutting	Rãnh cắt chéo	dental
+Work length (bur)	Chiều dài làm việc (mũi khoan)	dental
+Diamond burs (DIA-BURS)	Mũi khoan kim cương DIA-BURS	dental
+Carbide burs	Mũi khoan carbide	dental
+MANIFill / MANIBond 7th Gen / MANIShine	Giữ nguyên tên bao bì mới	dental
+Dental suture needle code (RH-18mm)	Mã kim chỉ nha khoa: hình kim + độ cong + chiều dài	dental

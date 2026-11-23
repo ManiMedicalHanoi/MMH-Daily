@@ -42,6 +42,7 @@ KHÔNG commit file nào trong /tmp; KHÔNG dán tên người / khách hàng và
 Không có mạng tới script.google.com ⇒ chạy workflow **MMH Daily** `kind=weekly` (bản mẫu tự động) và báo người dùng.
 
 ## Quy tắc
+- **Bối cảnh MMH cho Claude** (24/11/2026): `context/MMH.md` (hồ sơ ngắn: sản phẩm, chuỗi giá trị, điều gì ảnh hưởng MMH, cách dịch — luôn nằm trong lời dặn chung, được đệm lời nhắc) + `context/glossary.tsv` (≈1.400 thuật ngữ chuẩn Anh – Việt rút từ MMH Library ▸ glossary nhãn khoa / nha khoa + thuật ngữ thầu / BHYT; mỗi lượt chỉ gửi ≤ 60 thuật ngữ có trong tin hôm nay — `edition.mjs ▸ glossaryFor`). Không đưa số liệu nội bộ, tên NPP, giá vào 2 file này (kho công khai). Thuật ngữ trong MMH Library đổi ⇒ dựng lại glossary.tsv.
 - App tên **MMH Daily Podcast**. **Hỏi tin** + **Luyện nói** (`coach/`): app học nói tiếng Anh 3 mức (xem README ▸ Luyện nói). Đổi file trong `coach/` ⇒ tăng `?v=` trong `coach/index.html`; thêm file ⇒ thêm vào bước `cp` của workflow + danh sách đệm `sw.js`.
 - Chỉ sửa `data/` khi làm số báo; sửa code thì theo README.
 - Không đổi lịch (cron) / người dẫn nếu người dùng không yêu cầu.

@@ -56,6 +56,10 @@
           <dl class="st-dl">${s.words.map(w => `<dt>${esc(w.en)}</dt><dd>${esc(w.vi)}</dd>`).join('')}${s.phrases.map(x => `<dt>${esc(x.en)}</dt><dd>${esc(x.vi)}</dd>`).join('')}${s.grammar.map(g => `<dt>${esc(g.p)}</dt><dd>${esc(g.vi)}</dd>`).join('')}</dl></details>
       </section>`;
     },
+    tabs(e) {   // thanh chuyển nhanh đầu trang Nghe: Nghe · Học bài này · Luyện nói · Xếp hạng
+      const s = e.study, ok = s && (s.quiz?.length || s.words?.length);
+      return `<nav class="ls-tabs" aria-label="Chuyển nhanh"><a class="on" href="#/listen/${e.date}">Nghe</a>${ok ? '<button type="button" data-ls2="open">Học bài này</button>' : ''}<a href="coach/#/">Luyện nói</a><a href="#/rank">Xếp hạng</a></nav>`;
+    },
     open(e) { if (e) ed = e; if (!ed?.study) return; L = load(ed.date); if (L.step === 'done') Object.assign(L, { step: 'words', i: 0 }); ov.hidden = false; document.documentElement.classList.add('ls2-on'); render(); }
   };
 
