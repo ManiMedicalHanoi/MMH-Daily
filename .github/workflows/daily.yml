@@ -24,7 +24,7 @@ concurrency: { group: mmh-daily, cancel-in-progress: false }
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 70
     env:
       HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
       HAS_INKEY: ${{ secrets.DAILY_INTERNAL_KEY != '' }}

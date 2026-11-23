@@ -22,8 +22,12 @@ async function geminiJson({ system, user, schema, maxTokens }) {
   const prompt = user + '\n\nReturn ONLY one JSON object that matches this JSON Schema exactly (all required keys, no extra keys):\n' + JSON.stringify(schema);
   let last;
   const t0all = Date.now();
+  /* Gói miễn phí hay bị Google báo "quá tải" (503) vào giờ cao điểm ⇒ hết danh sách mà chỉ toàn 503 thì nghỉ 3 phút, thử lại cả danh sách (tối đa 3 vòng, ~15 phút). */
+  for (let round = 0; round < 3; round++) {
+  if (round) { console.log(`  Gemini: mọi mẫu đang quá tải ⇒ nghỉ 3 phút rồi thử lại (vòng ${round + 1}/3)`); await sleep(180000); }
+  let busyOnly = true;
   for (const model of (await gemList()).slice(0, 10)) {
-    if (Date.now() - t0all > 6 * 60e3) break;
+    if (Date.now() - t0all > 16 * 60e3) break;
     for (let a = 0; a < 2; a++) {
       const t0 = Date.now();
       let r;
@@ -44,10 +48,12 @@ async function geminiJson({ system, user, schema, maxTokens }) {
       last = new Error(`Gemini ${model} ${r.status}${msg ? ': ' + msg : ''}`);
       console.log(`  Gemini ${model} ${r.status}${msg ? ' — ' + msg : ''}`);
       if (r.status === 404 || r.status === 400) break;                                  // mẫu không dùng được ⇒ mẫu khác
-      if (r.status === 429 && /limit: ?0|quota|exceeded|billing/i.test(msg)) break;      // hết / không có hạn mức miễn phí ⇒ đổi mẫu ngay
+      if (r.status === 429 && /limit: ?0|quota|exceeded|billing/i.test(msg)) { busyOnly = false; break; } // hết / không có hạn mức miễn phí ⇒ đổi mẫu ngay
       if ([429, 500, 502, 503, 504].includes(r.status)) { if (a === 0) { await sleep(r.status === 429 ? 15000 : 6000); continue; } break; }
       throw last;
     }
+  }
+  if (!busyOnly) break;
   }
   throw last || new Error('Gemini không trả lời');
 }
