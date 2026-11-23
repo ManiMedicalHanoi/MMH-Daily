@@ -194,6 +194,7 @@
           ${ed.vocab?.length ? `<div style="margin-top:20px">${vocabHtml(ed, true)}</div>` : ''}
         </div>
       </div>
+      ${window.STUDY ? STUDY.html(ed) : ''}
       <h2 class="ls-sh">Các chương trình</h2>
       <div class="shows">${Object.keys(SHOWMETA).map(id => `<div class="show${id === p.show ? ' today' : ''}" style="--show:${showColor(id)}"><div class="cv">${cover({ name: showName(id), color: showColor(id) })}</div><b>${esc(showName(id))}</b><span>${esc(SHOWDESC[id])}</span></div>`).join('')}</div>
     </div>`;

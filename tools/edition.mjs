@@ -257,6 +257,35 @@ society: ${JSON.stringify(pick('society'))}` });
   const { PROVIDER, usedModel } = await import('./ai.mjs');
   ed.writer = PROVIDER || 'claude'; ed.model = usedModel();
   try { await coachWrite(ed, all, SYSTEM); } catch (e) { console.log('Bỏ qua soạn sẵn bài luyện / tóm tắt: ' + e.message); }
+  try { await studyWrite(ed, SYSTEM, AV.vocab); } catch (e) { console.log('Bỏ qua bài học từ podcast: ' + e.message); }
+}
+
+/* Bài học từ podcast (trang Nghe ▸ "Học từ số này"): từ mới, cụm hay / câu móc, ngữ pháp, bài kiểm tra nghe — gắn với lượt lời để bấm nghe lại. */
+async function studyWrite(ed, SYSTEM, avoid) {
+  const { askJson, S: J } = await import('./ai.mjs');
+  const T = ed.podcast.turns, I = { type: 'integer' };
+  const script = T.map((t, i) => `${i}. ${t.sp}: ${t.text}`).join('\n');
+  const out = await askJson({ system: SYSTEM, effort: 'low', maxTokens: 24000, schema: J.obj({
+      words: J.arr(J.obj({ en: J.str, vi: J.str, ex: J.str, turn: I })),
+      phrases: J.arr(J.obj({ en: J.str, vi: J.str, use: J.str, turn: I })),
+      grammar: J.arr(J.obj({ p: J.str, vi: J.str, ex: J.str, turn: I })),
+      quiz: J.arr(J.obj({ kind: { type: 'string', enum: ['gist', 'detail', 'vocab', 'inference'] }, q: J.str, opts: J.arr(J.str), a: I, why: J.str, turn: I })) }),
+    user: `Build a listening lesson from today's MMH Daily podcast script for a B1 learner (MMH product & sales manager). Use ONLY what is in the script; "turn" = the line number where it is heard.
+words: 12 useful new words or terms from the script (work + health + business), not already taught recently: ${[...(ed.vocab || []).map(v => v.en), ...(avoid || [])].join(', ') || 'none'}.
+  vi = short Vietnamese meaning; ex = the exact sentence from the script that contains it.
+phrases: 6 natural chunks worth copying — hooks, collocations, everyday idioms, ways to react or hand over (e.g. "Here's the thing", "keep an eye on"). vi = meaning; use = one short Vietnamese tip on when to use it at work.
+grammar: 3 patterns used in the script (conditionals, passive, "as long as", reported speech…). p = the pattern, vi = one-sentence Vietnamese explanation, ex = the script sentence.
+quiz: 8 listening questions in English, in script order: 2 gist, 4 detail, 1 vocab-in-context, 1 inference. opts = 4 short options, exactly one correct, a = index of the correct option (0-3); vary the position of the answer.
+  why = one Vietnamese sentence explaining the answer.
+
+Script:
+${script}` });
+  const n = T.length, ok = x => Number.isInteger(x.turn) && x.turn >= 0 && x.turn < n;
+  ed.study = {
+    words: out.words.filter(ok).slice(0, 14), phrases: out.phrases.filter(ok).slice(0, 8), grammar: out.grammar.filter(ok).slice(0, 4),
+    quiz: out.quiz.filter(q => ok(q) && q.opts.length === 4 && q.a >= 0 && q.a < 4).slice(0, 10)
+  };
+  console.log(`Bài học từ podcast: ${ed.study.words.length} từ · ${ed.study.phrases.length} cụm · ${ed.study.grammar.length} ngữ pháp · ${ed.study.quiz.length} câu hỏi nghe`);
 }
 
 /* Soạn sẵn cho app (để mở ra là dùng ngay, không phải chờ AI trên điện thoại):

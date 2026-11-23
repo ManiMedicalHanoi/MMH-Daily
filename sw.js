@@ -1,7 +1,7 @@
 // MMH Daily — service worker: trang + dữ liệu lấy mạng trước (mất mạng ⇒ bản lưu); MP3 không lưu ở đây (trình duyệt tự đệm).
 // Gỡ khẩn cấp: thay toàn bộ file bằng: self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.registration.unregister()));
-const V = 'mmh-daily-v5';
-self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(V).then(c => c.addAll(['./', 'index.html', 'app.css', 'app.js', 'install.js', 'update.js', 'learn.js', 'guide.js', 'manifest.webmanifest', 'coach/', 'coach/index.html', 'coach/coach.css', 'coach/coach.js', 'coach/lessons.js', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png']).catch(() => {}))); });
+const V = 'mmh-daily-v6';
+self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(V).then(c => c.addAll(['./', 'index.html', 'app.css', 'app.js', 'install.js', 'update.js', 'learn.js', 'study.js', 'guide.js', 'manifest.webmanifest', 'coach/', 'coach/index.html', 'coach/coach.css', 'coach/coach.js', 'coach/lessons.js', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png']).catch(() => {}))); });
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {
   const u = new URL(e.request.url);

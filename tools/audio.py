@@ -3,7 +3,7 @@
 
 Giọng: edge-tts (giọng neural Microsoft, miễn phí). Lỗi ⇒ thử lại; hỏng hẳn ⇒ Piper (offline) nếu đã cài.
 Có secret ELEVENLABS_API_KEY ⇒ mặc định giọng ElevenLabs (DAILY_VOICE=edge để ép giọng miễn phí), bộ giọng theo DAILY_VOICES (config.json ▸ voice.presets).
-Mẫu eleven_v3 (config.json ▸ voice.model) đọc cả thẻ cảm xúc trong turns[i].say ([curious], [chuckles]…); phụ đề + giọng miễn phí dùng turns[i].text (không thẻ).
+Mẫu eleven_v4_turbo / v4 / v3 (config.json ▸ voice.model) đọc cả thẻ cảm xúc trong turns[i].say ([curious], [chuckles]…); phụ đề + giọng miễn phí dùng turns[i].text (không thẻ).
 ElevenLabs lỗi / hết credit giữa chừng ⇒ cả số quay về edge-tts (không trộn giọng).
 Nhạc hiệu mở / kết tự tạo bằng ffmpeg (hợp âm khác nhau theo chương trình). Âm lượng chuẩn -16 LUFS, MP3 mono 64 kbps.
 Ghi lại mốc thời gian từng lượt lời (turns[i].t) để app chạy phụ đề theo giọng đọc.
@@ -22,6 +22,7 @@ CHORDS = {  # nhạc hiệu: nốt gốc (Hz) theo chương trình
     'thisweek': [349.2, 440.0, 523.3, 659.3], 'notes': [261.6, 311.1, 392.0], 'roundup': [293.7, 370.0, 440.0, 587.3], 'desk': [329.6, 392.0, 493.9],
 }
 PIPER = {'A': 'en_US-lessac-medium', 'B': 'en_GB-alan-medium'}
+TAGGED = {'eleven_v3', 'eleven_v4', 'eleven_v4_turbo'}   # mẫu đọc được thẻ cảm xúc [curious]…
 FEMALE = {'Ava', 'Emma', 'Jenny', 'Michelle', 'Libby', 'Sonia', 'Natasha', 'Aria', 'Sara', 'Clara', 'Jane', 'Nancy', 'Maisie', 'Hollie', 'Ana'}
 
 
@@ -43,7 +44,7 @@ def eleven_voices(hosts):
 
 def tts_eleven(text, voice_id, out, model, prev_text='', next_text=''):
     import urllib.request, urllib.error
-    if model == 'eleven_v3':                          # v3: cảm xúc theo thẻ trong lời; 0.5 = "Natural" (thấp hơn = biểu cảm hơn, dễ lệch)
+    if model in TAGGED:                               # v3 / v4: cảm xúc theo thẻ trong lời; 0.5 = "Natural" (thấp hơn = biểu cảm hơn, dễ lệch)
         body = {'text': text, 'model_id': model, 'voice_settings': {'stability': 0.5, 'similarity_boost': 0.8}}
     else:
         body = {'text': text, 'model_id': model, 'previous_text': prev_text[-600:], 'next_text': next_text[:600],
@@ -146,7 +147,7 @@ async def main():
     if os.environ.get('DAILY_VOICE') == 'eleven' and os.environ.get('ELEVENLABS_API_KEY'):
         ev, model = eleven_voices(pod['hosts'])
         def line(t):                                  # lời đưa cho ElevenLabs: v3 có thẻ cảm xúc; câu Listen & Repeat đọc chậm, rõ
-            if model == 'eleven_v3':
+            if model in TAGGED:
                 return ('[slowly, clearly] ' + t['text']) if t.get('rep') else (t.get('say') or t['text'])
             return t['text']
         chars = sum(len(line(t)) for t in turns)
