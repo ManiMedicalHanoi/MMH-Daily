@@ -16,7 +16,7 @@ Phiên do app mở có khối `<routine-fire-payload>` chứa JSON `{kind, sourc
    `data/requests/daily.json` = `{"at":"<giờ hiện tại ISO>","sources":"…","topics":"…","show":""}`, commit + `git push origin HEAD:main` (GitHub tự gom tin, dựng số).
    Chờ xong (≈ 5 phút): lặp `git pull` tới khi `data/index.json ▸ updated` mới hơn lúc bắt đầu.
 2. `node tools/brief.mjs` ⇒ đọc chương trình hôm nay (người dẫn, kiểu: solo / duo / qa / desk / deep) + danh sách tin.
-3. Đọc **WRITING.md** (chọn tin theo mức ảnh hưởng tới MMH + giọng nói tự nhiên). Viết file `/tmp/out.json` theo đúng mẫu ở đầu `tools/apply.mjs`:
+3. Đọc **WRITING.md** + **PODCAST.md** (kiểu chương trình theo nội dung, ngôn ngữ B1, phần học tiếng Anh, chống lặp) (chọn tin theo mức ảnh hưởng tới MMH + giọng nói tự nhiên). Viết file `/tmp/out.json` theo đúng mẫu ở đầu `tools/apply.mjs`:
    - **Mọi** tin trong brief: tiêu đề Anh + Việt, 1 dòng dẫn tiếng Anh, tóm tắt 2–3 câu Việt + Anh. KHÔNG cần "vì sao quan trọng" (người dùng bỏ — để `why_vi` trống).
    - Lời biên tập 60–90 từ (Anh + Việt); phân tích y tế 180–240 từ (Anh + Việt); 8 từ vựng có trong kịch bản.
    - Kịch bản podcast 1.200–1.500 từ (8–10 phút), đúng người dẫn / kiểu chương trình; tin ảnh hưởng tới MMH trước và sâu nhất, tin chung chỉ điểm nhanh cuối chương trình; nói tự nhiên (rút gọn, câu ngắn, phản ứng,

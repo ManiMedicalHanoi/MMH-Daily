@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DAY, vnDay, iso } from './lib.mjs';
-import { SHOWS, showFor, GLOSSARY } from './shows.mjs';
+import { SHOWS, showFor, pickShow, HOW, LEARN, learnFor, GLOSSARY } from './shows.mjs';
 import { translateStories, translate } from './translate.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -201,8 +201,9 @@ async function claudeWrite(ed, picked) {
   const all = [...new Map(Object.values(picked.sections).flat().concat(picked.docs, deskX).map(x => [x.id, x])).values()];
   const list = all.map(x => ({ id: x.id, sec: x.sec, tags: x.tags, lang: x.lang, source: x.src, date: x.d.slice(0, 10), title: x.t, summary: (x.sum || '').slice(0, 450) }));
   const prev = (readJson(path.join(ROOT, 'data', 'index.json'), { editions: [] }).editions || []).slice(0, 5).map(e => `${e.date}: ${e.show} — ${e.lead}`);
-  const SYSTEM = `You are the editor of MMH Daily, a morning news app for staff of MANI Medical Hanoi (MMH). Follow this house guide exactly
-(it is in Vietnamese; write stories and scripts in English with Vietnamese where asked):\n\n${fs.readFileSync(path.join(ROOT, 'WRITING.md'), 'utf8')}`;
+  const AV = historyAvoid(readJson(HIST_F, []));
+  const SYSTEM = `You are the editor of MMH Daily Podcast, a morning news podcast for staff of MANI Medical Hanoi (MMH) who are learning English (level B1). Follow these house guides exactly
+(they are in Vietnamese; write stories and scripts in English with Vietnamese where asked):\n\n${fs.readFileSync(path.join(ROOT, 'WRITING.md'), 'utf8')}\n\n${fs.readFileSync(path.join(ROOT, 'PODCAST.md'), 'utf8')}`;
   // 1. tin song ngữ
   const st = await askJson({ system: SYSTEM, effort: 'low', schema: J.obj({ stories: J.arr(J.obj({ id: J.str, h_en: J.str, h_vi: J.str, dek_en: J.str, s_vi: J.str, s_en: J.str, why_vi: J.str })) }),
     user: `For EVERY story below write: h_en (sharp English headline), h_vi (Vietnamese headline), dek_en (one-line English standfirst),
@@ -216,18 +217,23 @@ customer or tender step; empty string if nothing useful).\n\nStories (JSON):\n${
   const hosts = show.hosts.map(h => `${h.id} = ${h.name} (${h.role})`).join('; ');
   const out = await askJson({ system: SYSTEM, effort: 'medium',
     schema: J.obj({ note: J.obj({ en: J.str, vi: J.str }), health: J.obj({ en: J.str, vi: J.str }), vocab: J.arr(J.obj({ en: J.str, vi: J.str, ex: J.str })),
-      podcast: J.obj({ title: J.str, desc: J.str, turns: J.arr(J.obj({ sp: { type: 'string', enum: show.hosts.map(h => h.id) }, text: J.str, vi: J.str })) }) }),
+      podcast: J.obj({ title: J.str, desc: J.str, turns: J.arr(J.obj({ sp: { type: 'string', enum: show.hosts.map(h => h.id) }, text: J.str, vi: J.str, rep: { type: 'boolean' } })) }) }),
     user: `Date: ${dateEn(DATE)} (${DATE}). Today's show: "${show.name}" — ${show.desc} Format: ${show.style}. Hosts: ${hosts}.
 Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'none'}.
 1. note: editor's note (60–90 words) in English and Vietnamese.
 2. health: analysis for MMH (180–240 words) in English and Vietnamese: dental, eye care, tenders, devices, insurance, market — what changed, who is affected, what MMH should watch.
-3. vocab: 8 useful English terms used in the script, with Vietnamese meaning and a short example from the script.
-4. podcast: title, one-line desc, and turns for a 1,200–1,500 word script (about 8–10 minutes). Listener priorities, in this order: (1) the hottest, most-read health news;
+3. vocab: 8 useful English terms used in the script, with Vietnamese meaning and a short example from the script. Do NOT reuse these terms taught in the last 14 days: ${AV.vocab.join(', ') || 'none'}.
+4. podcast: title, one-line desc, and turns for a 1,100–1,400 word script (about 8–10 minutes at a relaxed pace). Listener priorities, in this order: (1) the hottest, most-read health news;
    (2) new laws, decrees and circulars on medical-device tenders and procurement, health insurance and hospitals; (3) treatment trends in ophthalmology and dentistry;
    (4) news from hospitals and medical societies. Stories that touch MMH's business come first and deepest, each with a concrete 'what this means for us';
    general economy / politics / society only one or two sentences at the end, skip them if nothing matters for MMH. No entertainment or celebrity news. ${show.style === 'solo' ? 'One anchor only.' : show.style === 'qa' ? 'A asks short listener-style questions; B answers.' : show.style === 'desk' ? 'B is the health correspondent and carries health in depth; A wraps up other news briefly.' : show.style === 'deep' ? 'Spend half the show explaining the lead story step by step, then a quick round-up.' : 'Two hosts in real conversation.'}
+   HOW TO PRESENT TODAY'S SHOW: ${HOW[ed.podcast.show] || ''}
+   LEARNING SEGMENT (60–90 seconds, near the end): ${LEARN[ed.podcast.learn]}
+   LANGUAGE FOR B1 LEARNERS: average 10–14 words per sentence, max about 18; everyday words; explain any industry term in plain words the first time; paraphrase each story's key point once; no hard idioms.
+   VARIETY: the opening line, the hand-offs and the sign-off must be different from recent episodes. Recent openings: ${AV.opens.map(o => '"' + o + '"').join(' | ') || 'none'}.
+   Recent sign-offs: ${AV.closes.map(o => '"' + o + '"').join(' | ') || 'none'}. Avoid these phrases that were overused recently: ${AV.phrases.join('; ') || 'none'}.
    Sound like real people talking, not reading: contractions, short sentences, natural reactions and hand-offs, a light personal touch; numbers written to be spoken;
-   no URLs or lists. Never sound cheerful about accidents or deaths. For every turn also give "vi": a natural Vietnamese subtitle of that turn.
+   no URLs or lists. Never sound cheerful about accidents or deaths. For every turn also give "vi": a natural Vietnamese subtitle of that turn, and "rep": true only for Listen & Repeat sentences (else false).
 
 Stories — health: ${JSON.stringify(pick('health'))}
 economy: ${JSON.stringify(pick('economy'))}
@@ -235,7 +241,7 @@ politics: ${JSON.stringify(pick('politics'))}
 society: ${JSON.stringify(pick('society'))}` });
   ed.note = out.note; ed.healthDesk.analysis = out.health; ed.vocab = out.vocab;
   ed.podcast.title = out.podcast.title; ed.podcast.desc = out.podcast.desc;
-  ed.podcast.turns = out.podcast.turns.map(t => ({ sp: t.sp, text: speech(t.text), vi: t.vi }));
+  ed.podcast.turns = out.podcast.turns.map(t => Object.assign({ sp: t.sp, text: speech(t.text), vi: t.vi }, t.rep ? { rep: true } : {}));
   const { PROVIDER, usedModel } = await import('./ai.mjs');
   ed.writer = PROVIDER || 'claude'; ed.model = usedModel();
   try { await coachWrite(ed, all, SYSTEM); } catch (e) { console.log('Bỏ qua soạn sẵn bài luyện / tóm tắt: ' + e.message); }
@@ -282,6 +288,18 @@ Stories (JSON): ${JSON.stringify(list)}` });
   console.log(`Soạn sẵn: ${Object.keys(ed.coach.lessons).length} bài luyện nói · ${ed.coach.briefs.length} bản tóm tắt chủ đề`);
 }
 
+/* Lịch sử 30 ngày (chống lặp kiểu chương trình, câu mở / kết, cụm từ cửa miệng, từ vựng) — data/history.json */
+const HIST_F = path.join(ROOT, 'data', 'history.json');
+const STOPW = new Set('the a an and or but of to in on at for with is are was were be been it its this that these those we you they i he she our your their so as by from about just really yeah okay right well'.split(' '));
+const grams = text => { const w = String(text).toLowerCase().replace(/[^a-z' ]+/g, ' ').split(/\s+/).filter(Boolean); const out = new Set();
+  for (let n = 3; n <= 4; n++) for (let i = 0; i + n <= w.length; i++) { const g = w.slice(i, i + n); if (g.filter(x => !STOPW.has(x)).length >= 1) out.add(g.join(' ')); } return [...out]; };
+function historyAvoid(hist) {
+  const recent = hist.slice(0, 6), cnt = new Map();
+  recent.forEach(h => (h.grams || []).forEach(g => cnt.set(g, (cnt.get(g) || 0) + 1)));
+  const phrases = [...cnt].filter(([, c]) => c >= 2).sort((a, b) => b[1] - a[1]).map(([g]) => g).slice(0, 40);
+  return { opens: recent.map(h => h.open).filter(Boolean), closes: recent.map(h => h.close).filter(Boolean), phrases,
+    vocab: [...new Set(hist.slice(0, 14).flatMap(h => h.vocab || []))].slice(0, 120) };
+}
 const KEEP_EDITIONS = +(process.env.DAILY_KEEP || 7);   // chỉ giữ 7 số / podcast gần nhất
 const slim = x => x && ({ id: x.id, t: x.t, u: x.u, src: x.src, d: x.d, lang: x.lang, sec: x.sec, tags: x.tags, mmh: x.mmh, docs: x.docs, img: x.img, also: x.also, kind: x.kind,
   sum: x.sum, h_en: x.h_en, h_vi: x.h_vi, dek: x.dek, s_vi: x.s_vi, s_en: x.s_en, why: x.why, mt: x.mt });
@@ -290,14 +308,15 @@ async function main() {
   const pool = readJson(path.join(ROOT, 'data', 'pool.json'), null);
   if (!pool) throw new Error('Chưa có data/pool.json — chạy collect.mjs trước');
   const picked = pick(pool);
-  let showId = process.env.DAILY_SHOW || showFor(DATE);
+  const HIST = readJson(HIST_F, []).filter(h => h.date !== DATE);
+  let showId = (process.env.DAILY_SHOW && SHOWS[process.env.DAILY_SHOW]) ? process.env.DAILY_SHOW : pickShow(DATE, picked, HIST);
   const useAI = !!(process.env.ANTHROPIC_API_KEY || process.env.GEMINI_API_KEY);
   const index = readJson(path.join(ROOT, 'data', 'index.json'), { editions: [] });
   const no = (index.editions.find(e => e.date === DATE)?.no) || (index.editions.length ? Math.max(...index.editions.map(e => e.no || 0)) + 1 : 1);
   const ed = {
     date: DATE, no, updated: iso(NOW), writer: '',
     lead: picked.lead?.id, sections: {}, healthDesk: { groups: picked.desk, order: Object.keys(DESK) }, docs: picked.docs.map(x => x.id),
-    podcast: { show: showId, name: SHOWS[showId].name, hosts: SHOWS[showId].hosts, color: SHOWS[showId].color },
+    podcast: { show: showId, name: SHOWS[showId].name, hosts: SHOWS[showId].hosts, color: SHOWS[showId].color, rate: SHOWS[showId].rate || '-5%', learn: learnFor(DATE) },
     filter: (FILTER.sources.length || FILTER.topics.length) ? { sources: FILTER.sources, topics: FILTER.topics, by: process.env.DAILY_BY || '' } : undefined,
     stories: {}, sources: pool.status.map(s => ({ id: s.id, lang: s.lang, ok: !!s.ok, kept: s.kept })),
   };
@@ -341,6 +360,10 @@ async function main() {
   for (const f of fs.readdirSync(ED_DIR)) { const d = f.replace(/\.json$/, ''); if (/^\d{4}-\d{2}-\d{2}$/.test(d) && !keepDates.has(d)) fs.unlinkSync(path.join(ED_DIR, f)); }
   index.updated = iso(NOW);
   fs.writeFileSync(path.join(ROOT, 'data', 'index.json'), JSON.stringify(index));
+  const T = ed.podcast.turns, all = T.map(t => t.text).join(' ');
+  const hrow = { date: DATE, show: showId, writer: ed.writer, open: (T[0]?.text || '').slice(0, 140), close: (T[T.length - 1]?.text || '').slice(0, 140),
+    vocab: (ed.vocab || []).map(v => v.en), grams: grams(all).slice(0, 700) };
+  fs.writeFileSync(HIST_F, JSON.stringify([hrow, ...HIST].slice(0, 30)));
   console.log(`Số ${no} · ${DATE} · ${SHOWS[showId].name} · viết bằng ${ed.writer} · ${words} từ · ${Object.keys(ed.stories).length} tin`);
 }
 main().catch(e => { console.error(e); process.exit(1); });

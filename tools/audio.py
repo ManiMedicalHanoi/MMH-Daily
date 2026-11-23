@@ -17,6 +17,7 @@ SR = 24000
 CHORDS = {  # nhạc hiệu: nốt gốc (Hz) theo chương trình
     'briefing': [392.0, 493.9, 587.3], 'twotakes': [349.2, 440.0, 523.3], 'healthdesk': [329.6, 415.3, 493.9],
     'markets': [293.7, 370.0, 440.0], 'editor': [261.6, 329.6, 392.0], 'explainer': [440.0, 523.3, 659.3], 'weekly': [311.1, 392.0, 466.2],
+    'notes': [261.6, 311.1, 392.0], 'clinic': [369.99, 440.0, 554.4], 'story': [220.0, 277.2, 329.6], 'quickfive': [440.0, 554.4, 659.3],
     'thisweek': [349.2, 440.0, 523.3, 659.3], 'notes': [261.6, 311.1, 392.0], 'roundup': [293.7, 370.0, 440.0, 587.3], 'desk': [329.6, 392.0, 493.9],
 }
 PIPER = {'A': 'en_US-lessac-medium', 'B': 'en_GB-alan-medium'}
@@ -127,7 +128,8 @@ async def main():
 
     # 1. giọng đọc từng lượt (song song 4 lượt)
     sem = asyncio.Semaphore(4)
-    rate = os.environ.get('DAILY_RATE', '+0%')
+    rate = os.environ.get('DAILY_RATE') or pod.get('rate') or '-5%'   # nhịp vừa phải cho người học B1 (PODCAST.md)
+    REP_RATE = '-22%'                                                 # câu Listen & Repeat: chậm hơn
     engine = {'edge': 0, 'piper': 0, 'fail': 0, 'eleven': 0}
     turns = pod['turns']
     files = None
@@ -163,7 +165,7 @@ async def main():
     async def one(i, turn):
         mp3 = tmp / f't{i:03d}.mp3'
         async with sem:
-            ok = await tts_edge(turn['text'], voices.get(turn['sp'], list(voices.values())[0]), mp3, rate)
+            ok = await tts_edge(turn['text'], voices.get(turn['sp'], list(voices.values())[0]), mp3, REP_RATE if turn.get('rep') else rate)
         if ok:
             engine['edge'] += 1
             return mp3
@@ -186,8 +188,9 @@ async def main():
     jingle(intro, notes, 3.2)
     jingle(outro, notes, 2.6, rev=True)
     gaps = {k: tmp / f'gap{k}.wav' for k in ('s', 'm')}
-    silence(gaps['s'], 0.35)
-    silence(gaps['m'], 0.6)
+    silence(gaps['s'], 0.45)
+    silence(gaps['m'], 0.7)
+    gaps['r'] = tmp / 'gapr.wav'; silence(gaps['r'], 2.6)   # khoảng lặng sau câu Listen & Repeat để người nghe nói theo
     seq, t = [], 0.0
     seq.append(intro); t += dur(intro)
     prev = None
@@ -203,6 +206,8 @@ async def main():
             seq.append(g); t += dur(g)
         turn['t'] = round(t, 2)
         seq.append(wav); t += dur(wav)
+        if turn.get('rep'):
+            seq.append(gaps['r']); t += dur(gaps['r'])
         prev = turn['sp']
     seq.append(gaps['m']); seq.append(outro)
 

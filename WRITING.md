@@ -1,4 +1,6 @@
-# MMH Daily — cách viết (Claude đọc trước khi viết số báo / bản tin nội bộ)
+# MMH Daily — cách viết (AI đọc trước khi viết số báo)
+
+> Kiểu chương trình, ngôn ngữ cho người học B1, phần học tiếng Anh, chống lặp: xem **PODCAST.md**.
 
 Người nghe: nhân sự MMH (MANI Medical Hanoi). MMH nhập khẩu và phân phối sản phẩm của MANI (Nhật) và MMG (Đức):
 **nha khoa** (trâm nội nha JIZAI, mũi khoan DIA-BURS, vật liệu MMG), **nhãn khoa** (dao mổ, chỉ khâu nhãn khoa, móc, kẹp vi phẫu),

@@ -75,3 +75,9 @@ Secret **`GEMINI_API_KEY`** (Settings ▸ Secrets and variables ▸ Actions; key
 `ed.coach.lessons` (bài luyện nói 3 mức cho 4 tin liên quan MMH nhất) và `ed.coach.briefs` (tóm tắt: đấu thầu & thiết bị · văn bản pháp quy · nhãn khoa · nha khoa · bệnh viện · PESTEL)
 ⇒ app mở là dùng, không gọi Gemini trên điện thoại. Podcast ưu tiên: tin y tế đọc nhiều (VnExpress tin xem nhiều) · văn bản đấu thầu / thiết bị · xu hướng nhãn khoa, nha khoa · bệnh viện, hội y học.
 Chỉ giữ **7 số / podcast gần nhất** (`DAILY_KEEP`), Releases `ep-*` cũ hơn tự xoá.
+
+## Podcast đa dạng (từ 23/11/2026, `PODCAST.md` = quy tắc trình bày)
+11 chương trình (thêm Morning Notes · Clinic Notes · One Story · Quick Five). `tools/shows.mjs ▸ pickShow` chọn theo nội dung trong ngày (văn bản pháp quy ⇒ Explainer / Ask the Editor,
+nhãn khoa + nha khoa ⇒ Clinic Notes, một tin vượt trội ⇒ One Story, nhiều tin ngắn ⇒ Quick Five / Two Takes…), không trùng 3 ngày gần nhất, đổi kiểu giọng (nam / nữ / hai người) so với hôm qua.
+Mỗi số có 1 phần học (Word Spotlight · Phrase for Work · Listen & Repeat · Quick Quiz, xoay theo ngày). `data/history.json` (30 ngày) ⇒ AI tránh câu mở / kết, cụm từ lặp, từ vựng 14 ngày.
+Giọng: tốc độ theo chương trình (−4% → −7%), câu `rep: true` đọc −22% + 2,6 giây lặng để nói theo.
