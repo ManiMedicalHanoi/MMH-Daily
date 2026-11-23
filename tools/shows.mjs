@@ -2,6 +2,54 @@
 // Giọng: Microsoft Edge neural (edge-tts, miễn phí). Mỗi chương trình có người dẫn riêng ⇒ nghe là nhận ra.
 
 export const SHOWS = {
+  /* ── 5 SERIES CỐ ĐỊNH (23/11/2026, người dùng duyệt) — nhân vật, tính cách, giọng không đổi giữa các số; xem PODCAST.md ▸ 7 ── */
+  talk: {
+    name: 'MMH Talk', vi: 'Trò chuyện MMH', style: 'duo', mode: 'duo', rate: '-4%', series: true,
+    desc: 'Emma and Daniel talk through the stories that matter most for MMH this week.',
+    hosts: [
+      { id: 'A', name: 'Emma', voice: 'en-US-EmmaMultilingualNeural', el: 'hpp4J3VqNfWAUOO0d1Us', role: 'Host',
+        bio: 'Emma, the main host. Curious, warm, asks the questions a busy sales person would ask; likes concrete examples; laughs easily but never at bad news.' },
+      { id: 'B', name: 'Daniel', voice: 'en-US-BrianMultilingualNeural', el: 'iP95p4xoKVk53GoZ742B', role: 'Co-host',
+        bio: 'Daniel, co-host. Used to work in hospital procurement before joining the industry side; calm, a little sceptical, explains how tenders and hospital budgets really work; pushes back politely, then finds common ground.' }],
+    color: '#1F5E8C',
+  },
+  clinicroom: {
+    name: 'The Clinic Room', vi: 'Phòng khám', style: 'duo', mode: 'duo', rate: '-6%', series: true,
+    desc: 'Dr. Sarah explains eye care and dentistry — conditions, techniques, instruments — while Minh asks the questions.',
+    hosts: [
+      { id: 'A', name: 'Sarah', voice: 'en-GB-SoniaNeural', el: 'Xb7hH8MSUJpSbSDYk0k2', role: 'Clinical educator',
+        bio: 'Dr. Sarah, a British clinician who teaches ophthalmology and dentistry workshops. Clear, patient, uses simple images ("think of the cornea as a window"); always explains which step of the procedure an instrument is used in.' },
+      { id: 'B', name: 'Minh', voice: 'en-US-AndrewMultilingualNeural', el: 'bIHbv24MWmeRgasZH58o', role: 'Sales rep, learning',
+        bio: 'Minh, a young MMH sales rep who visits eye and dental clinics. Friendly, honest about what he does not know, asks the questions a B1 listener would ask, connects the answer to what doctors tell him on visits.' }],
+    color: '#2E7D8C',
+  },
+  lawdesk: {
+    name: 'Law & Tender Desk', vi: 'Bàn luật & thầu', style: 'solo', mode: 'm', rate: '-7%', series: true,
+    desc: 'Thomas walks through new laws, decrees and tender rules — what changed, who is affected, from when, what MMH should do.',
+    hosts: [
+      { id: 'A', name: 'Thomas', voice: 'en-GB-ThomasNeural', el: 'JBFqnCBsd6RMkjVDRZzb', role: 'Legal explainer',
+        bio: 'Thomas, a calm British legal explainer. Speaks slowly and precisely, numbers his points ("First… Second…"), translates legal language into plain English, ends each item with one practical step for MMH.' }],
+    color: '#5B3F8C',
+  },
+  headlines: {
+    name: 'Morning Headlines', vi: 'Thời sự buổi sáng', style: 'solo', mode: 'm', rate: '-5%', series: true,
+    desc: 'Andrew, news anchor: the hottest economy, politics, society and health headlines — and what each means for MMH.',
+    hosts: [
+      { id: 'A', name: 'Andrew', voice: 'en-GB-RyanNeural', el: 'onwK4e9ZLuTAKqWW03F9', role: 'News anchor',
+        bio: 'Andrew, a steady broadcast anchor. Crisp, confident, slightly faster pace; short punchy sentences; every headline gets a one-line "for MMH, this means…".' }],
+    color: '#A23B3B',
+  },
+  english: {
+    name: 'English at Work', vi: 'Tiếng Anh công sở', style: 'duo', mode: 'duo', rate: '-7%', series: true,
+    desc: 'Saturday class: Ms. Olivia and Minh review the week\'s words and phrases and role-play real MMH situations.',
+    hosts: [
+      { id: 'A', name: 'Olivia', voice: 'en-US-AvaMultilingualNeural', el: 'XrExE9yKIg1WjnnlVkGX', role: 'English teacher',
+        bio: 'Ms. Olivia, an English teacher for business people. Encouraging, structured, corrects gently ("Nice try — we usually say…"), gives the learner time to answer.' },
+      { id: 'B', name: 'Minh', voice: 'en-US-AndrewMultilingualNeural', el: 'bIHbv24MWmeRgasZH58o', role: 'Learner (MMH sales rep)',
+        bio: 'Minh, the same young MMH sales rep from The Clinic Room, now as the student; makes the typical small mistakes of a Vietnamese B1 speaker and improves during the lesson.' }],
+    color: '#8A5A00',
+  },
+  /* ── các chương trình cũ: giữ để mở lại số cũ (không còn trong lịch) ── */
   briefing: {
     mode: 'm', rate: '-6%',
     name: 'The Morning Briefing', vi: 'Bản tin sáng', style: 'solo',
@@ -70,10 +118,12 @@ export const SHOWS = {
     color: '#C0582B',
   },
   weekly: {
-    mode: 'duo', rate: '-5%',
+    mode: 'duo', rate: '-5%', series: true,
     name: 'Week in Review', vi: 'Nhìn lại tuần', style: 'duo',
-    desc: 'Sunday edition: the week that was in health, the economy, politics and society.',
-    hosts: [{ id: 'A', name: 'Natasha', voice: 'en-AU-NatashaNeural', role: 'Host' }, { id: 'B', name: 'William', voice: 'en-AU-WilliamMultilingualNeural', role: 'Co-host' }],
+    desc: 'Sunday: Emma and Daniel (MMH Talk) connect the week\'s stories and say what to watch next week.',
+    hosts: [
+      { id: 'A', name: 'Emma', voice: 'en-US-EmmaMultilingualNeural', el: 'hpp4J3VqNfWAUOO0d1Us', role: 'Host', bio: 'Emma from MMH Talk (same personality).' },
+      { id: 'B', name: 'Daniel', voice: 'en-US-BrianMultilingualNeural', el: 'iP95p4xoKVk53GoZ742B', role: 'Co-host', bio: 'Daniel from MMH Talk (same personality).' }],
     color: '#3D5A3D',
   },
 };
@@ -90,10 +140,17 @@ export const SHOWS_INTERNAL = {
     hosts: [{ id: 'A', name: 'Andrew', voice: 'en-US-AndrewMultilingualNeural', role: 'Host' }], color: '#1F4E79' },
 };
 
-const ROTATION = ['briefing', 'notes', 'healthdesk', 'twotakes', 'clinic', 'quickfive', 'editor', 'explainer', 'story'];
-const DAILY_SHOWS = [...ROTATION, 'markets'];
+/* Lịch tuần (0 = CN): T2, T5 MMH Talk · T3 The Clinic Room · T4 Law & Tender Desk · T6 Morning Headlines · T7 English at Work · CN Week in Review. */
+export const SCHEDULE = ['weekly', 'talk', 'clinicroom', 'lawdesk', 'talk', 'headlines', 'english'];
+const ROTATION = ['talk', 'clinicroom', 'lawdesk', 'headlines'];
+const DAILY_SHOWS = [...ROTATION];
 /* Cách trình bày từng chương trình (đưa vào lời dặn AI). */
 export const HOW = {
+  talk: 'MMH Talk: Emma and Daniel in a real conversation about the 2–3 stories that matter most for MMH, then a quick round of 2–3 shorter items. Emma asks, Daniel brings the hospital-procurement view; they may disagree a little, then agree on what it means for MMH.',
+  clinicroom: 'The Clinic Room: a teaching episode on eye care or dentistry built on today\'s clinical / hospital stories (or, if few, one condition or procedure linked to the news). Dr. Sarah explains the condition, the procedure step by step and where instruments are used (ophthalmic knives, sutures, micro forceps, trabeculotomy hook, endo files, diamond burs, composites); Minh asks plain questions and says what he hears from doctors. Other news: at most two sentences at the end.',
+  lawdesk: 'Law & Tender Desk: Thomas alone. For each legal item (law, decree, circular, tender rule, insurance price list): 1) what changed, 2) who is affected, 3) from when, 4) one practical step for MMH. Explain every legal term in plain English. If there are few legal items, explain one in depth and add the most relevant tender / hospital-procurement news.',
+  headlines: 'Morning Headlines: Andrew alone, broadcast style. 5–7 headlines across health, economy, policy and society — only those with a link to MMH — each 3–5 sentences ending with "for MMH, this means…" (vary the wording). Lead with the most important one.',
+  english: 'English at Work (Saturday class): NOT a news show. Ms. Olivia teaches Minh using words, phrases and grammar from THIS WEEK\'s episodes (list given) plus one or two of this week\'s MMH stories as context: warm-up recap, 3 phrase drills, one role-play of a real MMH situation (calling a hospital, a distributor meeting, a tender email), quick quiz. Minh makes typical B1 mistakes; Olivia corrects gently. Mark 3–5 drill sentences for the listener with rep=true.',
   briefing: 'One male anchor. Clear, warm, steady. Lead story in depth, then 3–4 shorter stories with smooth links.',
   notes: 'One female host, calm and friendly, like a colleague summarising the morning for you. Short sections, each ends with one plain-English takeaway.',
   twotakes: 'Two hosts with two angles on the hottest, most-read stories: one optimistic, one sceptical. Gentle disagreement, then common ground.',
@@ -104,50 +161,38 @@ export const HOW = {
   clinic: 'Two people who know the clinic: eye care and dentistry stories — the condition, the technique, the trend among doctors, and the link to MMH products (ophthalmic knives and sutures, micro forceps, endo files, diamond burs, composites).',
   story: 'One storyteller, narrative style: set the scene, what happened, why it matters, what to watch. The other stories only get one or two sentences at the end.',
   quickfive: 'Exactly five short stories. Each: 2–3 sentences, then a quick question to the listener ("Quick question: …?"), a short pause line, and the answer. Light and fast-paced in structure, but simple language.',
-  weekly: 'Sunday: the week in review — the three stories that mattered most for MMH, then what to watch next week.'
+  weekly: 'Sunday: Emma and Daniel look back on the week — the three stories that mattered most for MMH, then what to watch next week.'
 };
 /* Phần học tiếng Anh trong số (xoay theo ngày, xem PODCAST.md §3). */
 export const LEARN = {
+  class: 'The whole episode is the lesson (see HOW). Keep it practical for MMH work.',
+  legal: 'Legal English: explain 3 legal terms used today (e.g. decree, circular, take effect, bidder, procuring entity) in plain words, each with one MMH example sentence.',
   spotlight: 'Word Spotlight: pick ONE useful word or phrase from today\'s stories; explain it simply and give two short example sentences from MMH work.',
   phrase: 'Phrase for Work: teach ONE sentence pattern useful in meetings, emails or presentations, inspired by today\'s news, with two examples.',
   repeat: 'Listen & Repeat: say "Say it with me." then three short sentences (max 10 words each) taken from today\'s stories; mark those three turns with rep=true.',
   quiz: 'Quick Quiz: ask the listener two short questions about stories in this episode, give a beat ("Think about it…"), then answer each.'
 };
-export const learnFor = dateStr => { const k = Object.keys(LEARN); return k[Math.floor(new Date(dateStr + 'T00:00:00Z') / 864e5) % k.length]; };
+export const learnFor = (dateStr, show) => { if (show === 'english') return 'class'; if (show === 'lawdesk') return 'legal'; const k = ['spotlight', 'phrase', 'repeat', 'quiz']; return k[Math.floor(new Date(dateStr + 'T00:00:00Z') / 864e5) % k.length]; };
 
-/* Chọn chương trình theo nội dung trong ngày (PODCAST.md §1), không trùng 3 ngày gần nhất, không cùng kiểu giọng với hôm qua. */
+/* Chọn series: theo lịch tuần (SCHEDULE); nội dung đặc biệt được đổi chỗ — nhiều văn bản luật ⇒ Law & Tender Desk, nhiều tin nhãn / nha khoa ⇒ The Clinic Room —
+   miễn series đó chưa phát trong 2 ngày gần nhất và không trùng hôm qua. T7 (English at Work) và CN (Week in Review) không đổi. */
 export function pickShow(dateStr, picked, history = []) {
-  const d = new Date(dateStr + 'T00:00:00Z');
-  if (d.getUTCDay() === 0) return 'weekly';
+  const day = new Date(dateStr + 'T00:00:00Z').getUTCDay(), base = SCHEDULE[day];
+  if (day === 0 || day === 6) return base;
   const xs = Object.values(picked.sections || {}).flat();
   const has = t => xs.filter(x => (x.tags || []).includes(t)).length;
-  const lead = picked.lead, leadMmh = lead?.mmh || 0;
-  const second = xs.filter(x => x !== lead).reduce((m, x) => Math.max(m, x.mmh || 0), 0);
   const legal = (picked.docs || []).length + has('policy') + has('tender');
   const clinicN = has('eye') + has('dental');
-  const econ = (picked.sections?.economy || []).length + has('market');
-  const health = (picked.sections?.health || []).length;
-  const prefs = [];
-  if (legal >= 3) prefs.push('explainer', 'editor');
-  if (clinicN >= 3) prefs.push('clinic');
-  if (leadMmh >= 7 && leadMmh - second >= 2) prefs.push('story', 'explainer');
-  if (has('tender') + has('hospital') + has('device') >= 4) prefs.push('healthdesk');
-  if (health >= 7) prefs.push('quickfive', 'twotakes');
-  if (econ >= 5) prefs.push('markets');
-  const recent = history.slice(0, 3).map(h => h.show);
-  const yMode = history[0] ? (SHOWS[history[0].show]?.mode || '') : '';
-  const ok = id => SHOWS[id] && DAILY_SHOWS.includes(id) && !recent.includes(id);
-  const byContent = [...new Set(prefs)].filter(ok);                       // nội dung quyết định trước
-  if (byContent.length) return byContent.find(id => SHOWS[id].mode !== yMode) || byContent[0];
-  const n = Math.floor(d / 864e5), rot = ROTATION.map((_, i) => ROTATION[(n + i) % ROTATION.length]).filter(ok);
-  return rot.find(id => SHOWS[id].mode !== yMode) || rot[0] || showFor(dateStr);
+  const recent = history.slice(0, 2).map(h => h.show), yday = history[0]?.show;
+  const free = id => !recent.includes(id);
+  if (base !== 'lawdesk' && legal >= 4 && free('lawdesk')) return 'lawdesk';
+  if (base !== 'clinicroom' && clinicN >= 4 && free('clinicroom')) return 'clinicroom';
+  if (base === yday) return ROTATION.find(id => id !== yday && free(id)) || base;
+  return base;
 }
 /** Chủ nhật = Week in Review; ngày khác xoay vòng theo số ngày, không trùng hôm trước. */
 export function showFor(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00Z');
-  if (d.getUTCDay() === 0) return 'weekly';
-  const n = Math.floor(d / 864e5);
-  return ROTATION[n % ROTATION.length];   // dự phòng khi không có dữ liệu tin
+  return SCHEDULE[new Date(dateStr + 'T00:00:00Z').getUTCDay()];   // dự phòng khi không có dữ liệu tin
 }
 
 // Thuật ngữ Anh – Việt hay gặp trong tin (dùng cho mục "Học từ vựng" khi chưa có AI).

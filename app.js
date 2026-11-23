@@ -159,8 +159,9 @@
     return `<div class="sec-h" style="margin-top:4px"><h2>Số cũ</h2><span class="sub">${eds.length} số báo · bấm để đọc / nghe lại</span></div>
       <div class="archive">${eds.map(e => `<a class="arc" href="#/e/${e.date}"><div class="cv">${cover({ name: showName(e.show), color: showColor(e.show) }, e.date)}</div><div><b>${esc(viDate(e.date))}</b><span>Số ${e.no} · ${esc(showName(e.show))}</span><br><span>${esc(e.lead || '')}</span></div></a>`).join('')}</div>`;
   }
-  const SHOWMETA = { briefing: ['The Morning Briefing', '#1F4E79'], twotakes: ['Two Takes', '#7A3E9D'], healthdesk: ['Health Desk', '#0E7C6B'], markets: ['Market Watch', '#B8641B'], editor: ['Ask the Editor', '#2F6F9F'], explainer: ['The Explainer', '#A23B3B'], weekly: ['Week in Review', '#3D5A3D'], notes: ['Morning Notes', '#6B4E9B'], clinic: ['Clinic Notes', '#2E7D8C'], story: ['One Story', '#5A4632'], quickfive: ['Quick Five', '#C0582B'] };
-  const SHOWDESC = { briefing: 'Một người dẫn · tin chính trong ~8 phút', twotakes: 'Hai người dẫn trao đổi', healthdesk: 'Chuyên sâu y tế: đấu thầu, chính sách, bệnh viện', markets: 'Kinh tế, thương mại, đầu tư', editor: 'Hỏi – đáp với biên tập viên', explainer: 'Giải thích sâu một tin lớn', weekly: 'Chủ nhật: nhìn lại cả tuần', notes: 'Một giọng nữ · tóm tắt nhẹ nhàng từng tin', clinic: 'Nhãn khoa, nha khoa: xu hướng điều trị và sản phẩm', story: 'Một người kể · một câu chuyện lớn từ đầu đến cuối', quickfive: 'Năm tin nhanh, mỗi tin một câu hỏi cho bạn' };
+  const SERIES = [['talk', 'Thứ Hai, Thứ Năm'], ['clinicroom', 'Thứ Ba'], ['lawdesk', 'Thứ Tư'], ['headlines', 'Thứ Sáu'], ['english', 'Thứ Bảy'], ['weekly', 'Chủ nhật']];
+  const SHOWMETA = { talk: ['MMH Talk', '#1F5E8C'], clinicroom: ['The Clinic Room', '#2E7D8C'], lawdesk: ['Law & Tender Desk', '#5B3F8C'], headlines: ['Morning Headlines', '#A23B3B'], english: ['English at Work', '#8A5A00'], briefing: ['The Morning Briefing', '#1F4E79'], twotakes: ['Two Takes', '#7A3E9D'], healthdesk: ['Health Desk', '#0E7C6B'], markets: ['Market Watch', '#B8641B'], editor: ['Ask the Editor', '#2F6F9F'], explainer: ['The Explainer', '#A23B3B'], weekly: ['Week in Review', '#3D5A3D'], notes: ['Morning Notes', '#6B4E9B'], clinic: ['Clinic Notes', '#2E7D8C'], story: ['One Story', '#5A4632'], quickfive: ['Quick Five', '#C0582B'] };
+  const SHOWDESC = { talk: 'Emma & Daniel trò chuyện về các chuyện nóng nhất với MMH', clinicroom: 'Dr. Sarah giảng nhãn khoa, nha khoa · Minh hỏi', lawdesk: 'Thomas giải thích luật, nghị định, quy định thầu', headlines: 'Andrew đọc tin thời sự · mỗi tin một câu "với MMH"', english: 'Lớp tiếng Anh công sở: cô Olivia & Minh ôn từ của tuần', briefing: 'Một người dẫn · tin chính trong ~8 phút', twotakes: 'Hai người dẫn trao đổi', healthdesk: 'Chuyên sâu y tế: đấu thầu, chính sách, bệnh viện', markets: 'Kinh tế, thương mại, đầu tư', editor: 'Hỏi – đáp với biên tập viên', explainer: 'Giải thích sâu một tin lớn', weekly: 'Emma & Daniel nhìn lại cả tuần', notes: 'Một giọng nữ · tóm tắt nhẹ nhàng từng tin', clinic: 'Nhãn khoa, nha khoa: xu hướng điều trị và sản phẩm', story: 'Một người kể · một câu chuyện lớn từ đầu đến cuối', quickfive: 'Năm tin nhanh, mỗi tin một câu hỏi cho bạn' };
   const showName = id => SHOWMETA[id]?.[0] || id;
   const showColor = id => SHOWMETA[id]?.[1] || '#0E7C6B';
 
@@ -196,8 +197,8 @@
         </div>
       </div>
       ${window.STUDY ? STUDY.html(ed) : ''}
-      <h2 class="ls-sh">Các chương trình</h2>
-      <div class="shows">${Object.keys(SHOWMETA).map(id => `<div class="show${id === p.show ? ' today' : ''}" style="--show:${showColor(id)}"><div class="cv">${cover({ name: showName(id), color: showColor(id) })}</div><b>${esc(showName(id))}</b><span>${esc(SHOWDESC[id])}</span></div>`).join('')}</div>
+      <h2 class="ls-sh">Các series trong tuần</h2>
+      <div class="shows">${SERIES.map(([id, day]) => `<div class="show${id === p.show ? ' today' : ''}" style="--show:${showColor(id)}"><div class="cv">${cover({ name: showName(id), color: showColor(id) })}</div><b>${esc(showName(id))}</b><span>${esc(day)} · ${esc(SHOWDESC[id])}</span></div>`).join('')}</div>
     </div>`;
   }
 

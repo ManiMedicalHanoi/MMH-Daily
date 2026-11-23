@@ -38,6 +38,8 @@ def eleven_voices(hosts):
         g = 'f' if h['name'] in FEMALE else 'm'
         if p[g]['id'] in used:                       # 2 người cùng giới ⇒ người thứ hai lấy giọng còn lại
             g = 'm' if g == 'f' else 'f'
+        if h.get('el'):                              # series cố định: mỗi nhân vật một giọng riêng (tools/shows.mjs ▸ el)
+            out[h['id']] = h['el']; used.add(h['el']); continue
         out[h['id']] = p[g]['id']; used.add(p[g]['id'])
     return out, cfg.get('model', 'eleven_multilingual_v2')
 

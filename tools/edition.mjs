@@ -209,6 +209,9 @@ async function claudeWrite(ed, picked) {
   const list = all.map(x => ({ id: x.id, sec: x.sec, tags: x.tags, lang: x.lang, source: x.src, date: x.d.slice(0, 10), title: x.t, summary: (x.sum || '').slice(0, 450) }));
   const prev = (readJson(path.join(ROOT, 'data', 'index.json'), { editions: [] }).editions || []).slice(0, 5).map(e => `${e.date}: ${e.show} — ${e.lead}`);
   const AV = historyAvoid(readJson(HIST_F, []));
+  const MEM = memRecall(picked, ed.podcast.show, ed.date);
+  const WEEK = [...new Set(readJson(HIST_F, []).filter(h => h.date !== ed.date).slice(0, 6).flatMap(h => [...(h.vocab || []), ...(h.phr || [])]))].slice(0, 40);
+  if (MEM.used.length) console.log('Sổ ghi nhớ: gợi ý nhắc lại ' + MEM.used.map(m => m.date + ' ' + m.topic).join(' · '));
   const SYSTEM = `You are the editor of MMH Daily Podcast, a morning news podcast for staff of MANI Medical Hanoi (MMH) who are learning English (level B1). Follow these house guides exactly
 (they are in Vietnamese; write stories and scripts in English with Vietnamese where asked):\n\n${fs.readFileSync(path.join(ROOT, 'WRITING.md'), 'utf8')}\n\n${fs.readFileSync(path.join(ROOT, 'PODCAST.md'), 'utf8')}`;
   // 1. tin song ngữ
@@ -243,13 +246,13 @@ For rel = 0 you may leave the other fields short — the story will be dropped.\
   const hosts = show.hosts.map(h => `${h.id} = ${h.name} (${h.role})`).join('; ');
   const out = await askJson({ system: SYSTEM, effort: 'medium',
     schema: J.obj({ note: J.obj({ en: J.str, vi: J.str }), health: J.obj({ en: J.str, vi: J.str }), vocab: J.arr(J.obj({ en: J.str, vi: J.str, ex: J.str })),
-      podcast: J.obj({ title: J.str, desc: J.str, turns: J.arr(J.obj({ sp: { type: 'string', enum: show.hosts.map(h => h.id) }, text: J.str, vi: J.str, rep: { type: 'boolean' } })) }) }),
+      podcast: J.obj({ title: J.str, desc: J.str, recap: J.arr(J.obj({ topic: J.str, gist: J.str })), turns: J.arr(J.obj({ sp: { type: 'string', enum: show.hosts.map(h => h.id) }, text: J.str, vi: J.str, rep: { type: 'boolean' } })) }) }),
     user: `Date: ${dateEn(DATE)} (${DATE}). Today's show: "${show.name}" — ${show.desc} Format: ${show.style}. Hosts: ${hosts}.
 Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'none'}.
 1. note: editor's note (60–90 words) in English and Vietnamese.
 2. health: analysis for MMH (180–240 words) in English and Vietnamese: dental, eye care, tenders, devices, insurance, market — what changed, who is affected, what MMH should watch.
 3. vocab: 8 useful English terms used in the script, with Vietnamese meaning and a short example from the script. Do NOT reuse these terms taught in the last 14 days: ${AV.vocab.join(', ') || 'none'}.
-4. podcast: title, one-line desc, and turns for a 1,100–1,400 word script (about 8–10 minutes at a relaxed pace). Listener priorities, in this order: (1) the hottest, most-read health news;
+4. podcast: title, one-line desc, recap (2–5 items for the series' memory: topic = 2–5 words, gist = one sentence on what the episode said or concluded, incl. anything to follow up), and turns for a 1,100–1,400 word script (about 8–10 minutes at a relaxed pace). Listener priorities, in this order: (1) the hottest, most-read health news;
    (2) new laws, decrees and circulars on medical-device tenders and procurement, health insurance and hospitals; (3) treatment trends in ophthalmology and dentistry;
    (4) news from hospitals and medical societies. Stories that touch MMH's business come first and deepest.
    ALWAYS TIE IT TO MMH (house rule): this is MMH's own podcast. EVERY story you include must end with a concrete link to MMH — a product group (ophthalmic knives,
@@ -258,6 +261,9 @@ Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'n
    bidding or tax law) are welcome only with the impact chain spelled out ("…so our import cost from Japan…"). If you cannot link a story to MMH, leave it out.
    No entertainment or celebrity news. ${show.style === 'solo' ? 'One anchor only.' : show.style === 'qa' ? 'A asks short listener-style questions; B answers.' : show.style === 'desk' ? 'B is the health correspondent and carries health in depth; A wraps up other news briefly.' : show.style === 'deep' ? 'Spend half the show explaining the lead story step by step, then a quick round-up.' : 'Two hosts in real conversation.'}
    HOW TO PRESENT TODAY'S SHOW: ${HOW[ed.podcast.show] || ''}
+   FIXED CAST (a running series — keep each character's personality and way of speaking exactly; do not re-introduce their background every time, just let it show):
+   ${show.hosts.map(h => `${h.id} = ${h.bio || h.name + ' (' + h.role + ')'}`).join(' | ')}
+   ${MEM.text}${ed.podcast.show === 'english' ? `\n   THIS WEEK'S LANGUAGE (build the class on these): ${WEEK.join(', ') || 'choose useful work English from today\'s stories'}` : ''}
    LEARNING SEGMENT (60–90 seconds, near the end): ${LEARN[ed.podcast.learn]}
    LANGUAGE FOR B1 LEARNERS: average 10–14 words per sentence, max about 18; everyday words; explain any industry term in plain words the first time; paraphrase each story's key point once; no hard idioms.
    VARIETY: the opening line, the hand-offs and the sign-off must be different from recent episodes. Recent openings: ${AV.opens.map(o => '"' + o + '"').join(' | ') || 'none'}.
@@ -275,7 +281,8 @@ economy: ${JSON.stringify(pick('economy'))}
 politics: ${JSON.stringify(pick('politics'))}
 society: ${JSON.stringify(pick('society'))}` });
   ed.note = out.note; ed.healthDesk.analysis = out.health; ed.vocab = out.vocab;
-  ed.podcast.title = out.podcast.title; ed.podcast.desc = out.podcast.desc;
+  ed.podcast.title = out.podcast.title; ed.podcast.desc = out.podcast.desc; ed.podcast.recap = (out.podcast.recap || []).slice(0, 6);
+  if (MEM.used.length) ed.podcast.recall = MEM.used.map(m => ({ date: m.date, show: m.show, topic: m.topic }));
   ed.podcast.turns = out.podcast.turns.map(t => voiceTurn({ sp: t.sp, text: t.text, vi: t.vi, rep: t.rep }));
   const { PROVIDER, usedModel } = await import('./ai.mjs');
   ed.writer = PROVIDER || 'claude'; ed.model = usedModel();
@@ -295,7 +302,8 @@ async function reviewScript(ed, SYSTEM) {
 (a) every story is clearly linked to MMH's business (products, customers, tenders, distributors, costs) — add a short concrete link where it is missing;
 (b) stories with no possible link to MMH are removed (list their turn numbers in "remove");
 (c) delivery tags: at most one per turn, only [curious] [surprised] [thoughtful] [warmly] [excited] [serious] [chuckles] [sighs], none in Listen & Repeat turns, never cheerful tags on sad news;
-(d) spoken rhythm: no three long sentences in a row, one clear key point per story; (e) nothing invented beyond what is already stated.
+(d) spoken rhythm: no three long sentences in a row, one clear key point per story; (e) nothing invented beyond what is already stated;
+(f) each character speaks in line with the fixed cast (personality, role); at most ONE brief, natural mention of an earlier episode — remove extra ones and any retelling of old content.
 Only return turns that need changing ("fixes": full new English text with tags + its Vietnamese subtitle). Keep fixes few and small. If the script is fine return empty arrays.
 
 Script:
@@ -377,6 +385,32 @@ Stories (JSON): ${JSON.stringify(list)}` });
   console.log(`Soạn sẵn: ${Object.keys(ed.coach.lessons).length} bài luyện nói · ${ed.coach.briefs.length} bản tóm tắt chủ đề`);
 }
 
+/* Sổ ghi nhớ của các series — data/memory.json (~5 tháng): mỗi số = chủ đề + ý chính (recap do Claude viết).
+   Mỗi sáng tìm số cũ có chủ đề gần với tin hôm nay (mọi series); chỉ khoảng 1/3 số được phép nhắc lại, và tối đa 1 lần, cho tự nhiên (người dùng chốt 23/11/2026). */
+const MEM_F = path.join(ROOT, 'data', 'memory.json');
+const MEM_P = +(process.env.DAILY_RECALL_P || 0.35);
+const kw = s => new Set(String(s || '').toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').split(/\s+/).filter(w => w.length > 3 && !STOPW.has(w)));
+function memRecall(picked, show, date) {
+  const mem = readJson(MEM_F, []);
+  const today = [...(picked.sections?.health || []).slice(0, 8), ...(picked.docs || []).slice(0, 4), ...(picked.sections?.economy || []).slice(0, 3)];
+  const W = kw(today.map(x => [x.h_en, x.t, x.s_en, (x.tags || []).join(' ')].join(' ')).join(' '));
+  const day = d => Math.floor(new Date(d + 'T00:00:00Z') / 864e5), now = day(date);
+  const cands = [];
+  for (const e of mem) {
+    const age = now - day(e.date); if (age < 2) continue;
+    for (const it of e.items || []) {
+      const k = kw(it.topic + ' ' + it.gist); let sc = 0; for (const w of k) if (W.has(w)) sc++;
+      if (sc >= 3) cands.push({ date: e.date, show: e.show, name: e.name, topic: it.topic, gist: it.gist, sc: sc + (e.show === show ? 1 : 0) - age / 60 });
+    }
+  }
+  cands.sort((a, b) => b.sc - a.sc);
+  const pool = [...new Map(cands.map(c => [c.date + c.topic, c])).values()].slice(0, 4);
+  if (show === 'english' || !pool.length || Math.random() >= MEM_P) return { used: [], text: 'EARLIER EPISODES: do not refer to earlier episodes today.' };
+  const used = pool.sort(() => Math.random() - 0.5).slice(0, Math.random() < 0.5 ? 1 : 2);
+  const ago = d => { const n = now - day(d); return n < 7 ? 'a few days ago' : n < 14 ? 'last week' : n < 35 ? Math.round(n / 7) + ' weeks ago' : 'a while back'; };
+  return { used, text: `EARLIER EPISODES you MAY mention — at most ONE brief, natural mention (half a sentence, e.g. "…which we touched on ${ago(used[0].date)}"), only where today's story really continues it; never retell it; skipping it is fine: ${used.map(m => `[${ago(m.date)}, ${m.name}] ${m.topic}: ${m.gist}`).join(' | ')}` };
+}
+
 /* Lịch sử 30 ngày (chống lặp kiểu chương trình, câu mở / kết, cụm từ cửa miệng, từ vựng) — data/history.json */
 const HIST_F = path.join(ROOT, 'data', 'history.json');
 const STOPW = new Set('the a an and or but of to in on at for with is are was were be been it its this that these those we you they i he she our your their so as by from about just really yeah okay right well'.split(' '));
@@ -405,7 +439,7 @@ async function main() {
   const ed = {
     date: DATE, no, updated: iso(NOW), writer: '',
     lead: picked.lead?.id, sections: {}, healthDesk: { groups: picked.desk, order: Object.keys(DESK) }, docs: picked.docs.map(x => x.id),
-    podcast: { show: showId, name: SHOWS[showId].name, hosts: SHOWS[showId].hosts, color: SHOWS[showId].color, rate: SHOWS[showId].rate || '-5%', learn: learnFor(DATE) },
+    podcast: { show: showId, name: SHOWS[showId].name, hosts: SHOWS[showId].hosts, color: SHOWS[showId].color, rate: SHOWS[showId].rate || '-5%', learn: learnFor(DATE, showId) },
     filter: (FILTER.sources.length || FILTER.topics.length) ? { sources: FILTER.sources, topics: FILTER.topics, by: process.env.DAILY_BY || '' } : undefined,
     stories: {}, sources: pool.status.map(s => ({ id: s.id, lang: s.lang, ok: !!s.ok, kept: s.kept })),
   };
@@ -451,8 +485,13 @@ async function main() {
   fs.writeFileSync(path.join(ROOT, 'data', 'index.json'), JSON.stringify(index));
   const T = ed.podcast.turns, all = T.map(t => t.text).join(' ');
   const hrow = { date: DATE, show: showId, writer: ed.writer, open: (T[0]?.text || '').slice(0, 140), close: (T[T.length - 1]?.text || '').slice(0, 140),
-    vocab: (ed.vocab || []).map(v => v.en), grams: grams(all).slice(0, 700) };
+    vocab: [...(ed.vocab || []).map(v => v.en), ...(ed.study?.words || []).map(w => w.en)], phr: (ed.study?.phrases || []).map(p => p.en), grams: grams(all).slice(0, 700) };
   fs.writeFileSync(HIST_F, JSON.stringify([hrow, ...HIST].slice(0, 30)));
+  if (ed.podcast.recap?.length) {
+    const mem = readJson(MEM_F, []).filter(e => e.date !== DATE);
+    mem.unshift({ date: DATE, show: showId, name: SHOWS[showId].name, title: ed.podcast.title, items: ed.podcast.recap });
+    fs.writeFileSync(MEM_F, JSON.stringify(mem.slice(0, 150)));
+  }
   console.log(`Số ${no} · ${DATE} · ${SHOWS[showId].name} · viết bằng ${ed.writer} · ${words} từ · ${Object.keys(ed.stories).length} tin`);
 }
 main().catch(e => { console.error(e); process.exit(1); });

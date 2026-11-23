@@ -3,7 +3,7 @@
 Người nghe chính: nhân sự MMH (quản lý sản phẩm, sales) trình độ tiếng Anh **B1**, nghe để vừa nắm tin vừa học tiếng Anh.
 Mục tiêu: **mỗi ngày một kiểu, nghe cuốn, dễ hiểu, tự nhiên**, không lặp khuôn.
 
-## 1. Chọn kiểu chương trình theo nội dung (máy chọn sẵn trong `tools/shows.mjs ▸ pickShow`, không trùng 3 ngày gần nhất)
+## 1. (cũ, trước 24/11/2026) Chọn kiểu chương trình theo nội dung — nay thay bằng 5 series cố định ở mục 7; bảng dưới vẫn dùng làm gợi ý cách trình bày
 | Nội dung nổi bật trong ngày | Kiểu hợp | Cách trình bày |
 |---|---|---|
 | Văn bản pháp quy mới (luật, nghị định, thông tư, đấu thầu, BHYT) | **The Explainer** · **Ask the Editor** | Giải thích từng bước: cái gì đổi · ai bị ảnh hưởng · từ khi nào · MMH cần làm gì. Hỏi – đáp như người nghe đang thắc mắc. |
@@ -50,3 +50,18 @@ Giọng đọc xoay vòng: một giọng nam · một giọng nữ · hai ngư�
 - Máy tách lời: `turns[i].say` = có thẻ (đưa cho giọng đọc), `turns[i].text` = sạch (phụ đề, giọng miễn phí khi hết credit).
 
 Xem thêm `WRITING.md` (chọn tin, giọng nói tự nhiên, phụ đề Việt, đúng sự thật, danh sách từ cấm).
+
+## 7. Series cố định, nhân vật cố định (người dùng duyệt 23/11/2026, `tools/shows.mjs`)
+| Ngày | Series | Nhân vật (giọng ElevenLabs riêng, không đổi) | Nội dung |
+|---|---|---|---|
+| T2, T5 | **MMH Talk** | Emma (dẫn chính, tò mò) · Daniel (từng làm mua sắm bệnh viện, hơi hoài nghi) | 2–3 chuyện quan trọng nhất với MMH, trao đổi, phản biện nhẹ |
+| T3 | **The Clinic Room** | Dr. Sarah (giảng nhãn khoa, nha khoa) · Minh (sales trẻ MMH, hỏi như người nghe B1) | Bệnh, kỹ thuật, dụng cụ dùng ở bước nào |
+| T4 | **Law & Tender Desk** | Thomas (giải thích luật, giọng Anh, chậm rãi) | Cái gì đổi · ai bị ảnh hưởng · từ khi nào · MMH làm gì; phần học = tiếng Anh pháp lý |
+| T6 | **Morning Headlines** | Andrew (MC thời sự) | 5–7 tin nóng, mỗi tin kết bằng "với MMH, …" |
+| T7 | **English at Work** | Ms. Olivia (giáo viên) · Minh (học viên) | Ôn từ / cụm / ngữ pháp của cả tuần, đóng vai tình huống MMH |
+| CN | **Week in Review** | Emma · Daniel | Nối các chuyện của tuần, việc cần theo dõi tuần sau |
+- Đổi chỗ theo tin: nhiều văn bản luật ⇒ Law & Tender Desk, nhiều tin nhãn / nha khoa ⇒ The Clinic Room (nếu series đó chưa phát 2 ngày gần đây). T7, CN không đổi.
+- Nhân vật giữ đúng tính cách, cách nói; không giới thiệu lại lý lịch mỗi số.
+- **Sổ ghi nhớ** `data/memory.json` (~5 tháng, mọi series): mỗi số Claude ghi 2–5 ý (`recap`). Sáng hôm sau máy tìm số cũ có chủ đề gần với tin hôm nay;
+  **chỉ khoảng 1/3 số** được phép nhắc lại (ngẫu nhiên, `DAILY_RECALL_P`), tối đa **một lần, nửa câu**, chỉ khi tin hôm nay thật sự nối tiếp; không kể lại chuyện cũ. Bước soát kịch bản bỏ phần nhắc thừa.
+
