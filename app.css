@@ -511,3 +511,5 @@ html.lrn-on,html.lrn-on body{overflow:hidden}
 .tx.st-blur p span{filter:blur(5px);transition:filter .2s}
 .tx.st-blur p:hover span{filter:none}
 @media (max-width:620px){.st-dl{grid-template-columns:1fr;gap:4px}.st-dl dd{margin-bottom:10px}.st-opts{grid-template-columns:1fr}}
+.mmh-why{margin:6px 0 4px;font:500 14px/1.5 var(--sans);color:var(--accent-ink);background:rgba(14,124,107,.07);padding:6px 10px;border-radius:6px}
+.mmh-why b{font-weight:700}

@@ -78,10 +78,11 @@
     else { if (vi) out += `<p class="sum">${esc(vi)}</p>`; if (en && opt.both) out += `<p class="sum en">${esc(en)}</p>`; else if (!vi && en) out += `<p class="sum en">${esc(en)}</p>`; }
     return out;
   }
+  const mmhWhy = x => x.why ? `<p class="mmh-why"><b>Với MMH:</b> ${esc(x.why)}</p>` : '';
   const link = (x, inner) => `<a href="${esc(x.u)}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
   function storyHtml(x, size = 's', opt = {}) {
     return `<article class="story">${opt.img && x.img ? `<img class="thumb" src="${esc(x.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
-      ${opt.kick ? kicker(x) : ''}<h3 class="hl ${size}">${link(x, esc(H(x)))}</h3>${x.dek && S.lang === 'en' ? `<p class="dek">${esc(x.dek)}</p>` : ''}${body(x, opt)}${byline(x)}</article>`;
+      ${opt.kick ? kicker(x) : ''}<h3 class="hl ${size}">${link(x, esc(H(x)))}</h3>${x.dek && S.lang === 'en' ? `<p class="dek">${esc(x.dek)}</p>` : ''}${body(x, opt)}${mmhWhy(x)}${byline(x)}</article>`;
   }
 
   // ── thẻ nghe ──
@@ -105,7 +106,7 @@
     const vocab = ed.vocab?.length ? vocabHtml(ed) : '';
     let html = `<div class="mlisten">${listenCard(ed)}</div><div class="front">
       <div class="lead">${L ? `${kicker(L)}${L.img ? `<img class="ph" src="${esc(L.img)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
-        <h1 class="hl xl">${link(L, esc(H(L)))}</h1>${L.dek ? `<p class="dek">${esc(L.dek)}</p>` : ''}${body(L, { both: true })}${byline(L)}` : '<div class="empty">Chưa có tin.</div>'}
+        <h1 class="hl xl">${link(L, esc(H(L)))}</h1>${L.dek ? `<p class="dek">${esc(L.dek)}</p>` : ''}${body(L, { both: true })}${mmhWhy(L)}${byline(L)}` : '<div class="empty">Chưa có tin.</div>'}
         <div class="lead-sub">${leadSub.map(x => storyHtml(x, 'm', { kick: true })).join('')}</div>
       </div>
       <aside class="side">${listenCard(ed)}${note}${docsBox}${vocab}</aside>
