@@ -104,11 +104,11 @@
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const Rec = {
     r: null, on: false,
-    start(onText, onEnd) {
+    start(onText, onEnd, lang) {
       if (!SR) { onEnd({ text: '', err: 'nosupport' }); return; }
       Voice.stop();
       const r = new SR(); this.r = r;
-      r.lang = 'en-US'; r.interimResults = true; r.continuous = true; r.maxAlternatives = 1;
+      r.lang = lang || 'en-US'; r.interimResults = true; r.continuous = true; r.maxAlternatives = 1;
       let fin = '', err = ''; const conf = [];
       r.onresult = e => {
         let inter = '';
@@ -162,6 +162,14 @@
       return vs.find(x => /en[-_]US/i.test(x.lang)) || vs[0];
     },
     stop() { try { AUD.pause(); } catch {} if ('speechSynthesis' in window) speechSynthesis.cancel(); },
+    sayWait(text) {
+      return new Promise(async res => {
+        if (CFG.akey && CFG.areg) { try { await azureSay(text, CFG.rate); AUD.onended = () => res(); AUD.onpause = () => res(); return; } catch {} }
+        if (!('speechSynthesis' in window)) return res();
+        const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = CFG.rate; const v = this.pick(); if (v) u.voice = v;
+        u.onend = () => res(); u.onerror = () => res(); speechSynthesis.speak(u);
+      });
+    },
     async say(text, rate) {
       rate = rate || CFG.rate; this.stop();
       if (CFG.akey && CFG.areg) {
@@ -196,13 +204,15 @@
   }
   async function gem(sys, user) {
     if (!CFG.gkey) throw new Error('NOKEY');
-    let model = CFG.gmodel || 'gemini-2.5-flash';
-    for (let n = 0; n < 2; n++) {
+    let model = CFG.gmodel || 'gemini-2.5-flash', think = !CFG.noThink;
+    for (let n = 0; n < 3; n++) {
+      const gc = { responseMimeType: 'application/json', temperature: 0.3 }; if (think) gc.thinkingConfig = { thinkingBudget: 0 };
       const r = await fetch(`${GEM}/models/${encodeURIComponent(model)}:generateContent`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': CFG.gkey },
-        body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents: [{ role: 'user', parts: [{ text: user }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.3 } })
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents: [{ role: 'user', parts: [{ text: user }] }], generationConfig: gc })
       });
-      if (r.status === 404 && n === 0) {
+      if (r.status === 400 && think) { think = false; CFG.noThink = true; saveCfg(); continue; }
+      if (r.status === 404 && n < 2) {
         const b = bestModel(await gemModels());
         if (b) { model = CFG.gmodel = b.id; saveCfg(); continue; }
       }
@@ -326,9 +336,11 @@ From a Vietnamese news summary (and a rough machine translation), return JSON on
     Voice.stop(); if (Rec.on) Rec.stop();
     const h = location.hash.replace(/^#\/?/, '');
     const [a, b, c] = h.split('/');
-    S.view = a === 'l' ? 'lesson' : a === 'words' ? 'words' : a === 'set' ? 'set' : 'home';
+    S.view = a === 'l' ? 'lesson' : a === 'words' ? 'words' : a === 'set' ? 'set' : a === 'ask' ? 'ask' : 'home';
+    if (S.view !== 'ask' && ASK.ctl) ASK.ctl.abort();
     $$('#ch-nav a').forEach(x => x.classList.toggle('on', x.dataset.r === (S.view === 'lesson' ? 'home' : S.view)));
     window.scrollTo({ top: 0 });
+    if (S.view === 'ask') return renderAsk();
     if (S.view === 'home') return renderHome();
     if (S.view === 'words') return renderWords();
     if (S.view === 'set') return renderSet();
@@ -620,11 +632,248 @@ From a Vietnamese news summary (and a rough machine translation), return JSON on
     sel.innerHTML = `<option value="">Tự chọn giọng tốt nhất</option>` + vs.map(v => `<option${v.name === CFG.voice ? ' selected' : ''}>${esc(v.name)}</option>`).join('');
   }
 
+  /* ── Hỏi tin: hỏi về tin 7 ngày qua ⇒ Gemini trả lời (chữ hiện dần) ⇒ đọc to từng câu ngay khi có ── */
+  const POOL = { list: null, at: 0 };
+  const ASK = { range: LS.get('mmh_ask_range', 7), lens: LS.get('mmh_ask_lens', 'all'), sel: new Set(), speak: LS.get('mmh_ask_speak', true), lang: LS.get('mmh_ask_lang', 'vi-VN'), hist: [], busy: false, ctl: null, n: 0 };
+  const LENS = [['all', 'Tất cả'], ['eye', 'Nhãn khoa'], ['dental', 'Nha khoa'], ['tender', 'Đấu thầu & thiết bị'], ['L', 'Pháp lý'], ['P', 'Chính sách'], ['E', 'Kinh tế'], ['T', 'Công nghệ'], ['S', 'Xã hội']];
+  const QUICK = ['Tóm tắt tin đấu thầu thiết bị y tế mới nhất', 'Có gì mới về nhãn khoa?', 'Có gì mới về nha khoa?', 'Luật, thông tư nào mới ảnh hưởng tới MMH?', 'Phân tích PESTEL các tin tuần này cho MMH', 'Tin nào đáng chú ý nhất hôm nay?'];
+  const bare = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+  const STOP = new Set('cac cua va la co cho voi trong nhung mot nay ve tin gi nao moi nhat hom tuan the nhu khong duoc bao nhieu ra sao tom tat phan tich cho toi minh the nao what which news new latest about the and for with this week today of to in on is are'.split(' '));
+  async function loadPool() {
+    if (POOL.list && Date.now() - POOL.at < 10 * 60e3) return POOL.list;
+    const idx = await (await fetch('../data/index.json?t=' + Date.now(), { cache: 'no-store' })).json();
+    const ck = 'mmh_ask_pool', c = (() => { try { return JSON.parse(sessionStorage.getItem(ck) || 'null'); } catch { return null; } })();
+    if (c && c.v === idx.updated) { POOL.list = c.list; POOL.at = Date.now(); return POOL.list; }
+    const dates = (idx.editions || []).slice(0, 7).map(e => e.date);
+    const eds = await Promise.all(dates.map(d => fetch(`../data/editions/${d}.json`, { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null)));
+    const seen = new Map();
+    eds.forEach((ed, i) => { if (!ed) return; Object.values(ed.stories || {}).forEach(s => {
+      if (seen.has(s.id) || NEWS_SKIP.test((s.t || '') + ' ' + (s.sum || ''))) return;
+      seen.set(s.id, { id: s.id, t: s.t, h_en: s.h_en, sum: s.sum || '', s_en: s.s_en || '', src: s.src || '', u: s.u || '', d: (s.d || dates[i]).slice(0, 10), sec: s.sec, tags: s.tags || [], mmh: s.mmh || 0, docs: s.docs, pe: window.PESTEL ? PESTEL.of(s) : [] });
+    }); });
+    POOL.list = [...seen.values()].sort((a, b) => b.d.localeCompare(a.d) || b.mmh - a.mmh); POOL.at = Date.now();
+    try { sessionStorage.setItem(ck, JSON.stringify({ v: idx.updated, list: POOL.list })); } catch {}
+    return POOL.list;
+  }
+  function inLens(x) {
+    if (ASK.lens === 'all') return true;
+    if (ASK.lens === 'tender') return x.tags.includes('tender') || x.tags.includes('device');
+    if (/^[A-Z]$/.test(ASK.lens)) return x.pe.includes(ASK.lens);
+    return x.tags.includes(ASK.lens);
+  }
+  const inRange = x => x.d >= addDays(today(), -(ASK.range - 1));
+  const viewList = () => (POOL.list || []).filter(x => inRange(x) && inLens(x));
+  function pick(q) {
+    if (ASK.sel.size) return (POOL.list || []).filter(x => ASK.sel.has(x.id)).slice(0, 15);
+    const b = bare(q), words = b.split(/[^a-z0-9]+/).filter(w => w.length >= 3 && !STOP.has(w));
+    const want = { eye: /mat|nhan khoa|eye|ophthal|cataract|glaucoma|giac mac|khuc xa|can thi/.test(b), dental: /rang|nha khoa|dental|implant|chinh nha/.test(b), tender: /thau|mua sam|tender|procure|thiet bi/.test(b), L: /luat|thong tu|nghi dinh|quy dinh|phap ly|law|circular|decree/.test(b) };
+    const pool = (POOL.list || []).filter(inRange);
+    const sc = x => {
+      const t = bare([x.t, x.h_en, x.sum, x.s_en].join(' '));
+      let s = words.reduce((a, w) => a + (t.includes(w) ? 1 : 0), 0) * 2 + x.mmh * 0.4 + (inLens(x) ? 2 : 0);
+      if (want.eye && x.tags.includes('eye')) s += 6; if (want.dental && x.tags.includes('dental')) s += 6;
+      if (want.tender && (x.tags.includes('tender') || x.tags.includes('device'))) s += 6; if (want.L && x.pe.includes('L')) s += 5;
+      if (x.sec === 'politics' && !x.tags.length) s -= 3;
+      return s;
+    };
+    return pool.map(x => [sc(x), x]).filter(([s]) => s > 1).sort((a, b) => b[0] - a[0]).slice(0, 12).map(([, x]) => x);
+  }
+  const ASK_SYS = `You are the news analyst of MMH (MANI Medical Hanoi), a Vietnamese distributor of MANI (Japan) dental, ophthalmic and surgical products (ophthalmic knives and sutures, micro forceps, endodontic files, diamond burs, composites). The user is a product & sales manager at CEFR B1 English level who wants to follow healthcare, law, tender (procurement) and market news and practise English.
+Answer ONLY from the numbered articles provided; never invent facts, numbers or names. Cite sources like [1], [2]. If the articles do not answer the question, say so briefly.
+Write plain text in EXACTLY this structure (keep the headings):
+## EN
+3-6 short bullet points ("- ") in clear B1-B2 English, each ending with citations.
+## VI
+The same bullet points in natural Vietnamese.
+## PESTEL
+Only the factors present, one line each, format "L: short Vietnamese note [n]" using letters P (political/policy), E (economic), S (social), T (technological), M (environmental), L (legal).
+## MMH
+1-3 Vietnamese sentences on the possible impact on MMH's business or product strategy (dental, ophthalmic, surgical; tenders; distributors). Write "Chưa thấy ảnh hưởng trực tiếp." if none.
+## WORDS
+4-6 lines "english term = nghĩa tiếng Việt" taken from your English bullets.
+## NEXT
+3 short follow-up questions in Vietnamese, one per line.`;
+  function parseAns(t) {
+    const o = {}; let cur = null;
+    String(t).split('\n').forEach(line => {
+      const h = line.match(/^\s*#{1,3}\s*(EN|VI|PESTEL|MMH|WORDS|NEXT)\b/i);
+      if (h) { cur = h[1].toUpperCase(); o[cur] = ''; return; }
+      if (cur) o[cur] += line + '\n'; else o.EN = (o.EN || '') + line + '\n';
+    });
+    for (const k in o) o[k] = o[k].trim();
+    return o;
+  }
+  const bullets = s => String(s || '').split('\n').map(x => x.replace(/^\s*[-*•]\s*/, '').trim()).filter(Boolean);
+  const speakable = s => s.replace(/\[\d+(?:\s*,\s*\d+)*\]/g, '').replace(/\*\*/g, '').trim();
+  const cite = (s, srcs) => esc(s).replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (m, ns) => ns.split(/\s*,\s*/).map(n => { const x = srcs[+n - 1]; return x ? `<a class="cite" href="${esc(x.u)}" target="_blank" rel="noopener" title="${esc(x.t)}">${n}</a>` : ''; }).join(''));
+
+  async function gemStream(sys, contents, onText, signal) {
+    if (!CFG.gkey) throw new Error('NOKEY');
+    let model = CFG.gmodel || 'gemini-2.5-flash', think = !CFG.noThink;
+    for (let n = 0; n < 3; n++) {
+      const gc = { temperature: 0.3 }; if (think) gc.thinkingConfig = { thinkingBudget: 0 };
+      const r = await fetch(`${GEM}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`, {
+        method: 'POST', signal, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': CFG.gkey },
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents, generationConfig: gc })
+      });
+      if (r.status === 400 && think) { think = false; CFG.noThink = true; saveCfg(); continue; }
+      if (r.status === 404 && n === 0) { const b = bestModel(await gemModels()); if (b) { model = CFG.gmodel = b.id; saveCfg(); continue; } }
+      if (!r.ok) throw gemErr(r.status);
+      const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', all = '';
+      for (;;) {
+        const { value, done } = await rd.read(); if (done) break;
+        buf += dec.decode(value, { stream: true });
+        let i; while ((i = buf.indexOf('\n')) >= 0) {
+          const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+          if (!line.startsWith('data:')) continue;
+          try { const j = JSON.parse(line.slice(5)); const t = (j.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join(''); if (t) { all += t; onText(all); } } catch {}
+        }
+      }
+      return all;
+    }
+    throw new Error('Gemini chưa trả lời được. Thử lại.');
+  }
+
+  function renderAsk() {
+    $('#view').innerHTML = `
+      <h1>Hỏi tin</h1>
+      <p class="sub">Hỏi về tin y tế, nha khoa, nhãn khoa, đấu thầu, pháp lý trong bản tin những ngày qua. Trả lời bằng tiếng Anh kèm tiếng Việt, có PESTEL và ảnh hưởng tới MMH, đọc to ngay khi có chữ.</p>
+      ${CFG.gkey ? '' : '<div class="note" style="margin-bottom:12px">Cần Gemini key (miễn phí) để hỏi và tóm tắt. Vào <a href="#/set">Cài đặt</a> để thêm key. Danh sách tin bên dưới vẫn xem được.</div>'}
+      <div class="card ask-box">
+        <div class="ask-in"><textarea id="ask-q" rows="2" placeholder="Ví dụ: Luật Đấu thầu sửa đổi thay đổi gì với mua sắm thiết bị y tế?"></textarea>
+          <button class="mic sm" id="ask-mic" aria-label="Hỏi bằng giọng nói">${I.mic}</button></div>
+        <div class="row" style="margin-top:8px"><button class="btn pri" data-act="ask-go">Hỏi</button>
+          <button class="chip" data-act="ask-lang" title="Ngôn ngữ khi hỏi bằng giọng nói">Nói: ${ASK.lang === 'vi-VN' ? 'Tiếng Việt' : 'English'}</button>
+          <label class="small row" style="gap:6px"><input type="checkbox" id="ask-speak" ${ASK.speak ? 'checked' : ''}> Đọc to câu trả lời</label>
+          <span class="grow"></span><button class="btn ghost" data-act="ask-stop" id="ask-stop" hidden>Dừng</button></div>
+        <div class="chips" style="margin:10px 0 0">${QUICK.map(q => `<button class="chip" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+      </div>
+      <div id="ask-thread"></div>
+      <h2>Tin trong bản tin</h2>
+      <div class="row" style="margin-bottom:8px"><div class="chips" style="margin:0">${[[1, 'Hôm nay'], [3, '3 ngày'], [7, '7 ngày']].map(([d, l]) => `<button class="chip${ASK.range === d ? ' on' : ''}" data-range="${d}">${l}</button>`).join('')}</div></div>
+      <div class="chips">${LENS.map(([k, l]) => `<button class="chip${ASK.lens === k ? ' on' : ''}" data-lens="${k}">${esc(l)}</button>`).join('')}</div>
+      <div class="row ask-selbar" id="ask-selbar" hidden><span class="grow small" id="ask-seln"></span><button class="btn" data-act="ask-clear">Bỏ chọn</button><button class="btn pri" data-act="ask-sum">Tóm tắt các bài đã chọn</button></div>
+      <div id="ask-list"><p class="muted small"><span class="spin"></span> Đang tải tin…</p></div>`;
+    paintThread();
+    loadPool().then(paintList).catch(() => { $('#ask-list').innerHTML = '<p class="note">Chưa đọc được bản tin. Kiểm tra mạng rồi mở lại.</p>'; });
+  }
+  function peChips(x) { return (x.pe || []).map(f => `<span class="pe pe-${f}" title="${esc(PESTEL.NAMES[f][1])}">${PESTEL.NAMES[f][0]}</span>`).join(''); }
+  function paintList() {
+    const box = $('#ask-list'); if (!box) return;
+    const xs = viewList();
+    box.innerHTML = xs.length ? `<div class="ls">${xs.slice(0, 60).map(x => `<label class="li ask-li${ASK.sel.has(x.id) ? ' on' : ''}"><input type="checkbox" data-pick="${x.id}" ${ASK.sel.has(x.id) ? 'checked' : ''}>
+      <span class="t"><span class="tp">${esc(x.src)} · ${x.d.split('-').reverse().slice(0, 2).join('/')} <span class="pes">${peChips(x)}</span></span>${esc(x.t)}${x.sum ? `<span class="ls-sub">${esc(x.sum)}</span>` : ''}</span>
+      ${x.u ? `<a class="btn ghost small" href="${esc(x.u)}" target="_blank" rel="noopener">Bài gốc</a>` : ''}</label>`).join('')}</div>`
+      : '<p class="muted small">Không có tin phù hợp trong khoảng này.</p>';
+    paintSel();
+  }
+  function paintSel() { const b = $('#ask-selbar'); if (!b) return; b.hidden = !ASK.sel.size; $('#ask-seln').textContent = `Đã chọn ${ASK.sel.size} bài`; }
+  function paintThread() {
+    const box = $('#ask-thread'); if (!box) return;
+    box.innerHTML = ASK.hist.map((h, i) => ansHtml(h, i)).join('');
+  }
+  function ansHtml(h, i) {
+    const o = parseAns(h.a || ''), srcs = h.srcs;
+    const en = bullets(o.EN), vi = bullets(o.VI), pe = bullets(o.PESTEL), words = bullets(o.WORDS), next = bullets(o.NEXT);
+    return `<div class="card ans" id="ans-${i}"><div class="ans-q">${esc(h.q)}</div>
+      ${h.err ? `<p class="note">${esc(h.err)}</p>` : ''}
+      ${en.length ? `<div class="lbl">English</div><ul class="ans-en">${en.map((b, k) => `<li>${cite(b, srcs)} <button class="say" data-say="${esc(speakable(b))}" aria-label="Nghe">${I.play}</button> <button class="say" data-practice="${i}:${k}" title="Luyện đọc câu này">${I.mic}</button></li>`).join('')}</ul>`
+        : h.done ? '' : '<p class="muted small"><span class="spin"></span> Đang đọc tin và trả lời…</p>'}
+      ${vi.length ? `<details class="ans-vi" ${h.viOpen ? 'open' : ''}><summary class="lbl">Tiếng Việt</summary><ul>${vi.map(b => `<li>${cite(b, srcs)}</li>`).join('')}</ul></details>` : ''}
+      ${pe.length ? `<div class="lbl" style="margin-top:10px">PESTEL</div><ul class="ans-pe">${pe.map(b => { const m = b.match(/^([PESTML])\s*[:\-–]\s*(.*)$/); return m ? `<li><span class="pe pe-${m[1]}" title="${esc(PESTEL.NAMES[m[1]]?.[1] || '')}">${PESTEL.NAMES[m[1]]?.[0] || m[1]}</span> ${cite(m[2], srcs)}</li>` : `<li>${cite(b, srcs)}</li>`; }).join('')}</ul>` : ''}
+      ${o.MMH ? `<div class="lbl" style="margin-top:10px">Ảnh hưởng tới MMH</div><p class="ans-mmh">${cite(o.MMH, srcs)}</p>` : ''}
+      ${words.length ? `<div class="lbl" style="margin-top:10px">Từ vựng</div><div class="chips">${words.map(w => { const [en2, vi2] = w.split(/\s*=\s*/); return `<button class="chip" data-say="${esc(en2 || w)}" title="${esc(vi2 || '')}">${esc(en2 || w)}${vi2 ? ` <span class="muted">· ${esc(vi2)}</span>` : ''}</button>`; }).join('')}</div>` : ''}
+      <div id="prac-${i}"></div>
+      ${h.done && !h.err ? `<div class="row" style="margin-top:10px"><button class="btn" data-replay="${i}">${I.play} Nghe lại</button>${next.map(q => `<button class="chip" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>` : ''}
+      ${srcs.length ? `<details style="margin-top:10px"><summary class="small muted">Nguồn (${srcs.length} bài)</summary><ol class="ans-src">${srcs.map(x => `<li><a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)}</a> <span class="muted small">· ${esc(x.src)} · ${x.d.split('-').reverse().slice(0, 2).join('/')}</span></li>`).join('')}</ol></details>` : ''}
+    </div>`;
+  }
+  /* đọc to từng câu ngay khi Gemini viết xong câu đó (không chờ cả câu trả lời) */
+  const SPK = { q: [], busy: false, said: 0 };
+  async function spkPump() {
+    if (SPK.busy) return; SPK.busy = true;
+    while (SPK.q.length) { const t = SPK.q.shift(); try { await Voice.sayWait(t); } catch {} }
+    SPK.busy = false;
+  }
+  function spkFeed(enText, final) {
+    const body = speakable(bullets(enText).join('. ').replace(/\.\.+/g, '.'));
+    const parts = body.split(/(?<=[.!?])\s+/);
+    const ready = final ? parts : parts.slice(0, -1);
+    while (SPK.said < ready.length) { const s = ready[SPK.said++].trim(); if (s) SPK.q.push(s); }
+    spkPump();
+  }
+  async function ask(q) {
+    q = String(q || '').trim(); if (!q || ASK.busy) return;
+    if (!CFG.gkey) { toast('Cần Gemini key. Vào Cài đặt để thêm.', 3500); return; }
+    await loadPool().catch(() => []);
+    const srcs = pick(q);
+    if (!srcs.length) { toast('Chưa thấy tin nào khớp câu hỏi trong khoảng ngày đang chọn.', 3500); return; }
+    Voice.stop(); SPK.q = []; SPK.said = 0;
+    const h = { q, srcs, a: '', done: false }; ASK.hist.push(h); if (ASK.hist.length > 6) ASK.hist.shift();
+    const i = ASK.hist.length - 1; ASK.busy = true; $('#ask-stop').hidden = false;
+    paintThread(); $('#ans-' + i)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const arts = srcs.map((x, k) => `[${k + 1}] ${x.d} · ${x.src}\n${x.t}${x.h_en && x.h_en !== x.t ? ' / ' + x.h_en : ''}\n${x.sum}${x.s_en && x.s_en !== x.sum ? '\n' + x.s_en : ''}`).join('\n\n');
+    const contents = [];
+    ASK.hist.slice(0, -1).slice(-2).forEach(p => { if (p.a) { contents.push({ role: 'user', parts: [{ text: p.q }] }); contents.push({ role: 'model', parts: [{ text: (parseAns(p.a).EN || '').slice(0, 1500) }] }); } });
+    contents.push({ role: 'user', parts: [{ text: `Articles:\n${arts}\n\nQuestion: ${q}` }] });
+    let last = 0;
+    ASK.ctl = new AbortController();
+    try {
+      await gemStream(ASK_SYS, contents, all => {
+        h.a = all;
+        if (Date.now() - last > 120) { last = Date.now(); const el = $('#ans-' + i); if (el) el.outerHTML = ansHtml(h, i); }
+        if (ASK.speak) spkFeed(parseAns(all).EN || '', false);
+      }, ASK.ctl.signal);
+      h.done = true;
+      if (ASK.speak) spkFeed(parseAns(h.a).EN || '', true);
+      bullets(parseAns(h.a).WORDS).forEach(w => { const [en2, vi2] = w.split(/\s*=\s*/); if (en2 && vi2) addWord(en2, vi2, '', 'Hỏi tin'); });
+    } catch (e) { h.done = true; h.err = e.name === 'AbortError' ? '' : (e.message === 'NOKEY' ? 'Chưa có Gemini key.' : e.message); }
+    ASK.busy = false; ASK.ctl = null; if ($('#ask-stop')) $('#ask-stop').hidden = true;
+    const el = $('#ans-' + i); if (el) el.outerHTML = ansHtml(h, i);
+  }
+  function askMic() {
+    const btn = $('#ask-mic');
+    if (Rec.on) { Rec.stop(); return; }
+    if (!SR) { toast(recErr('nosupport'), 4000); return; }
+    btn.classList.add('rec'); btn.innerHTML = I.stop;
+    Rec.start(t => { $('#ask-q').value = t; }, r => {
+      btn.classList.remove('rec'); btn.innerHTML = I.mic;
+      if (!r.text) { toast(recErr(r.err) || 'Chưa nghe rõ, thử lại nhé.', 4000); return; }
+      $('#ask-q').value = r.text; ask(r.text);
+    }, ASK.lang);
+  }
+  function practice(i, k) {
+    const h = ASK.hist[i]; if (!h) return;
+    const s = speakable(bullets(parseAns(h.a).EN)[k] || ''); if (!s) return;
+    const box = $('#prac-' + i);
+    box.innerHTML = `<div class="hbox" style="margin-top:10px"><div class="lbl">Luyện đọc</div><p class="best" style="font-size:17px">${esc(s)}</p>
+      <div class="row"><button class="btn" data-say="${esc(s)}">${I.play} Nghe</button><button class="btn" data-say="${esc(s)}" data-rate="0.75">${I.slow} Chậm</button><button class="btn pri" data-act="prac-go">${I.mic} Đọc lại</button></div><div id="prac-res"></div></div>`;
+    S.st.target = s;
+    box.querySelector('[data-act="prac-go"]').onclick = e => {
+      const b = e.currentTarget;
+      if (Rec.on) { Rec.stop(); return; }
+      if (!SR) { toast(recErr('nosupport'), 4000); return; }
+      b.innerHTML = I.stop + ' Dừng';
+      Rec.start(() => {}, r => {
+        b.innerHTML = I.mic + ' Đọc lại';
+        if (!r.text) { toast(recErr(r.err) || 'Chưa nghe rõ, thử lại nhé.', 4000); return; }
+        const a = align(s, r.text);
+        box.querySelector('#prac-res').innerHTML = `<div style="margin-top:8px">${ring(a.score, 'Đọc rõ')}</div><div style="margin-top:6px">${wordsHtml(a)}</div>${legend}`;
+      });
+    };
+  }
+
   /* ── sự kiện ── */
   $('#view').addEventListener('click', async e => {
     const t = e.target.closest('button, u, a'); if (!t) return;
     const ds = t.dataset;
-    if (ds.say != null) { Voice.say(ds.say, ds.rate ? +ds.rate : CFG.rate); return; }
+    if (ds.say != null) { SPK.q = []; Voice.say(ds.say, ds.rate ? +ds.rate : CFG.rate); return; }
+    if (ds.q) { $('#ask-q').value = ds.q; ask(ds.q); return; }
+    if (ds.range) { ASK.range = +ds.range; LS.set('mmh_ask_range', ASK.range); $$('[data-range]').forEach(b => b.classList.toggle('on', b === t)); paintList(); return; }
+    if (ds.lens) { ASK.lens = ds.lens; LS.set('mmh_ask_lens', ASK.lens); $$('[data-lens]').forEach(b => b.classList.toggle('on', b === t)); paintList(); return; }
+    if (ds.replay != null) { const h = ASK.hist[+ds.replay]; if (h) { Voice.stop(); SPK.q = bullets(parseAns(h.a).EN).map(speakable); spkPump(); } return; }
+    if (ds.practice) { const [i, k] = ds.practice.split(':').map(Number); practice(i, k); return; }
+    if (t.id === 'ask-mic') { askMic(); return; }
     if (ds.topic) { S.topic = ds.topic; LS.set('mmh_coach_topic', S.topic); renderHome(); return; }
     if (ds.lvl) { location.hash = `#/l/${encodeURIComponent(S.L.id)}/${ds.lvl}`; return; }
     if (ds.b != null && S.lvl === 1 && !S.st.checked) { S.st.sel[+ds.b] = ds.o; $('#drill').innerHTML = lvl1Html(); return; }
@@ -644,6 +893,11 @@ From a Vietnamese news summary (and a rough machine translation), return JSON on
     if (ds.know != null) { know(ds.know === '1'); return; }
     if (t.id === 'mic') { micToggle(S.lvl === 1 ? doneL1 : doneSpeak); return; }
     switch (ds.act) {
+      case 'ask-go': ask($('#ask-q').value); return;
+      case 'ask-stop': if (ASK.ctl) ASK.ctl.abort(); SPK.q = []; Voice.stop(); return;
+      case 'ask-sum': ask(`Tóm tắt ${ASK.sel.size} bài đã chọn: ý chính, PESTEL, ảnh hưởng tới MMH.`); return;
+      case 'ask-clear': ASK.sel.clear(); paintList(); return;
+      case 'ask-lang': ASK.lang = ASK.lang === 'vi-VN' ? 'en-US' : 'vi-VN'; LS.set('mmh_ask_lang', ASK.lang); t.textContent = 'Nói: ' + (ASK.lang === 'vi-VN' ? 'Tiếng Việt' : 'English'); return;
       case 'check': {
         S.st.checked = true; const bl = blanksOf(S.L.en);
         bl.forEach((b, i) => { if (S.st.sel[i] !== b) { const k = S.L.keys.find(x => x[1].toLowerCase().includes(b.toLowerCase())); addWord(b, k ? k[0] : '', clean(S.L.en), topicName(S.L.topic)); } });
@@ -681,8 +935,15 @@ From a Vietnamese news summary (and a rough machine translation), return JSON on
         return;
     }
   });
+  $('#view').addEventListener('change', e => {
+    const p = e.target.dataset?.pick; if (p) { e.target.checked ? ASK.sel.add(p) : ASK.sel.delete(p); e.target.closest('.li')?.classList.toggle('on', e.target.checked); paintSel(); }
+    if (e.target.id === 'ask-speak') { ASK.speak = e.target.checked; LS.set('mmh_ask_speak', ASK.speak); if (!ASK.speak) { SPK.q = []; Voice.stop(); } }
+  });
   $('#view').addEventListener('input', e => { if (e.target.id === 'rate') $('#rate-v').textContent = e.target.value; });
-  $('#view').addEventListener('keydown', e => { if (e.target.id === 'typed-in' && e.key === 'Enter') { e.preventDefault(); $('[data-act="typed-go"]').click(); } });
+  $('#view').addEventListener('keydown', e => {
+    if (e.target.id === 'typed-in' && e.key === 'Enter') { e.preventDefault(); $('[data-act="typed-go"]').click(); }
+    if (e.target.id === 'ask-q' && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(e.target.value); }
+  });
 
   window.COACH = { align, ideaHit, toks, S, CFG };
   route();

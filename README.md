@@ -1,4 +1,6 @@
-# MMH Daily
+# MMH Daily Podcast
+
+> Đổi tên từ "MMH Daily" (23/11/2026). Bản tin nội bộ Chủ nhật đã BỎ khỏi app + lịch chạy theo yêu cầu người dùng (code `tools/weekly.mjs`, dữ liệu mã hoá cũ vẫn giữ, chạy tay `kind=weekly` vẫn được). Chỉ còn tin từ báo / cơ quan chính thống, bệnh viện, hội y học; bỏ tin giải trí (`config.json ▸ kw.entertainment`).
 
 Tờ báo buổi sáng của MMH + podcast tiếng Anh mỗi ngày.
 **Ưu tiên y tế** (đấu thầu, chính sách, đầu tư công, bệnh viện lớn, thiết bị y tế), sau đó kinh tế, chính trị, xã hội Việt Nam.
@@ -61,3 +63,8 @@ Trang riêng trong cùng app (menu **Luyện nói**, lối tắt app). Mỗi đo
 - Nhận giọng: Web Speech API (Chrome / Edge / Safari), không có ⇒ gõ. Chấm ý + sửa câu: **Gemini API key của người dùng** (Cài đặt, chỉ lưu localStorage của máy đó,
   gọi thẳng từ trình duyệt, tự chọn mẫu Flash mới nhất khi mẫu cũ không còn); chưa có key ⇒ chấm theo `ideas` có sẵn. Giọng mẫu: giọng trình duyệt hoặc Azure Neural TTS (key + vùng, tuỳ chọn).
 - Không dùng tài khoản Claude của người dùng trong trang này (điều khoản Anthropic không cho dùng gói thuê bao trong app tự làm).
+
+## Hỏi tin (`coach/#/ask`, từ 23/11/2026)
+Hỏi bằng chữ hoặc giọng nói (Việt / Anh) về tin của 7 số gần nhất ⇒ chọn tối đa 12 tin khớp nhất (hoặc các tin người dùng tick) ⇒ Gemini trả lời **dạng chữ, hiện dần** (stream SSE, tắt "suy nghĩ" để nhanh):
+English (có trích nguồn [n]) · Tiếng Việt · PESTEL · Ảnh hưởng tới MMH · Từ vựng (tự vào Sổ từ) · 3 câu hỏi tiếp. Đọc to từng câu ngay khi viết xong (giọng trình duyệt / Azure, miễn phí), "Luyện đọc" từng câu (chấm từng từ).
+Chỉ trả lời từ các tin đưa vào (tóm tắt của báo, không đọc toàn văn bài). Nhãn PESTEL trên mỗi tin: `pestel.js` (luật từ khoá, chạy trên trình duyệt, dùng chung trang báo + Hỏi tin).

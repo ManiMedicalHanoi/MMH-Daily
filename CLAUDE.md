@@ -25,7 +25,8 @@ Phiên do app mở có khối `<routine-fire-payload>` chứa JSON `{kind, sourc
 4. `node tools/apply.mjs <ngày> /tmp/out.json` (báo lỗi ⇒ sửa rồi chạy lại) ⇒ `git add data && git commit -m "Số báo <ngày> — Claude viết" && git push origin HEAD:main`.
 5. Đẩy lên main ⇒ workflow tự tạo giọng + đăng trang (≈ 5 phút). Báo người dùng: chương trình, số tin, độ dài, link trang.
 
-## B. Bản tin nội bộ — Claude viết (Routine "MMH Daily · Nội bộ", tối Chủ nhật hoặc bấm Run now)
+## B. Bản tin nội bộ — ĐÃ BỎ (23/11/2026, người dùng yêu cầu: app chỉ còn tin báo chính thống). Không chạy mục này nếu người dùng không yêu cầu lại.
+### (cũ) Bản tin nội bộ — Claude viết (Routine "MMH Daily · Nội bộ", tối Chủ nhật hoặc bấm Run now)
 Cần: mạng tới `script.google.com` + `script.googleusercontent.com` (môi trường Claude Code), kho này có `data/inbox.pub.json`
 (GitHub tạo khi đã có secret `DAILY_INTERNAL_KEY`). Phiên Claude KHÔNG có khoá — chỉ khoá bản tin bằng khoá công khai.
 1. `NODE_USE_ENV_PROXY=1 WEEKLY_FACTS_ONLY=1 WEEKLY_OUT=/tmp/mmh-in node tools/weekly.mjs` (Node phải bật proxy mới ra mạng) ⇒ `/tmp/mmh-in/<CN>.facts.json` (số liệu Report Hub, CRM, thầu, đào tạo — ngoài repo).
@@ -41,6 +42,6 @@ KHÔNG commit file nào trong /tmp; KHÔNG dán tên người / khách hàng và
 Không có mạng tới script.google.com ⇒ chạy workflow **MMH Daily** `kind=weekly` (bản mẫu tự động) và báo người dùng.
 
 ## Quy tắc
-- **Luyện nói** (`coach/`): app học nói tiếng Anh 3 mức (xem README ▸ Luyện nói). Đổi file trong `coach/` ⇒ tăng `?v=` trong `coach/index.html`; thêm file ⇒ thêm vào bước `cp` của workflow + danh sách đệm `sw.js`.
+- App tên **MMH Daily Podcast**. **Hỏi tin** + **Luyện nói** (`coach/`): app học nói tiếng Anh 3 mức (xem README ▸ Luyện nói). Đổi file trong `coach/` ⇒ tăng `?v=` trong `coach/index.html`; thêm file ⇒ thêm vào bước `cp` của workflow + danh sách đệm `sw.js`.
 - Chỉ sửa `data/` khi làm số báo; sửa code thì theo README.
 - Không đổi lịch (cron) / người dẫn nếu người dùng không yêu cầu.
