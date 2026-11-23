@@ -597,3 +597,7 @@ html.ls2-on .mini{display:none}
 .rk-x{position:absolute;top:10px;right:10px;background:none;border:0;color:#7C8491;font-size:18px;width:36px;height:36px;cursor:pointer}
 .rk-err{color:#F09A94;font-size:14px;margin:0}
 @media (max-width:620px){.rk-list li{grid-template-columns:28px minmax(0,1fr) 48px}.rk-st{grid-column:2;text-align:left;margin-top:-6px}.rk-pt{grid-row:1;grid-column:3}.rk-p{padding:12px 6px}.rk-p b{font-size:14px}}
+/* Thanh chuyển nhanh trang Nghe */
+.ls-tabs{position:sticky;top:0;z-index:30;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 16px;padding:8px 0;background:var(--dark)}
+.ls-tabs a,.ls-tabs button{flex:none;border:1px solid var(--dline);background:var(--dark2);color:var(--dtext2);border-radius:999px;padding:9px 16px;font:600 14px var(--sans);text-decoration:none;cursor:pointer}
+.ls-tabs .on{background:#F2F3F5;color:#111;border-color:#F2F3F5}

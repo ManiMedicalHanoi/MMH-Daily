@@ -171,7 +171,7 @@
     const turns = (p.turns || []).filter(t => t.text);
     const hosts = Object.fromEntries(p.hosts.map(h => [h.id, h]));
     const recent = S.index.editions.slice(0, 14);
-    return `<div class="ls" style="--show:${p.color}">
+    return `<div class="ls" style="--show:${p.color}">${window.STUDY ? STUDY.tabs(ed) : ''}
       <section class="ls-hero"><div class="cv">${cover(p, ed.date, true)}</div><div>
         <div class="ls-k">Podcast · ${esc(viDate(ed.date))}</div>
         <h1 class="ls-t">${esc(p.name)}</h1>
@@ -375,6 +375,7 @@
     $('#view').innerHTML = '<div class="skel" style="height:44px;width:70%"></div><div class="skel"></div><div class="skel" style="width:85%"></div><div class="skel" style="width:60%"></div>';
     try { await loadIndex(); }
     catch { $('#view').innerHTML = '<div class="empty">Chưa có dữ liệu. Thử tải lại sau ít phút.</div>'; return; }
+    if (!location.hash || location.hash === '#' || location.hash === '#/') history.replaceState(null, '', '#/listen');   // mở app ⇒ vào thẳng podcast (người dùng yêu cầu 24/11/2026)
     await route();
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost') && !(window.DAILY_CFG || {}).demo) navigator.serviceWorker.register('sw.js').catch(() => {});
   }

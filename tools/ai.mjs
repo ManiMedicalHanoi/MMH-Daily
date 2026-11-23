@@ -65,13 +65,14 @@ export async function askJson({ system, user, schema, maxTokens = 32000, effort 
   const stream = client.messages.stream({
     model: MODEL, max_tokens: maxTokens,
     output_config: { effort, format: { type: 'json_schema', schema } },
-    system, messages: [{ role: 'user', content: user }],
+    // lời dặn chung (bối cảnh MMH + WRITING + PODCAST) giống nhau ở mọi lượt trong ngày ⇒ đệm lời nhắc: lượt sau chỉ tính ~10% giá phần này
+    system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }], messages: [{ role: 'user', content: user }],
   });
   const res = await stream.finalMessage();
   if (res.stop_reason === 'refusal') throw new Error('Claude từ chối: ' + (res.stop_details?.category || ''));
   if (res.stop_reason === 'max_tokens') throw new Error('Claude trả lời bị cắt (max_tokens)');
   const u = res.usage || {};
-  console.log(`  Claude ${MODEL}: vào ${u.input_tokens} · ra ${u.output_tokens} token`);
+  console.log(`  Claude ${MODEL}: vào ${u.input_tokens} (+ đệm đọc ${u.cache_read_input_tokens || 0} · ghi ${u.cache_creation_input_tokens || 0}) · ra ${u.output_tokens} token`);
   return JSON.parse(res.content.filter(b => b.type === 'text').map(b => b.text).join(''));
 }
 const obj = (props) => ({ type: 'object', additionalProperties: false, required: Object.keys(props), properties: props });
