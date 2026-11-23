@@ -23,7 +23,7 @@ Tờ báo buổi sáng của MMH + podcast tiếng Anh mỗi ngày.
   Admin: Thiết lập ▸ token GitHub (fine-grained, kho này, Actions R/W), Fire URL + token Routine, số lượt ElevenLabs / ngày.
 - **Chế độ học** (`learn.js`): phụ đề Anh + Việt chạy theo câu, lặp câu, dừng sau mỗi câu, ẩn Anh / Việt, từ vựng gạch chân.
 - **Hướng dẫn** (`guide.js`, nút ?), **Cài app** (`install.js`, `manifest.webmanifest`, `sw.js` — đổi quy tắc đệm ⇒ tăng `V`).
-- Giọng ElevenLabs: secret `ELEVENLABS_API_KEY` (Settings ▸ Secrets ▸ Actions). Không có ⇒ luôn giọng miễn phí.
+- Giọng ElevenLabs: secret `ELEVENLABS_API_KEY` (Settings ▸ Secrets ▸ Actions) ⇒ podcast hằng ngày tự đọc bằng ElevenLabs v3 có thẻ cảm xúc (PODCAST.md ▸ 6); hết credit / lỗi ⇒ giọng miễn phí. Không có khoá ⇒ luôn giọng miễn phí.
 
 ## Cài đặt kho mới (1 lần)
 - Settings ▸ Pages ▸ Build and deployment ▸ Source: **GitHub Actions**.

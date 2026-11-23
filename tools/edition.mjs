@@ -68,6 +68,13 @@ function pick(pool) {
 }
 
 // ── chữ cho giọng đọc ──
+// Thẻ cảm xúc cho ElevenLabs v3 ([curious], [chuckles]…): "say" = lời có thẻ (đưa cho giọng đọc), "text" = lời sạch (phụ đề, giọng miễn phí).
+const TAG = /\s*\[[a-z][a-z ,'-]{1,28}\]\s*/gi;
+const voiceTurn = t => { const raw = speech(t.text), text = raw.replace(TAG, ' ').replace(/\s+([,.?!])/g, '$1').replace(/\s+/g, ' ').trim();
+  const o = { sp: t.sp, text, vi: String(t.vi || '').replace(TAG, ' ').replace(/\s+/g, ' ').trim() };
+  if (raw !== text && !t.rep) o.say = raw;
+  if (t.rep) o.rep = true;
+  return o; };
 const speech = s => String(s || '')
   .replace(/\bHCMC\b/g, 'Ho Chi Minh City').replace(/\bVND\b/g, 'dong').replace(/\bUS\$/g, '$').replace(/(\d)%/g, '$1 percent')
   .replace(/\s*\([^)]*\)/g, '').replace(/[“”]/g, '"').replace(/\s+/g, ' ').trim();
@@ -234,6 +241,11 @@ Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'n
    Recent sign-offs: ${AV.closes.map(o => '"' + o + '"').join(' | ') || 'none'}. Avoid these phrases that were overused recently: ${AV.phrases.join('; ') || 'none'}.
    Sound like real people talking, not reading: contractions, short sentences, natural reactions and hand-offs, a light personal touch; numbers written to be spoken;
    no URLs or lists. Never sound cheerful about accidents or deaths. For every turn also give "vi": a natural Vietnamese subtitle of that turn, and "rep": true only for Listen & Repeat sentences (else false).
+   WRITE FOR THE VOICE (PODCAST.md ▸ 6): mix very short reactions (2–5 words) with medium sentences so the rhythm is never flat; each story has ONE key point said
+   with weight (a short sentence of its own, often after "Here's the thing." or a question); use "..." at most twice per story for a real pause.
+   Delivery tags for the voice engine, in square brackets inside "text": [curious] [surprised] [thoughtful] [warmly] [excited] [serious] [chuckles] [sighs].
+   At most one tag per turn, roughly one turn in three, placed where a real host would change tone; [serious] only for accidents, deaths, disease;
+   no tags in Listen & Repeat turns; never write tags in "vi".
 
 Stories — health: ${JSON.stringify(pick('health'))}
 economy: ${JSON.stringify(pick('economy'))}
@@ -241,7 +253,7 @@ politics: ${JSON.stringify(pick('politics'))}
 society: ${JSON.stringify(pick('society'))}` });
   ed.note = out.note; ed.healthDesk.analysis = out.health; ed.vocab = out.vocab;
   ed.podcast.title = out.podcast.title; ed.podcast.desc = out.podcast.desc;
-  ed.podcast.turns = out.podcast.turns.map(t => Object.assign({ sp: t.sp, text: speech(t.text), vi: t.vi }, t.rep ? { rep: true } : {}));
+  ed.podcast.turns = out.podcast.turns.map(t => voiceTurn({ sp: t.sp, text: t.text, vi: t.vi, rep: t.rep }));
   const { PROVIDER, usedModel } = await import('./ai.mjs');
   ed.writer = PROVIDER || 'claude'; ed.model = usedModel();
   try { await coachWrite(ed, all, SYSTEM); } catch (e) { console.log('Bỏ qua soạn sẵn bài luyện / tóm tắt: ' + e.message); }

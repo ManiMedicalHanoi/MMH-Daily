@@ -1171,9 +1171,9 @@
    "edge": "Miễn phí (Microsoft)",
    "eleven": "Tự nhiên (ElevenLabs)"
   },
-  "default": "edge",
-  "model": "eleven_multilingual_v2",
-  "note": "ElevenLabs cần secret ELEVENLABS_API_KEY. Mỗi lượt ~1 credit / ký tự (model multilingual v2); số báo 8 phút ≈ 6–8 nghìn ký tự.",
+  "default": "eleven",
+  "model": "eleven_v3",
+  "note": "Có secret ELEVENLABS_API_KEY ⇒ podcast đọc bằng ElevenLabs v3 (thẻ cảm xúc trong kịch bản), lỗi / hết credit ⇒ giọng miễn phí. v3 ≈ 1 credit / ký tự; số báo 8 phút ≈ 6–8 nghìn ký tự.",
   "presets": [
    {
     "id": "news",

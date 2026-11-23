@@ -41,4 +41,12 @@ Giọng đọc xoay vòng: một giọng nam · một giọng nữ · hai ngư�
 - Có "what this means for us" cụ thể cho MMH ở những tin liên quan.
 - Kết: 1 câu điều đáng nhớ nhất hôm nay + chào ngắn, khác mỗi ngày.
 
+## 6. Viết cho giọng đọc — nghe thật, có trọng tâm (23/11/2026, người dùng: giọng cũ "đều, thiếu hồn")
+- Nhịp: xen câu rất ngắn (2–5 từ: "Wait. Every few months?") với câu vừa; không để ba câu dài liền nhau.
+- Mỗi tin **một ý trọng tâm**, nói thành câu riêng, có đà dẫn ("Here's the thing." · một câu hỏi) — chỗ giọng nhấn.
+- "..." tối đa 2 lần / tin, cho một nhịp dừng thật.
+- **Thẻ cảm xúc** (giọng ElevenLabs v3 đọc, phụ đề tự bỏ): `[curious] [surprised] [thoughtful] [warmly] [excited] [serious] [chuckles] [sighs]`, trong ngoặc vuông ở chỗ người dẫn đổi giọng.
+  Tối đa 1 thẻ / lượt, khoảng 1 lượt trong 3 có thẻ; `[serious]` cho tai nạn, tử vong, bệnh tật (không vui vẻ); không thẻ trong câu Listen & Repeat, không thẻ trong phụ đề Việt.
+- Máy tách lời: `turns[i].say` = có thẻ (đưa cho giọng đọc), `turns[i].text` = sạch (phụ đề, giọng miễn phí khi hết credit).
+
 Xem thêm `WRITING.md` (chọn tin, giọng nói tự nhiên, phụ đề Việt, đúng sự thật, danh sách từ cấm).
