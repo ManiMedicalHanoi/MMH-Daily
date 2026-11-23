@@ -11,7 +11,7 @@ async function gemList() {
   const r = await fetch(GEM + '/models?pageSize=200', { headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY } });
   if (!r.ok) throw new Error('Gemini models ' + r.status);
   const d = await r.json();
-  const sc = id => { const v = parseFloat((id.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || 0); return v * 10 + (/flash/.test(id) ? 30 : 0) + (/flash-latest$/.test(id) ? 60 : 0) - (/lite/.test(id) ? 8 : 0) - (/preview|exp/.test(id) ? 12 : 0); };
+  const sc = id => { const v = parseFloat((id.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || 0); return v * 10 + (/flash/.test(id) ? 30 : 0) + (/latest$/.test(id) ? 5 : 0) - (/lite/.test(id) ? 8 : 0) - (/preview|exp/.test(id) ? 12 : 0); };
   gemModels = (d.models || []).filter(m => (m.supportedGenerationMethods || []).includes('generateContent') && /gemini/.test(m.name) && /flash/.test(m.name)
     && !/(tts|image|embed|live|audio|native|thinking-exp)/i.test(m.name)).map(m => m.name.replace(/^models\//, '')).sort((a, b) => sc(b) - sc(a));
   if (process.env.GEMINI_MODEL) gemModels.unshift(process.env.GEMINI_MODEL);
@@ -21,8 +21,10 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function geminiJson({ system, user, schema, maxTokens }) {
   const prompt = user + '\n\nReturn ONLY one JSON object that matches this JSON Schema exactly (all required keys, no extra keys):\n' + JSON.stringify(schema);
   let last;
-  for (const model of (await gemList()).slice(0, 4)) {
-    for (let a = 0; a < 3; a++) {
+  const t0all = Date.now();
+  for (const model of (await gemList()).slice(0, 10)) {
+    if (Date.now() - t0all > 6 * 60e3) break;
+    for (let a = 0; a < 2; a++) {
       const t0 = Date.now();
       let r;
       try {
@@ -37,9 +39,13 @@ async function geminiJson({ system, user, schema, maxTokens }) {
         console.log(`  Gemini ${model}: vào ${u.promptTokenCount} · ra ${u.candidatesTokenCount} token · ${((Date.now() - t0) / 1000).toFixed(0)} giây`);
         try { gemLast = model; return JSON.parse(txt.replace(/^```(?:json)?\s*|\s*```$/g, '')); } catch (e) { last = new Error('Gemini trả JSON hỏng'); continue; }
       }
-      last = new Error(`Gemini ${model} ${r.status}`);
-      if (r.status === 404) break;
-      if ([429, 500, 502, 503, 504].includes(r.status)) { console.log(`  Gemini ${model} bận (${r.status}), thử lại`); await sleep(a === 0 ? 8000 : 20000); continue; }
+      const body = await r.text().catch(() => '');
+      const msg = ((body.match(/"message"\s*:\s*"([^"]{0,220})/) || [])[1] || '').replace(/\\n/g, ' ');
+      last = new Error(`Gemini ${model} ${r.status}${msg ? ': ' + msg : ''}`);
+      console.log(`  Gemini ${model} ${r.status}${msg ? ' — ' + msg : ''}`);
+      if (r.status === 404 || r.status === 400) break;                                  // mẫu không dùng được ⇒ mẫu khác
+      if (r.status === 429 && /limit: ?0|quota|exceeded|billing/i.test(msg)) break;      // hết / không có hạn mức miễn phí ⇒ đổi mẫu ngay
+      if ([429, 500, 502, 503, 504].includes(r.status)) { if (a === 0) { await sleep(r.status === 429 ? 15000 : 6000); continue; } break; }
       throw last;
     }
   }

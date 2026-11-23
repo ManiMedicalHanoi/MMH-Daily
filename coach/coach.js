@@ -212,7 +212,7 @@
       .map(m => ({ id: m.name.replace(/^models\//, ''), label: m.displayName || m.name }));
   }
   function rankModels(list) {
-    const sc = m => { const v = parseFloat((m.id.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || 0); return v * 10 + (/flash/.test(m.id) ? 30 : 0) + (/flash-latest$/.test(m.id) ? 60 : 0) - (/lite/.test(m.id) ? 8 : 0) - (/pro/.test(m.id) ? 5 : 0) - (/preview|exp/.test(m.id) ? 12 : 0) - (/\d{3,}$/.test(m.id) ? 2 : 0); };
+    const sc = m => { const v = parseFloat((m.id.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || 0); return v * 10 + (/flash/.test(m.id) ? 30 : 0) + (/latest$/.test(m.id) ? 5 : 0) - (/lite/.test(m.id) ? 8 : 0) - (/pro/.test(m.id) ? 5 : 0) - (/preview|exp/.test(m.id) ? 12 : 0) - (/\d{3,}$/.test(m.id) ? 2 : 0); };
     return list.slice().sort((a, b) => sc(b) - sc(a));
   }
   const bestModel = list => rankModels(list)[0];
@@ -226,12 +226,16 @@
      Hạn mức miễn phí tính theo từng mẫu, nên đổi mẫu cũng giúp khi một mẫu hết lượt. */
   let MODELS = null;
   async function modelList() { if (!MODELS) MODELS = await gemModels(); return MODELS; }
+  /* Mẫu báo hết / không có hạn mức miễn phí ⇒ nhớ 12 giờ, không gọi lại (đỡ chờ). */
+  const badGet = () => { const b = LS.get('mmh_gem_bad', {}), now = Date.now(); for (const k in b) if (now - b[k] > 12 * 36e5) delete b[k]; return b; };
+  const badSet = m => { const b = badGet(); b[m] = Date.now(); LS.set('mmh_gem_bad', b); if (CFG.gmodel === m) { CFG.gmodel = ''; saveCfg(); } };
   async function candidates() {
-    const out = CFG.gmodel ? [CFG.gmodel] : [];
-    try { rankModels(await modelList()).forEach(m => { if (!out.includes(m.id) && !/pro/.test(m.id)) out.push(m.id); }); }
+    const bad = badGet();
+    const out = CFG.gmodel && !bad[CFG.gmodel] ? [CFG.gmodel] : [];
+    try { rankModels(await modelList()).forEach(m => { if (!out.includes(m.id) && !/pro/.test(m.id) && !bad[m.id]) out.push(m.id); }); }
     catch (e) { if (!out.length) throw e; }
-    if (!out.length) throw new Error('Key này chưa dùng được mẫu Gemini nào. Tạo lại key trong AI Studio.');
-    return out.slice(0, 4);
+    if (!out.length) { LS.set('mmh_gem_bad', {}); throw new Error('Các mẫu Gemini miễn phí đang hết lượt. Đợi vài phút rồi thử lại.'); }
+    return out.slice(0, 6);
   }
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const TRANSIENT = st => st === 429 || st === 500 || st === 502 || st === 503 || st === 504;
@@ -254,6 +258,7 @@
         if (r.status === 400 && think && /thinking|budget/i.test(txt)) { think = false; continue; }
         last = gemErr(r.status, txt);
         if (r.status === 404) break;
+        if (r.status === 429 && /limit: ?0|quota|exceeded|billing/i.test(txt)) { badSet(model); opt.onBusy?.(model); break; }
         if (TRANSIENT(r.status)) { opt.onBusy?.(model); if (a === 0) { await wait(r.status === 429 ? 2500 : 1500); continue; } break; }
         throw last;
       }
