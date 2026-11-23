@@ -2,7 +2,8 @@
 """MMH Daily — tạo file podcast MP3 từ kịch bản trong data/editions/<ngày>.json.
 
 Giọng: edge-tts (giọng neural Microsoft, miễn phí). Lỗi ⇒ thử lại; hỏng hẳn ⇒ Piper (offline) nếu đã cài.
-Tuỳ chọn: DAILY_VOICE=eleven (+ secret ELEVENLABS_API_KEY) ⇒ giọng ElevenLabs tự nhiên hơn, bộ giọng theo DAILY_VOICES (config.json ▸ voice.presets).
+Có secret ELEVENLABS_API_KEY ⇒ mặc định giọng ElevenLabs (DAILY_VOICE=edge để ép giọng miễn phí), bộ giọng theo DAILY_VOICES (config.json ▸ voice.presets).
+Mẫu eleven_v3 (config.json ▸ voice.model) đọc cả thẻ cảm xúc trong turns[i].say ([curious], [chuckles]…); phụ đề + giọng miễn phí dùng turns[i].text (không thẻ).
 ElevenLabs lỗi / hết credit giữa chừng ⇒ cả số quay về edge-tts (không trộn giọng).
 Nhạc hiệu mở / kết tự tạo bằng ffmpeg (hợp âm khác nhau theo chương trình). Âm lượng chuẩn -16 LUFS, MP3 mono 64 kbps.
 Ghi lại mốc thời gian từng lượt lời (turns[i].t) để app chạy phụ đề theo giọng đọc.
@@ -42,8 +43,11 @@ def eleven_voices(hosts):
 
 def tts_eleven(text, voice_id, out, model, prev_text='', next_text=''):
     import urllib.request, urllib.error
-    body = {'text': text, 'model_id': model, 'previous_text': prev_text[-600:], 'next_text': next_text[:600],
-            'voice_settings': {'stability': 0.42, 'similarity_boost': 0.8, 'style': 0.18, 'use_speaker_boost': True}}
+    if model == 'eleven_v3':                          # v3: cảm xúc theo thẻ trong lời; 0.5 = "Natural" (thấp hơn = biểu cảm hơn, dễ lệch)
+        body = {'text': text, 'model_id': model, 'voice_settings': {'stability': 0.5, 'similarity_boost': 0.8}}
+    else:
+        body = {'text': text, 'model_id': model, 'previous_text': prev_text[-600:], 'next_text': next_text[:600],
+                'voice_settings': {'stability': 0.38, 'similarity_boost': 0.8, 'style': 0.3, 'use_speaker_boost': True}}
     req = urllib.request.Request(f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}?output_format=mp3_44100_128', data=json.dumps(body).encode(),
                                  headers={'xi-api-key': os.environ['ELEVENLABS_API_KEY'], 'Content-Type': 'application/json', 'Accept': 'audio/mpeg'})
     for i in range(3):
@@ -137,16 +141,22 @@ async def main():
     if req.get('engine') and not os.environ.get('DAILY_VOICE'):
         os.environ['DAILY_VOICE'] = req['engine']
         if req.get('preset'): os.environ['DAILY_VOICES'] = req['preset']
+    if not os.environ.get('DAILY_VOICE') and os.environ.get('ELEVENLABS_API_KEY'):
+        os.environ['DAILY_VOICE'] = 'eleven'          # có khoá ElevenLabs ⇒ mặc định giọng có cảm xúc
     if os.environ.get('DAILY_VOICE') == 'eleven' and os.environ.get('ELEVENLABS_API_KEY'):
         ev, model = eleven_voices(pod['hosts'])
-        chars = sum(len(t['text']) for t in turns)
+        def line(t):                                  # lời đưa cho ElevenLabs: v3 có thẻ cảm xúc; câu Listen & Repeat đọc chậm, rõ
+            if model == 'eleven_v3':
+                return ('[slowly, clearly] ' + t['text']) if t.get('rep') else (t.get('say') or t['text'])
+            return t['text']
+        chars = sum(len(line(t)) for t in turns)
         print(f'ElevenLabs: {len(turns)} lượt · {chars} ký tự · model {model}')
         if ev:
             def el(i):
                 t = turns[i]
                 same = lambda j: 0 <= j < len(turns) and turns[j]['sp'] == t['sp']
                 mp3 = tmp / f'e{i:03d}.mp3'
-                ok = tts_eleven(t['text'], ev.get(t['sp'], list(ev.values())[0]), mp3, model,
+                ok = tts_eleven(line(t), ev.get(t['sp'], list(ev.values())[0]), mp3, model,
                                 turns[i - 1]['text'] if same(i - 1) else '', turns[i + 1]['text'] if same(i + 1) else '')
                 return mp3 if ok else None
             esem = asyncio.Semaphore(3)               # ElevenLabs giới hạn số lượt song song theo gói
@@ -156,7 +166,7 @@ async def main():
             res = await asyncio.gather(*[el_async(i) for i in range(len(turns))])
             if all(res):
                 files = res; engine['eleven'] = len(res)
-                pod['voice'] = {'engine': 'eleven', 'preset': os.environ.get('DAILY_VOICES', ''), 'chars': chars}
+                pod['voice'] = {'engine': 'eleven', 'model': model, 'preset': os.environ.get('DAILY_VOICES', ''), 'chars': chars}
             else:
                 print('ElevenLabs không tạo đủ các lượt ⇒ dùng giọng miễn phí cho cả số')
     elif os.environ.get('DAILY_VOICE') == 'eleven':

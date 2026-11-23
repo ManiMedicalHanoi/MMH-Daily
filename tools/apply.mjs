@@ -23,10 +23,12 @@ err.push(...lint(turns));
 for (const s of out.stories || []) if (!s.h_en || !s.h_vi || !s.s_vi || !s.s_en) err.push('tin ' + s.id + ': thiếu tiêu đề / tóm tắt Anh hoặc Việt');
 if (words < 700) err.push('kịch bản ' + words + ' từ — cần ≥ 700 (≈ 5 phút)');
 if (err.length) { console.error('KHÔNG GHI — sửa lại:\n- ' + err.join('\n- ')); process.exit(1); }
+const TAG = /\s*\[[a-z][a-z ,'-]{1,28}\]\s*/gi;   // thẻ cảm xúc ElevenLabs v3 ⇒ say (giọng) / text (phụ đề)
 const speech = s => String(s).replace(/\bHCMC\b/g, 'Ho Chi Minh City').replace(/\bVND\b/g, 'dong').replace(/(\d)%/g, '$1 percent').replace(/\s+/g, ' ').trim();
 for (const s of out.stories) Object.assign(ed.stories[s.id], { h_en: s.h_en, h_vi: s.h_vi, dek: s.dek_en, s_vi: s.s_vi, s_en: s.s_en, why: s.why_vi || undefined, mt: undefined });
 ed.note = out.note; ed.healthDesk.analysis = out.health; ed.vocab = out.vocab;
-Object.assign(ed.podcast, { title: out.podcast.title, desc: out.podcast.desc, turns: turns.map(t => ({ sp: t.sp, text: speech(t.text), vi: t.vi })), words });
+Object.assign(ed.podcast, { title: out.podcast.title, desc: out.podcast.desc, turns: turns.map(t => { const raw = speech(t.text), text = raw.replace(TAG, ' ').replace(/\s+([,.?!])/g, '$1').replace(/\s+/g, ' ').trim();
+  return Object.assign({ sp: t.sp, text, vi: String(t.vi).replace(TAG, ' ').trim() }, raw !== text && !t.rep ? { say: raw } : {}, t.rep ? { rep: true } : {}); }), words });
 delete ed.podcast.audio;                      // GitHub sẽ tạo lại giọng đọc
 if (process.env.DAILY_VOICE) ed.podcast.voiceReq = { engine: process.env.DAILY_VOICE, preset: process.env.DAILY_VOICES || '' };
 ed.writer = 'claude-code'; ed.updated = new Date().toISOString();
