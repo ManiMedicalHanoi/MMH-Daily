@@ -51,7 +51,7 @@
         <div class="st-hero"><div><h3>Học bài này</h3><p>4 bước · khoảng 10 phút: ${s.words.length} từ khoá · nghe · ${p.nq} câu kiểm tra · ${s.phrases.length + s.grammar.length} câu nói theo</p>
           <div class="st-steps">${STEPS.slice(0, 4).map(([k, n], i) => `<span class="${i < idx || p.finished ? 'ok' : i === idx ? 'on' : ''}">${i + 1}. ${n}</span>`).join('')}</div>
           ${p.done ? `<p class="st-sc">Kiểm tra nghe: <b>${p.right}/${p.nq}</b></p>` : ''}</div>
-          <button class="st-go" type="button" data-ls2="open">${p.finished ? 'Học lại' : idx > 0 ? 'Học tiếp' : 'Bắt đầu'}</button></div>
+          <div class="st-btns"><a class="st-rk" href="#/rank">Bảng xếp hạng</a><button class="st-go" type="button" data-ls2="open">${p.finished ? 'Học lại' : idx > 0 ? 'Học tiếp' : 'Bắt đầu'}</button></div></div>
         <details class="st-all"><summary>Xem nhanh toàn bộ từ, cụm, ngữ pháp</summary>
           <dl class="st-dl">${s.words.map(w => `<dt>${esc(w.en)}</dt><dd>${esc(w.vi)}</dd>`).join('')}${s.phrases.map(x => `<dt>${esc(x.en)}</dt><dd>${esc(x.vi)}</dd>`).join('')}${s.grammar.map(g => `<dt>${esc(g.p)}</dt><dd>${esc(g.vi)}</dd>`).join('')}</dl></details>
       </section>`;
@@ -72,6 +72,7 @@
       <div class="ls2-bar">${STEPS.slice(0, 4).map(([k, n], i) => `<button type="button" data-ls2="step" data-k="${k}" class="${i < idx ? 'ok' : i === idx ? 'on' : ''}"><i></i><span>${n}</span></button>`).join('')}</div></header>
       <div class="ls2-body">${({ words: vWords, listen: vListen, quiz: vQuiz, speak: vSpeak, done: vDone })[L.step]()}</div>`;
     if (L.step === 'listen') paintLine(true);
+    if (L.step === 'done') rankBox();
   }
 
   /* 1. Từ khoá: thẻ lật */
@@ -163,7 +164,26 @@
     return `<h2 class="ls2-q">Xong bài hôm nay!</h2>
       <div class="ls2-sum"><div><b>${right}/${Q.length}</b><span>câu nghe đúng</span></div><div><b>${avg == null ? '–' : avg + '%'}</b><span>nói theo</span></div><div><b>${unk.length}</b><span>từ thêm vào Sổ từ</span></div></div>
       ${wrong.length ? `<h3 class="ls2-h3">Nghe lại các câu sai</h3>${wrong.map(({ q }) => `<div class="ls2-wrong"><span>${esc(q.q)}</span><button type="button" data-ls2="seg" data-i="${q.turn}">Nghe lại</button></div>`).join('')}` : ''}
+      <div class="ls2-rank" id="ls2-rank"></div>
       <div class="ls2-act"><button type="button" class="b2" data-ls2="redo">Làm lại bài kiểm tra</button><a class="b1" href="coach/#/words">Ôn Sổ từ</a></div>`;
+  }
+  /* điểm theo tài khoản + bảng xếp hạng (rank.js ▸ RANK) */
+  function result() {
+    const Q = ed.study.quiz, a = quiz(), sp = Object.values(L.spoke);
+    return { quiz: Q.filter((q, i) => a[i] === q.a).length, quizN: Q.length, speak: sp.length ? Math.round(sp.reduce((s, r) => s + r.p, 0) / sp.length) : null,
+      spoken: sp.length, words: ed.study.words.filter(w => L.known[w.en] === 0).length };
+  }
+  async function rankBox() {
+    const el = document.getElementById('ls2-rank'); if (!el || !window.RANK) return;
+    const r = result(), sig = JSON.stringify(r);
+    const link = '<button type="button" class="ls2-lnk" data-ls2="rank">Xem bảng xếp hạng ›</button>';
+    if (L.sentSig === sig && L.sentMsg) { el.innerHTML = L.sentMsg + link; return; }
+    el.innerHTML = 'Đang lưu điểm…';
+    const d = await RANK.submit(ed, r);
+    if (d.need) { el.innerHTML = 'Đăng nhập email công ty để lưu điểm và lên bảng xếp hạng. <button type="button" class="ls2-lnk" data-ls2="login">Đăng nhập</button>'; return; }
+    if (d.err) { el.innerHTML = 'Chưa lưu được điểm (' + esc(d.err) + ') — app sẽ tự gửi lại. ' + link; return; }
+    L.sentSig = sig; L.sentMsg = `Đã lưu <b>${d.best} điểm</b>${d.rank ? ` · bạn đang <b>hạng ${d.rank}/${d.of}</b> tuần này` : ''}. `; save();
+    el.innerHTML = L.sentMsg + link;
   }
 
   /* ── thao tác ── */
@@ -189,7 +209,9 @@
     if (k === 'prev') { stopRec(); return go(L.step, Math.max(0, L.i - 1)); }
     if (k === 'next') { stopRec(); audio.pause(); return go(ds.to, 0); }
     if (k === 'mic') return mic(ds.t);
-    if (k === 'redo') { store.set(qk(ed.date), {}); return go('quiz', 0); }
+    if (k === 'redo') { store.set(qk(ed.date), {}); L.sentSig = ''; return go('quiz', 0); }
+    if (k === 'rank') { close(); location.hash = '#/rank'; return; }
+    if (k === 'login') { RANK.login().then(okk => { if (okk) RANK.flush().then(d => { if (d && d.date === ed.date) { L.sentSig = JSON.stringify(result()); L.sentMsg = `Đã lưu <b>${d.best} điểm</b>${d.rank ? ` · bạn đang <b>hạng ${d.rank}/${d.of}</b> tuần này` : ''}. `; save(); } rankBox(); }); }); return; }
   });
   ov.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
   // vuốt ngang trên thẻ từ khoá

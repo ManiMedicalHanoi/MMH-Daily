@@ -306,7 +306,7 @@
     const row = S.index.editions.find(e => e.date === date);
     $('#m-date').textContent = viDate(date);
     $('#m-no').textContent = `Số ${row?.no || ed.no} · ${S.lang === 'en' ? enDate(date) : 'Hà Nội'}`;
-    const dark = r === 'listen';
+    const dark = r === 'listen' || r === 'rank';
     document.body.classList.toggle('dark', dark);
     document.querySelector('meta[name=theme-color]').content = dark ? '#0E1013' : '#FBF9F4';
     let html;
@@ -314,13 +314,15 @@
     else if (r === 'docs') html = docsPage(ed);
     else if (r === 'listen') html = listenPage(ed);
     else if (r === 'archive') html = archivePage();
+    else if (r === 'rank' && window.RANK) html = RANK.page();
     else html = front(ed);
     $('#view').innerHTML = html;
     lastLine = -1;
     const key = r === 's' ? a : (r === 'e' || !r) ? 'front' : r;
     document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === key));
     $('#foot').innerHTML = footer(ed);
-    if (dark) wireListen(ed);
+    if (r === 'listen') wireListen(ed);
+    if (r === 'rank' && window.RANK) RANK.load();
     syncUi();
     if (!S.routed) S.routed = true; else window.scrollTo({ top: 0 });
   }
@@ -578,6 +580,6 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !dlg.hidden) close(); });
   })();
 
-  window.DAILY = { S, route, playDate, IN, setEp, loadEd, hub, tkGet, tkSet, inKey, toast, store, esc, audio, viDate, mmss, ICON, loadIndex, seekBy };
+  window.DAILY = { S, route, playDate, IN, setEp, loadEd, hub, tkGet, tkSet, inKey, toast, store, esc, audio, viDate, mmss, ICON, loadIndex, seekBy, HUB };
   boot();
 })();

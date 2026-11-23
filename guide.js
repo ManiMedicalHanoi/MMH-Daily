@@ -6,7 +6,7 @@
   const I = (d) => `<svg viewBox="0 0 48 48" aria-hidden="true">${d}</svg>`;
   const STEPS = [
     { ic: I('<rect x="9" y="6" width="30" height="36" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M15 14h18M15 20h18M15 26h11" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>'),
-      t: 'Đọc báo buổi sáng', x: 'Trang nhất xếp tin theo mức ảnh hưởng tới MMH: nha khoa, nhãn khoa, đấu thầu, thiết bị, BHYT, thị trường. Mỗi tin có tóm tắt Việt + Anh và dòng "Vì sao quan trọng". Bấm EN · VI để đổi ngôn ngữ tiêu đề.' },
+      t: 'Đọc báo buổi sáng', x: 'Trang nhất xếp tin theo mức ảnh hưởng tới MMH: nha khoa, nhãn khoa, đấu thầu, thiết bị, BHYT, thị trường. Chỉ giữ tin liên quan tới MMH, mỗi tin có tóm tắt Việt + Anh. Bấm EN · VI để đổi ngôn ngữ tiêu đề.' },
     { ic: I('<circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M20 16v16l13-8z" fill="currentColor"/>'),
       t: 'Nghe podcast tiếng Anh', x: 'Vào Nghe podcast ▸ bấm nút tròn. Phụ đề Việt chạy theo giọng đọc; bấm một câu trong lời thoại để nghe lại từ đó. Thanh phát nhỏ ở cuối màn hình đi theo bạn khi xem trang khác.' },
     { ic: I('<path d="M6 17 24 9l18 8-18 8z M14 21v8c0 3 4.5 5.5 10 5.5s10-2.5 10-5.5v-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>'),

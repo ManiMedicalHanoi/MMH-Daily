@@ -559,3 +559,41 @@ html.ls2-on .mini{display:none}
 .ls2-wrong{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#16191E;border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:14px;color:#D7DBE0}
 .ls2-wrong button{background:none;border:1px solid #2B3038;color:#D7DBE0;border-radius:999px;padding:6px 12px;font:600 12.5px var(--sans);flex:none;cursor:pointer}
 @media (max-width:620px){.st-go{width:100%}.ls2-bar span{font-size:11px}.ls2-w{font-size:27px}.ls2-q{font-size:19px}.ls2-line .en{font-size:19px}}
+/* Bảng xếp hạng (rank.js) */
+.st-btns{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.st-rk{color:var(--dtext2);font:600 14px var(--sans);text-decoration:none;border:1px solid var(--dline);border-radius:999px;padding:11px 18px}
+.ls2-rank{margin-top:16px;background:#16191E;border-radius:14px;padding:14px 16px;font-size:15px;color:#D7DBE0;line-height:1.55}
+.ls2-lnk{background:none;border:0;color:#7FD1AE;font:700 14.5px var(--sans);cursor:pointer;padding:0 0 0 4px}
+.rk{max-width:860px;margin:0 auto;padding:6px 0 40px;color:var(--dtext)}
+.rk-head{display:flex;gap:16px;justify-content:space-between;align-items:flex-end;flex-wrap:wrap}
+.rk-sub{color:var(--dtext3);font-size:13.5px;margin:6px 0 0;max-width:560px}
+.rk-per{margin:0;min-width:240px}
+.rk-range{color:var(--dtext2);font-size:14.5px;margin:18px 0 12px}.rk-range b{color:var(--dtext)}
+.rk-pod{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.rk-p{background:var(--dark2);border-radius:14px;padding:16px 12px;text-align:center;border-top:3px solid var(--m)}
+.rk-p i{font:700 22px var(--sans);color:var(--m);font-style:normal;display:block}
+.rk-p b{display:block;font:700 16px var(--sans);margin:4px 0 2px}.rk-p span{color:var(--dtext2);font-size:13.5px}
+.rk-p.me{outline:1px solid #7FD1AE}
+.rk-list{list-style:none;margin:0;padding:0;background:var(--dark2);border-radius:14px;overflow:hidden}
+.rk-list li{display:grid;grid-template-columns:34px minmax(0,1fr) auto 56px;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--dline)}
+.rk-list li:last-child{border:0}.rk-list li.me{background:rgba(63,167,126,.12)}
+.rk-n{color:var(--dtext3);font:700 15px var(--sans);text-align:center}
+.rk-who b{display:block;font-size:15.5px}.rk-who small{color:var(--dtext3);font-size:12.5px}
+.rk-st{color:var(--dtext2);font-size:13px;text-align:right}
+.rk-pt{font:700 18px var(--sans);text-align:right}
+.rk-none,.rk-empty{color:var(--dtext3);text-align:center;padding:26px 10px;display:block}
+.rk-empty .st-go{margin-top:14px}
+.rk-feed{display:grid;gap:8px}
+.rk-feed div{background:var(--dark2);border-radius:12px;padding:11px 14px;font-size:14.5px;color:var(--dtext2);line-height:1.5}
+.rk-feed b{color:var(--dtext)}.rk-feed a{color:#BFF0D9}.rk-feed small{display:block;color:var(--dtext3);font-size:12px;margin-top:2px}
+.rk-foot{color:var(--dtext3);font-size:13px;margin-top:18px}
+.rk-link{background:none;border:0;color:#7FD1AE;font:600 13.5px var(--sans);cursor:pointer;padding:6px 0}
+.rk-dlg{position:fixed;inset:0;z-index:90;background:rgba(5,6,8,.7);display:flex;align-items:center;justify-content:center;padding:16px}
+.rk-box{position:relative;background:#16191E;color:#ECEAE4;border-radius:18px;padding:24px 22px;width:100%;max-width:380px;display:grid;gap:10px;font-family:var(--sans)}
+.rk-box h3{margin:0;font:700 19px var(--sans)}.rk-why{margin:0;color:#A9B0BB;font-size:14px}
+.rk-box input{background:#0E1013;border:1px solid #2B3038;color:#F2F3F5;border-radius:12px;padding:13px 14px;font:500 16px var(--sans)}
+.rk-box input:focus{outline:2px solid #3FA77E;border-color:#3FA77E}
+.rk-btn{background:#F2F3F5;color:#111;border:0;border-radius:12px;padding:14px;font:700 15.5px var(--sans);cursor:pointer}
+.rk-x{position:absolute;top:10px;right:10px;background:none;border:0;color:#7C8491;font-size:18px;width:36px;height:36px;cursor:pointer}
+.rk-err{color:#F09A94;font-size:14px;margin:0}
+@media (max-width:620px){.rk-list li{grid-template-columns:28px minmax(0,1fr) 48px}.rk-st{grid-column:2;text-align:left;margin-top:-6px}.rk-pt{grid-row:1;grid-column:3}.rk-p{padding:12px 6px}.rk-p b{font-size:14px}}
