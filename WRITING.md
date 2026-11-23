@@ -22,7 +22,7 @@ Thứ tự ưu tiên:
 - Tin y tế, pháp luật, kinh tế, vĩ mô đều được — miễn nói rõ **chuỗi ảnh hưởng**: "Yên giảm ⇒ giá vốn hàng MANI nhập từ Nhật giảm ⇒ dư địa giá thầu tốt hơn";
   "Luật Đấu thầu sửa ⇒ bệnh viện tự mua sắm ⇒ sales làm việc trực tiếp với khoa phòng nhiều hơn".
 - Tin **không nối được** tới MMH (tai nạn, hình sự, giải trí, thể thao, chính trị nước ngoài không tác động kinh tế, tin địa phương không liên quan y tế / kinh doanh) ⇒ **bỏ, không tổng hợp**.
-- Máy chấm `rel` 0–3 cho từng tin (3 trực tiếp · 2 hệ thống y tế · 1 gián tiếp có chuỗi ảnh hưởng · 0 không liên quan ⇒ bỏ). `why_vi` = 1 câu "Với MMH: …", BẮT BUỘC khi rel ≥ 1, hiện dưới mỗi tin trên trang.
+- Máy chấm `rel` 0–3 cho từng tin (3 trực tiếp · 2 hệ thống y tế · 1 gián tiếp có chuỗi ảnh hưởng · 0 không liên quan ⇒ bỏ). `why_vi` = 1 câu ảnh hưởng tới MMH, BẮT BUỘC khi rel ≥ 1 — chỉ dùng làm ý cho podcast, KHÔNG hiện trên trang (người dùng bỏ 23/11/2026).
 - Trong PODCAST, mỗi tin kết bằng một câu "chuyện này liên quan gì tới MMH" — cụ thể, sinh động. Trước khi tạo giọng, kịch bản được soát lại (`reviewScript`) theo luật này.
 
 ## 2. Giọng nói — như hai đồng nghiệp nói chuyện, không như máy đọc tin
