@@ -50,3 +50,14 @@ Chạy thử tại máy: `node tools/collect.mjs && node tools/edition.mjs && py
   Log GitHub Actions chỉ in số đếm (kho công khai — ai cũng đọc được log).
 - **Cài lần đầu**: Admin mở app ▸ Nội bộ ▸ *Thiết lập (Admin)* ▸ Chép khoá ⇒ Settings ▸ Secrets ▸ Actions ▸ `DAILY_INTERNAL_KEY`. Lộ khoá ⇒ xoá Script Property `DAILY_KEY` của Training Hub ⇒ khoá mới ⇒ dán lại.
 - Chạy tay: Actions ▸ MMH Daily ▸ Run workflow ▸ kind = `weekly`.
+
+## Luyện nói (`coach/`, từ 23/11/2026)
+Trang riêng trong cùng app (menu **Luyện nói**, lối tắt app). Mỗi đoạn 3 mức: **1 Chọn từ & đọc** (câu tiếng Anh có 3 chỗ trống ⇒ chọn từ đúng ⇒ đọc to, so từng từ)
+· **2 Có gợi ý** (tiếng Việt, chạm chữ gạch chân để xem tiếng Anh; nút Từ khoá · Khung câu · Chia nhỏ · Nghe mẫu, mỗi gợi ý trừ ít điểm) · **3 Tự nói** (chỉ tiếng Việt).
+Đạt 70 điểm ⇒ chấm xanh mức đó. Sau khi chấm: câu đã sửa, cách nói khác, lỗi, từ khoá, ngữ pháp, **Nói lại câu chuẩn** (chấm đọc rõ từng từ). Từ khoá đã mở / nói sai vào **Sổ từ** (ôn sau 1, 3, 7, 14, 30 ngày).
+- Bài có sẵn: `coach/lessons.js` (18 câu theo công việc: thuyết trình sản phẩm, Sales & KPI, NPP, đấu thầu, email & họp, đời thường). Thêm bài: theo mẫu ở đầu file
+  (`[[…]]` = chỗ trống, `d` = 2 phương án sai, `ideas` = ý chính + cụm tiếng Anh chấp nhận). Câu mẫu và `alt` phải qua được luật `ideas` của chính bài.
+- Bài từ bản tin: tin hôm nay có nhãn chuyên môn (nhãn khoa, nha khoa, đấu thầu, thiết bị, chính sách, BHYT, phẫu thuật, bệnh viện; bỏ tin giải trí) ⇒ Gemini soạn bài cùng mẫu, lưu trên máy.
+- Nhận giọng: Web Speech API (Chrome / Edge / Safari), không có ⇒ gõ. Chấm ý + sửa câu: **Gemini API key của người dùng** (Cài đặt, chỉ lưu localStorage của máy đó,
+  gọi thẳng từ trình duyệt, tự chọn mẫu Flash mới nhất khi mẫu cũ không còn); chưa có key ⇒ chấm theo `ideas` có sẵn. Giọng mẫu: giọng trình duyệt hoặc Azure Neural TTS (key + vùng, tuỳ chọn).
+- Không dùng tài khoản Claude của người dùng trong trang này (điều khoản Anthropic không cho dùng gói thuê bao trong app tự làm).

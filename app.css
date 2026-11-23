@@ -287,6 +287,7 @@ body.dark .foot b{color:var(--dtext2)}
 
 /* ── bản tin nội bộ ── */
 .nav-in{color:var(--gold)!important}
+.nav-coach{color:var(--accent-ink)!important}
 .in-login{max-width:440px;margin:30px auto;border:1px solid var(--rule);padding:24px;background:#fff}
 .in-login h2{font:800 26px var(--display);margin:0 0 8px}
 .in-login p{color:var(--ink2);font-size:15.5px}

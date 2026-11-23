@@ -22,6 +22,7 @@
  ],
  "shortcuts": [
   { "name": "Nghe podcast hôm nay", "short_name": "Nghe", "url": "./#/listen", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+  { "name": "Luyện nói tiếng Anh", "short_name": "Luyện nói", "url": "./coach/", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
   { "name": "Bản tin nội bộ", "short_name": "Nội bộ", "url": "./#/noibo", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
  ]
 }

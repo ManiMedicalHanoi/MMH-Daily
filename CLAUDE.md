@@ -41,5 +41,6 @@ KHÔNG commit file nào trong /tmp; KHÔNG dán tên người / khách hàng và
 Không có mạng tới script.google.com ⇒ chạy workflow **MMH Daily** `kind=weekly` (bản mẫu tự động) và báo người dùng.
 
 ## Quy tắc
+- **Luyện nói** (`coach/`): app học nói tiếng Anh 3 mức (xem README ▸ Luyện nói). Đổi file trong `coach/` ⇒ tăng `?v=` trong `coach/index.html`; thêm file ⇒ thêm vào bước `cp` của workflow + danh sách đệm `sw.js`.
 - Chỉ sửa `data/` khi làm số báo; sửa code thì theo README.
 - Không đổi lịch (cron) / người dẫn nếu người dùng không yêu cầu.
