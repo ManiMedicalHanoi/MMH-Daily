@@ -18,7 +18,7 @@
   let WORDS = LS.get('mmh_coach_words', []);
   const TOPICS = window.COACH_TOPICS || [];
   const LESSONS = window.COACH_LESSONS || [];
-  const topicName = id => id === 'news' ? 'Bản tin hôm nay' : (TOPICS.find(t => t.id === id) || {}).vi || '';
+  const topicName = id => id === 'news' ? 'Bản tin hôm nay' : id === 'my' ? 'Chủ đề của tôi' : (TOPICS.find(t => t.id === id) || {}).vi || '';
   const LV = { 1: ['Mức 1', 'Chọn từ & đọc'], 2: ['Mức 2', 'Có gợi ý'], 3: ['Mức 3', 'Tự nói'] };
   const PASS = 70;
 
@@ -211,37 +211,61 @@
       && !/(tts|image|embed|live|audio|veo|imagen|learnlm|robotics|computer|native|thinking-exp)/i.test(m.name))
       .map(m => ({ id: m.name.replace(/^models\//, ''), label: m.displayName || m.name }));
   }
-  function bestModel(list) {
-    const sc = m => { const v = parseFloat((m.id.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || 0); return v * 10 + (/flash/.test(m.id) ? 30 : 0) - (/lite/.test(m.id) ? 8 : 0) - (/pro/.test(m.id) ? 5 : 0) - (/preview|exp/.test(m.id) ? 12 : 0) - (/\d{3,}$/.test(m.id) ? 2 : 0); };
-    return list.slice().sort((a, b) => sc(b) - sc(a))[0];
+  function rankModels(list) {
+    const sc = m => { const v = parseFloat((m.id.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || 0); return v * 10 + (/flash/.test(m.id) ? 30 : 0) + (/flash-latest$/.test(m.id) ? 60 : 0) - (/lite/.test(m.id) ? 8 : 0) - (/pro/.test(m.id) ? 5 : 0) - (/preview|exp/.test(m.id) ? 12 : 0) - (/\d{3,}$/.test(m.id) ? 2 : 0); };
+    return list.slice().sort((a, b) => sc(b) - sc(a));
   }
+  const bestModel = list => rankModels(list)[0];
   async function ensureModel() {
     if (CFG.gmodel) return CFG.gmodel;
     const b = bestModel(await gemModels());
     if (!b) throw new Error('Key này chưa dùng được mẫu Gemini nào. Tạo lại key trong AI Studio.');
     CFG.gmodel = b.id; saveCfg(); return b.id;
   }
-  async function gem(sys, user) {
+  /* Gọi Gemini bền: Google bận (503 / 429 / 500) ⇒ chờ rồi thử lại 1 lần ⇒ đổi sang mẫu Flash khác; không chạy được "tắt suy nghĩ" ⇒ bỏ.
+     Hạn mức miễn phí tính theo từng mẫu, nên đổi mẫu cũng giúp khi một mẫu hết lượt. */
+  let MODELS = null;
+  async function modelList() { if (!MODELS) MODELS = await gemModels(); return MODELS; }
+  async function candidates() {
+    const out = CFG.gmodel ? [CFG.gmodel] : [];
+    try { rankModels(await modelList()).forEach(m => { if (!out.includes(m.id) && !/pro/.test(m.id)) out.push(m.id); }); }
+    catch (e) { if (!out.length) throw e; }
+    if (!out.length) throw new Error('Key này chưa dùng được mẫu Gemini nào. Tạo lại key trong AI Studio.');
+    return out.slice(0, 4);
+  }
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const TRANSIENT = st => st === 429 || st === 500 || st === 502 || st === 503 || st === 504;
+  async function gemPost(method, body, opt = {}) {
     if (!CFG.gkey) throw new Error('NOKEY');
-    await ensureModel();
-    let model = CFG.gmodel || 'gemini-2.5-flash', think = !CFG.noThink;
-    for (let n = 0; n < 3; n++) {
-      const gc = { responseMimeType: 'application/json', temperature: 0.3 }; if (think) gc.thinkingConfig = { thinkingBudget: 0 };
-      const r = await tfetch(`${GEM}/models/${encodeURIComponent(model)}:generateContent`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': CFG.gkey },
-        body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents: [{ role: 'user', parts: [{ text: user }] }], generationConfig: gc })
-      }, 45000);
-      if (r.status === 400 && think) { think = false; CFG.noThink = true; saveCfg(); continue; }
-      if (r.status === 404 && n < 2) {
-        const b = bestModel(await gemModels());
-        if (b) { model = CFG.gmodel = b.id; saveCfg(); continue; }
+    let last = null;
+    for (const model of await candidates()) {
+      let think = !CFG.noThink;
+      for (let a = 0; a < 3; a++) {
+        const gc = Object.assign({}, body.generationConfig); if (think) gc.thinkingConfig = { thinkingBudget: 0 };
+        let r;
+        try {
+          r = await tfetch(`${GEM}/models/${encodeURIComponent(model)}:${method}`, {
+            method: 'POST', signal: opt.signal, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': CFG.gkey },
+            body: JSON.stringify(Object.assign({}, body, { generationConfig: gc }))
+          }, opt.ms || 45000);
+        } catch (e) { if (opt.signal?.aborted) throw e; last = e; opt.onBusy?.(model); break; }
+        if (r.ok) { if (model !== CFG.gmodel) { CFG.gmodel = model; saveCfg(); } return r; }
+        const txt = await r.text().catch(() => '');
+        if (r.status === 400 && think && /thinking|budget/i.test(txt)) { think = false; continue; }
+        last = gemErr(r.status, txt);
+        if (r.status === 404) break;
+        if (TRANSIENT(r.status)) { opt.onBusy?.(model); if (a === 0) { await wait(r.status === 429 ? 2500 : 1500); continue; } break; }
+        throw last;
       }
-      if (!r.ok) throw gemErr(r.status, await r.text().catch(() => ''));
-      const d = await r.json();
-      const txt = (d.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join('').trim();
-      return JSON.parse(txt.replace(/^```(?:json)?\s*|\s*```$/g, ''));
     }
-    throw new Error('Không tìm được mẫu Gemini phù hợp.');
+    throw last && /503|500|502|504/.test(last.message) ? new Error('Máy chủ Gemini đang quá tải. Đợi khoảng 1 phút rồi bấm Thử lại.') : (last || new Error('Gemini chưa trả lời được. Thử lại.'));
+  }
+  async function gem(sys, user, opt = {}) {
+    const r = await gemPost('generateContent', { systemInstruction: { parts: [{ text: sys }] }, contents: [{ role: 'user', parts: [{ text: user }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.4 } }, opt);
+    const d = await r.json();
+    const txt = (d.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join('').trim();
+    if (!txt) throw new Error('Gemini trả lời rỗng. Thử lại.');
+    return JSON.parse(txt.replace(/^```(?:json)?\s*|\s*```$/g, ''));
   }
   const EVAL_SYS = `You are a friendly, precise English speaking coach for a Vietnamese learner at CEFR B1 who works as a product and sales manager at a medical device distributor (dental, ophthalmic, surgical products) in Vietnam.
 The learner read a Vietnamese text and SPOKE an English version. The transcript comes from browser speech recognition: ignore small recognition errors (homophones, missing punctuation, numbers written as words) unless they clearly change the meaning.
@@ -312,14 +336,14 @@ From a Vietnamese news summary (and a rough machine translation), return JSON on
       const idx = await (await fetch('../data/index.json?t=' + Date.now(), { cache: 'no-store' })).json();
       const date = idx.editions?.[0]?.date; if (!date) throw new Error('Chưa có số báo.');
       const ed = await (await fetch(`../data/editions/${date}.json`, { cache: 'no-cache' })).json();
-      NEWS.date = date;
+      NEWS.date = date; NEWS.pre = ed.coach?.lessons || {}; NEWS.briefs = ed.coach?.briefs || []; NEWS.stories = ed.stories || {};
       const seen = new Set();
       NEWS.list = Object.values(ed.stories || {})
-        .filter(s => s.sum && (s.mmh || 0) >= 3 && (s.tags || []).some(t => NEWS_TAGS[t]) && (s.sec === 'health' || (s.tags || []).some(t => ['tender', 'device', 'policy'].includes(t))) && !NEWS_SKIP.test(s.t + ' ' + s.sum))
-        .sort((a, b) => (b.mmh || 0) - (a.mmh || 0))
+        .filter(s => NEWS.pre[s.id] || (s.sum && (s.mmh || 0) >= 3 && (s.tags || []).some(t => NEWS_TAGS[t]) && (s.sec === 'health' || (s.tags || []).some(t => ['tender', 'device', 'policy'].includes(t))) && !NEWS_SKIP.test(s.t + ' ' + s.sum)))
+        .sort((a, b) => (NEWS.pre[b.id] ? 1 : 0) - (NEWS.pre[a.id] ? 1 : 0) || (b.mmh || 0) - (a.mmh || 0))
         .filter(s => { const k = normStr(s.t).split(' ').slice(0, 4).join(' '); if (seen.has(k)) return false; seen.add(k); return true; })
         .slice(0, 6)
-        .map(s => ({ id: `n-${date}-${s.id}`, title: s.t, sum: s.sum, en: s.s_en || '', src: s.src || '', url: s.u || '', tag: NEWS_TAGS[(s.tags || []).find(t => NEWS_TAGS[t])] || '' }));
+        .map(s => ({ id: `n-${date}-${s.id}`, sid: s.id, title: s.h_vi || s.t, sum: s.s_vi || s.sum, en: s.s_en || '', src: s.src || '', url: s.u || '', tag: NEWS_TAGS[(s.tags || []).find(t => NEWS_TAGS[t])] || '' }));
     } catch (e) { NEWS.err = 'Chưa đọc được bản tin hôm nay.'; NEWS.list = []; }
     return NEWS.list;
   }
@@ -336,18 +360,67 @@ From a Vietnamese news summary (and a rough machine translation), return JSON on
     L.alt = (L.alt || []).filter(Boolean);
     return L;
   }
-  async function newsLesson(id) {
+  const PEND = {};
+  function newsLesson(id, onBusy) {
+    const c = LS.get('mmh_coach_news', {});
+    if (c[id]) return Promise.resolve(c[id]);
+    if (!PEND[id]) PEND[id] = newsLessonRaw(id, onBusy).finally(() => { delete PEND[id]; });
+    return PEND[id];
+  }
+  async function newsLessonRaw(id, onBusy) {
     const cache = LS.get('mmh_coach_news', {});
-    if (cache[id]) return cache[id];
     const list = await loadNews();
     const it = list.find(x => x.id === id);
     if (!it) throw new Error('Tin này không còn trong số báo hôm nay.');
-    const o = await gem(GEN_SYS, JSON.stringify({ title: it.title, vietnamese_summary: it.sum, rough_translation: it.en }));
+    const o = NEWS.pre?.[it.sid] || await gem(GEN_SYS, JSON.stringify({ title: it.title, vietnamese_summary: it.sum, rough_translation: it.en }), { onBusy });
     const L = fixLesson(o, { id, topic: 'news', title: it.title, src: it.src, url: it.url });
+    const cache2 = LS.get('mmh_coach_news', {}); Object.assign(cache, cache2);
     cache[id] = L;
     const ks = Object.keys(cache); if (ks.length > 40) delete cache[ks[0]];
     LS.set('mmh_coach_news', cache);
     return L;
+  }
+
+  /* Soạn sẵn bài từ bản tin ngay khi mở trang (chạy nền, lần lượt) ⇒ bấm vào là học ngay, không phải chờ. */
+  const PREP = {};
+  async function prefetchNews() {
+    if (prefetchNews.on) return; prefetchNews.on = true;
+    try {
+      const ls = await loadNews();
+      for (const n of ls.slice(0, 3)) {
+        if (LS.get('mmh_coach_news', {})[n.id]) { PREP[n.id] = 'ok'; continue; }
+        if (!NEWS.pre?.[n.sid] && !CFG.gkey) continue;
+        PREP[n.id] = 'run'; paintPrep(n.id);
+        try { await newsLesson(n.id); PREP[n.id] = 'ok'; } catch { PREP[n.id] = 'err'; }
+        paintPrep(n.id);
+        if (PREP[n.id] === 'err') break;
+        await wait(800);
+      }
+    } finally { prefetchNews.on = false; }
+  }
+  function paintPrep(id) {
+    const el = document.querySelector(`.li[href="#/l/${encodeURIComponent(id)}"] .prep`); if (!el) return;
+    const it = (NEWS.list || []).find(x => x.id === id);
+    const st = PREP[id] || (LS.get('mmh_coach_news', {})[id] || (it && NEWS.pre?.[it.sid]) ? 'ok' : '');
+    el.className = 'prep ' + st; el.textContent = st === 'ok' ? 'Sẵn sàng' : st === 'run' ? 'Đang soạn…' : st === 'err' ? 'Soạn khi mở' : '';
+  }
+
+  /* ── Bài theo chủ đề của tôi: người dùng gõ chủ đề ⇒ Gemini soạn 5 đoạn cùng mẫu 3 mức ── */
+  const MY_SUGGEST = ['Thuyết trình dao phẫu thuật nhãn khoa cho bác sĩ', 'Giới thiệu trâm JIZAI cho nha sĩ', 'Họp dự báo đặt hàng với nhà phân phối', 'Báo cáo KPI quý cho sếp người Nhật', 'Email cảm ơn và theo dõi sau hội thảo', 'Trò chuyện với bác sĩ ở hội nghị', 'Giải thích hồ sơ dự thầu cho bệnh viện', 'Phỏng vấn, giới thiệu bản thân bằng tiếng Anh'];
+  const myGet = () => LS.get('mmh_coach_my', []);
+  const myLesson = id => { for (const g of myGet()) { const L = g.lessons.find(x => x.id === id); if (L) return L; } return null; };
+  const GEN_SET_SYS = GEN_SYS.replace('From a Vietnamese news summary (and a rough machine translation), return JSON only with these keys:',
+    'The learner gives a THEME in Vietnamese. Create 5 different speaking drills for that theme: realistic sentences this learner would really say at work (presentations to doctors, meetings with distributors, emails, reports to Japanese managers, tender documents, small talk at conferences), varied situations, gradually harder. Do not invent real company figures; if a number helps, use an obvious example. Return JSON only: {"lessons":[5 objects]}; each object has these keys:')
+    .replace('1-2 sentences, at most 40 words, faithful to the source,', '1-2 sentences, at most 35 words,');
+  async function myCreate(theme, onBusy) {
+    const o = await gem(GEN_SET_SYS, 'THEME: ' + theme, { onBusy });
+    const arr = Array.isArray(o) ? o : (o.lessons || []);
+    const set = 'u' + Date.now().toString(36);
+    const lessons = [];
+    arr.forEach((x, k) => { try { lessons.push(fixLesson(x, { id: `${set}-${k}`, topic: 'my', src: theme, set })); } catch {} });
+    if (!lessons.length) throw new Error('Gemini chưa soạn được bài cho chủ đề này. Thử lại hoặc viết chủ đề cụ thể hơn.');
+    const all = myGet(); all.unshift({ set, theme, at: Date.now(), lessons }); LS.set('mmh_coach_my', all.slice(0, 30));
+    return lessons;
   }
 
   /* ── điều hướng ── */
@@ -380,37 +453,74 @@ From a Vietnamese news summary (and a rough machine translation), return JSON on
         <div class="goal"><div class="grow"><div class="small muted">Hôm nay</div><b>${min}</b> / ${goal} phút</div>
           <div class="small muted" style="text-align:right">Chuỗi ngày<br><b>${d.done ? d.streak || 1 : (d.prevDone === addDays(today(), -1) ? d.streak || 0 : 0)}</b></div></div>
         <div class="goal-bar" style="margin-top:8px"><i style="width:${Math.min(100, min / goal * 100)}%"></i></div>
-        <div class="lvls">
+        ${Object.keys(PROG).length ? '<details class="lvls-x"><summary>3 mức luyện là gì?</summary>' : ''}<div class="lvls">
           <div class="lvl-card"><b>Mức 1 · Chọn từ & đọc</b><span>Có câu tiếng Anh, chọn từ khoá đúng rồi đọc to để chấm phát âm.</span></div>
           <div class="lvl-card"><b>Mức 2 · Có gợi ý</b><span>Đọc tiếng Việt, nói tiếng Anh. Mở từ khoá, khung câu, chia nhỏ khi cần.</span></div>
           <div class="lvl-card"><b>Mức 3 · Tự nói</b><span>Chỉ có tiếng Việt, không gợi ý. App chấm đúng ý và sửa câu.</span></div>
-        </div>
+        </div>${Object.keys(PROG).length ? '</details>' : ''}
         ${due ? `<div class="row" style="margin-top:12px"><span class="grow small">${due} từ trong Sổ từ đến hạn ôn hôm nay.</span><a class="btn" href="#/words">Ôn từ</a></div>` : ''}
       </div>
+      ${todayCard()}
+      <h2>Chủ đề của tôi</h2>
+      <div class="card">
+        <div class="small muted" style="margin-bottom:8px">Gõ tình huống bạn cần nói, Gemini soạn 5 đoạn luyện theo đúng 3 mức.</div>
+        <div class="typed" style="margin:0"><input id="my-theme" placeholder="Ví dụ: thuyết trình sản phẩm mới cho bác sĩ nhãn khoa" autocomplete="off"><button class="btn pri" data-act="my-go">Tạo bài</button></div>
+        <div class="chips hs" style="margin:10px 0 0">${MY_SUGGEST.map(t => `<button class="chip" data-mytheme="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+        <div id="my-msg" class="small muted" style="margin-top:8px"></div>
+      </div>
+      <div id="my-sets">${mySetsHtml()}</div>
       <h2>Từ bản tin hôm nay</h2>
       <div id="news"><div class="muted small"><span class="spin"></span> Đang đọc bản tin…</div></div>
       <h2>Theo công việc</h2>
-      <div class="chips">${[['all', 'Tất cả'], ...TOPICS.map(t => [t.id, t.vi])].map(([id, vi]) => `<button class="chip${S.topic === id ? ' on' : ''}" data-topic="${id}">${esc(vi)}</button>`).join('')}</div>
+      <div class="chips hs">${[['all', 'Tất cả'], ...TOPICS.map(t => [t.id, t.vi])].map(([id, vi]) => `<button class="chip${S.topic === id ? ' on' : ''}" data-topic="${id}">${esc(vi)}</button>`).join('')}</div>
       <div class="ls">${list.map(l => lessonItem(l.id, topicName(l.topic), l.vi)).join('')}</div>`;
     loadNews().then(ls => {
       const box = $('#news'); if (!box) return;
       if (!ls.length) { box.innerHTML = `<div class="muted small">${esc(NEWS.err || 'Bản tin hôm nay chưa có tin y tế phù hợp.')}</div>`; return; }
-      box.innerHTML = (CFG.gkey ? '' : `<div class="note" style="margin-bottom:8px">Bài từ bản tin do Gemini soạn (từ khoá, chỗ trống, gợi ý). Thêm Gemini key miễn phí trong <a href="#/set">Cài đặt</a> để mở các bài này.</div>`)
-        + `<div class="ls">${ls.map(n => lessonItem(n.id, [n.tag, n.src].filter(Boolean).join(' · '), n.title, n.sum)).join('')}</div>`;
+      box.innerHTML = (CFG.gkey || Object.keys(NEWS.pre || {}).length ? '' : `<div class="note" style="margin-bottom:8px">Bài từ bản tin do AI soạn sẵn mỗi sáng. Hôm nay chưa có bài soạn sẵn; thêm Gemini key trong <a href="#/set">Cài đặt</a> để app tự soạn.</div>`)
+        + `<div class="ls">${ls.map(n => lessonItem(n.id, [n.tag, n.src].filter(Boolean).join(' · '), n.title, n.sum, true)).join('')}</div>`;
+      ls.forEach(n => paintPrep(n.id));
+      const tc = $('#today'); if (tc) tc.outerHTML = todayCard();
+      prefetchNews();
     });
   }
-  function lessonItem(id, tp, text, sub) {
-    return `<a class="li" href="#/l/${encodeURIComponent(id)}"><span class="t"><span class="tp">${esc(tp)}</span>${esc(text)}${sub ? `<span class="ls-sub">${esc(sub)}</span>` : ''}</span>
+  function mySetsHtml() {
+    return myGet().map(g => `<div class="myset"><div class="row" style="margin:16px 0 6px"><b class="grow">${esc(g.theme)}</b><button class="btn ghost small" data-mydel="${g.set}">Xoá</button></div>
+      <div class="ls">${g.lessons.map(l => lessonItem(l.id, 'Chủ đề của tôi', l.vi)).join('')}</div></div>`).join('');
+  }
+  /* Gợi ý hôm nay: 1 đoạn theo công việc chưa xong + 1 bài từ tin đã soạn sẵn + ôn từ */
+  function todayCard() {
+    const work = LESSONS.find(l => !passed(l.id, 3)) || LESSONS[0];
+    const news = (NEWS.list || []).find(n => LS.get('mmh_coach_news', {})[n.id]);
+    const mine = myGet().flatMap(g => g.lessons).find(l => !passed(l.id, 3));
+    const due = dueWords().length;
+    const items = [
+      mine && [`#/l/${encodeURIComponent(mine.id)}`, 'Chủ đề của tôi', mine.vi],
+      [`#/l/${encodeURIComponent(work.id)}`, topicName(work.topic) + ' · ' + LV[recLevel(work.id)][0], work.vi],
+      news && [`#/l/${encodeURIComponent(news.id)}`, 'Bản tin hôm nay', news.title],
+      due && ['#/words', 'Sổ từ', `Ôn ${due} từ đến hạn`]
+    ].filter(Boolean).slice(0, 3);
+    return `<div id="today"><h2>Gợi ý hôm nay</h2><div class="ls">${items.map(([h, tp, t]) => `<a class="li today" href="${h}"><span class="t"><span class="tp">${esc(tp)}</span>${esc(t)}</span><span class="go">Bắt đầu</span></a>`).join('')}</div></div>`;
+  }
+  function lessonItem(id, tp, text, sub, prep) {
+    return `<a class="li" href="#/l/${encodeURIComponent(id)}"><span class="t"><span class="tp">${esc(tp)}${prep ? ' <span class="prep"></span>' : ''}</span>${esc(text)}${sub ? `<span class="ls-sub">${esc(sub)}</span>` : ''}</span>
       <span class="dots" title="Mức đã đạt">${[1, 2, 3].map(l => `<i class="${passed(id, l) ? 'ok' : ''}"></i>`).join('')}</span></a>`;
   }
 
   /* ── bài luyện ── */
   async function openLesson(id, lvl) {
-    let L = LESSONS.find(x => x.id === id);
+    let L = LESSONS.find(x => x.id === id) || myLesson(id);
     if (!L && id.startsWith('n-')) {
-      if (!CFG.gkey) { $('#view').innerHTML = `<p class="note">Bài từ bản tin cần Gemini key (miễn phí). Vào <a href="#/set">Cài đặt</a> để thêm key.</p>`; return; }
-      $('#view').innerHTML = `<p class="muted"><span class="spin"></span> Gemini đang soạn bài từ tin này…</p>`;
-      try { L = await newsLesson(id); } catch (e) { $('#view').innerHTML = `<p class="note">${esc(e.message === 'NOKEY' ? 'Chưa có Gemini key.' : e.message)}</p><p><a class="btn" href="#/">Về danh sách</a></p>`; return; }
+      await loadNews();
+      const it0 = (NEWS.list || []).find(x => x.id === id);
+      if (!CFG.gkey && !(it0 && NEWS.pre?.[it0.sid])) { $('#view').innerHTML = `<p class="note">Bài này chưa được soạn sẵn. Thêm Gemini key (miễn phí) trong <a href="#/set">Cài đặt</a> để app tự soạn.</p>`; return; }
+      const t0 = Date.now(); let msg = 'Gemini đang soạn bài từ tin này';
+      const draw = () => { const el = $('#gen-wait'); if (el) el.innerHTML = `<span class="spin"></span> ${msg}… ${Math.round((Date.now() - t0) / 1000)} giây`; };
+      $('#view').innerHTML = `<p class="muted" id="gen-wait"></p>`; draw();
+      const tick = setInterval(draw, 500);
+      try { L = await newsLesson(id, () => { msg = 'Google đang bận, đang thử lại'; }); }
+      catch (e) { clearInterval(tick); if (S.view !== 'lesson') return; $('#view').innerHTML = `<p class="note">${esc(e.message === 'NOKEY' ? 'Chưa có Gemini key.' : e.message)}</p><div class="row"><button class="btn pri" data-act="reopen">Thử lại</button><a class="btn" href="#/">Về danh sách</a></div>`; return; }
+      clearInterval(tick);
       if (S.view !== 'lesson') return;
     }
     if (!L) { $('#view').innerHTML = '<p class="note">Không tìm thấy bài này.</p>'; return; }
@@ -420,6 +530,7 @@ From a Vietnamese news summary (and a rough machine translation), return JSON on
   }
   function seqOf(L) {
     if (L.topic === 'news') return (NEWS.list || []).map(x => x.id);
+    if (L.topic === 'my') return (myGet().find(g => g.set === L.set) || { lessons: [] }).lessons.map(x => x.id);
     return LESSONS.filter(x => S.topic === 'all' || x.topic === S.topic).map(x => x.id).concat(LESSONS.map(x => x.id)).filter((v, i, a) => a.indexOf(v) === i);
   }
   function paintLesson() {
@@ -727,38 +838,26 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
   const speakable = s => s.replace(/\[\d+(?:\s*,\s*\d+)*\]/g, '').replace(/\*\*/g, '').trim();
   const cite = (s, srcs) => esc(s).replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (m, ns) => ns.split(/\s*,\s*/).map(n => { const x = srcs[+n - 1]; return x ? `<a class="cite" href="${esc(x.u)}" target="_blank" rel="noopener" title="${esc(x.t)}">${n}</a>` : ''; }).join(''));
 
-  async function gemStream(sys, contents, onText, signal) {
-    if (!CFG.gkey) throw new Error('NOKEY');
-    await ensureModel();
-    let model = CFG.gmodel || 'gemini-2.5-flash', think = !CFG.noThink;
-    for (let n = 0; n < 3; n++) {
-      const gc = { temperature: 0.3 }; if (think) gc.thinkingConfig = { thinkingBudget: 0 };
-      const r = await tfetch(`${GEM}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`, {
-        method: 'POST', signal, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': CFG.gkey },
-        body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents, generationConfig: gc })
-      }, 30000);
-      if (r.status === 400 && think) { think = false; CFG.noThink = true; saveCfg(); continue; }
-      if (r.status === 404 && n === 0) { const b = bestModel(await gemModels()); if (b) { model = CFG.gmodel = b.id; saveCfg(); continue; } }
-      if (!r.ok) throw gemErr(r.status, await r.text().catch(() => ''));
-      const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', all = '';
-      for (;;) {
-        const { value, done } = await rd.read(); if (done) break;
-        buf += dec.decode(value, { stream: true });
-        let i; while ((i = buf.indexOf('\n')) >= 0) {
-          const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
-          if (!line.startsWith('data:')) continue;
-          try { const j = JSON.parse(line.slice(5)); const t = (j.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join(''); if (t) { all += t; onText(all); } } catch {}
-        }
+  async function gemStream(sys, contents, onText, signal, onBusy) {
+    const r = await gemPost('streamGenerateContent?alt=sse', { systemInstruction: { parts: [{ text: sys }] }, contents, generationConfig: { temperature: 0.3 } }, { signal, ms: 30000, onBusy });
+    const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', all = '';
+    for (;;) {
+      const { value, done } = await rd.read(); if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i; while ((i = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+        if (!line.startsWith('data:')) continue;
+        try { const j = JSON.parse(line.slice(5)); const t = (j.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join(''); if (t) { all += t; onText(all); } } catch {}
       }
-      return all;
     }
-    throw new Error('Gemini chưa trả lời được. Thử lại.');
+    return all;
   }
 
   function renderAsk() {
     $('#view').innerHTML = `
       <h1>Hỏi tin</h1>
-      <p class="sub">Hỏi về tin y tế, nha khoa, nhãn khoa, đấu thầu, pháp lý trong bản tin những ngày qua. Trả lời bằng tiếng Anh kèm tiếng Việt, có PESTEL và ảnh hưởng tới MMH, đọc to ngay khi có chữ.</p>
+      <p class="sub">Tóm tắt theo chủ đề được soạn sẵn mỗi sáng: bấm là đọc, nghe ngay. Muốn hỏi thêm thì gõ hoặc nói câu hỏi ở khung bên dưới.</p>
+      <div id="ask-briefs"><p class="muted small"><span class="spin"></span> Đang tải tóm tắt…</p></div>
       ${CFG.gkey ? '' : '<div class="note" style="margin-bottom:12px">Cần Gemini key (miễn phí) để hỏi và tóm tắt. Vào <a href="#/set">Cài đặt</a> để thêm key. Danh sách tin bên dưới vẫn xem được.</div>'}
       <div class="card ask-box">
         <div class="ask-in"><textarea id="ask-q" rows="2" placeholder="Ví dụ: Luật Đấu thầu sửa đổi thay đổi gì với mua sắm thiết bị y tế?"></textarea>
@@ -775,7 +874,7 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
       <div class="chips">${LENS.map(([k, l]) => `<button class="chip${ASK.lens === k ? ' on' : ''}" data-lens="${k}">${esc(l)}</button>`).join('')}</div>
       <div class="row ask-selbar" id="ask-selbar" hidden><span class="grow small" id="ask-seln"></span><button class="btn" data-act="ask-clear">Bỏ chọn</button><button class="btn pri" data-act="ask-sum">Tóm tắt các bài đã chọn</button></div>
       <div id="ask-list"><p class="muted small"><span class="spin"></span> Đang tải tin…</p></div>`;
-    paintThread();
+    paintThread(); paintBriefs();
     loadPool().then(paintList).catch(() => { $('#ask-list').innerHTML = '<p class="note">Chưa đọc được bản tin. Kiểm tra mạng rồi mở lại.</p>'; });
   }
   function peChips(x) { return (x.pe || []).map(f => `<span class="pe pe-${f}" title="${esc(PESTEL.NAMES[f][1])}">${PESTEL.NAMES[f][0]}</span>`).join(''); }
@@ -793,6 +892,20 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
     const box = $('#ask-thread'); if (!box) return;
     box.innerHTML = ASK.hist.map((h, i) => ansHtml(h, i)).join('');
   }
+  const getH = k => String(k).startsWith('b') ? BR.list[+String(k).slice(1)] : ASK.hist[+k];
+  /* Tóm tắt soạn sẵn mỗi sáng (máy chủ) ⇒ bấm là xem / nghe ngay, không phải chờ Gemini */
+  const BR = { list: [], cur: 0 };
+  const briefText = b => ['## EN', ...b.en.map(x => '- ' + x), '## VI', ...(b.vi || []).map(x => '- ' + x), '## PESTEL', ...(b.pestel || []).map(p => `${p.f}: ${p.note}`), '## MMH', b.mmh || '', '## WORDS', ...(b.words || []).map(w => `${w.en} = ${w.vi}`)].join('\n');
+  async function paintBriefs() {
+    const box = $('#ask-briefs'); if (!box) return;
+    await loadNews(); await loadPool().catch(() => []);
+    const st = NEWS.stories || {};
+    BR.list = (NEWS.briefs || []).map(b => ({ q: b.q, a: briefText(b), done: true, brief: true,
+      srcs: b.src.map(id => (POOL.list || []).find(x => x.id === id) || (st[id] && { t: st[id].h_vi || st[id].t, u: st[id].u, src: st[id].src, d: (st[id].d || '').slice(0, 10) })).filter(Boolean) }));
+    if (!BR.list.length) { box.innerHTML = `<div class="note" style="margin-bottom:12px">Sáng nay chưa có tóm tắt soạn sẵn (máy chủ chưa có Gemini key). Bạn vẫn hỏi được ở khung bên dưới.</div>`; return; }
+    BR.cur = Math.min(BR.cur, BR.list.length - 1);
+    box.innerHTML = `<h2 style="margin-top:6px">Tóm tắt sẵn hôm nay</h2><div class="chips hs">${BR.list.map((b, i) => `<button class="chip${i === BR.cur ? ' on' : ''}" data-brief="${i}">${esc(b.q.replace(/:.*$/, ''))}</button>`).join('')}</div>${ansHtml(BR.list[BR.cur], 'b' + BR.cur)}`;
+  }
   function ansHtml(h, i) {
     const o = parseAns(h.a || ''), srcs = h.srcs;
     const en = bullets(o.EN), vi = bullets(o.VI), pe = bullets(o.PESTEL), words = bullets(o.WORDS), next = bullets(o.NEXT);
@@ -805,7 +918,7 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
       ${o.MMH ? `<div class="lbl" style="margin-top:10px">Ảnh hưởng tới MMH</div><p class="ans-mmh">${cite(o.MMH, srcs)}</p>` : ''}
       ${words.length ? `<div class="lbl" style="margin-top:10px">Từ vựng</div><div class="chips">${words.map(w => { const [en2, vi2] = w.split(/\s*=\s*/); return `<button class="chip" data-say="${esc(en2 || w)}" title="${esc(vi2 || '')}">${esc(en2 || w)}${vi2 ? ` <span class="muted">· ${esc(vi2)}</span>` : ''}</button>`; }).join('')}</div>` : ''}
       <div id="prac-${i}"></div>
-      ${h.done && !h.err ? `<div class="row" style="margin-top:10px"><button class="btn" data-replay="${i}">${I.play} Nghe lại</button>${next.map(q => `<button class="chip" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>` : ''}
+      ${h.done && !h.err ? `<div class="row" style="margin-top:10px"><button class="btn${h.brief ? ' pri' : ''}" data-replay="${i}">${I.play} ${h.brief ? 'Nghe bản tóm tắt' : 'Nghe lại'}</button>${next.map(q => `<button class="chip" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>` : ''}
       ${srcs.length ? `<details style="margin-top:10px"><summary class="small muted">Nguồn (${srcs.length} bài)</summary><ol class="ans-src">${srcs.map(x => `<li><a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)}</a> <span class="muted small">· ${esc(x.src)} · ${x.d.split('-').reverse().slice(0, 2).join('/')}</span></li>`).join('')}</ol></details>` : ''}
     </div>`;
   }
@@ -844,7 +957,7 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
         h.a = all;
         if (Date.now() - last > 120) { last = Date.now(); const el = $('#ans-' + i); if (el) el.outerHTML = ansHtml(h, i); }
         if (ASK.speak) spkFeed(parseAns(all).EN || '', false);
-      }, ASK.ctl.signal);
+      }, ASK.ctl.signal, () => { const el = $('#ans-' + i + ' .muted'); if (el) el.innerHTML = '<span class="spin"></span> Google đang bận, đang thử lại…'; });
       h.done = true;
       if (ASK.speak) spkFeed(parseAns(h.a).EN || '', true);
       bullets(parseAns(h.a).WORDS).forEach(w => { const [en2, vi2] = w.split(/\s*=\s*/); if (en2 && vi2) addWord(en2, vi2, '', 'Hỏi tin'); });
@@ -864,7 +977,7 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
     }, ASK.lang);
   }
   function practice(i, k) {
-    const h = ASK.hist[i]; if (!h) return;
+    const h = getH(i); if (!h) return;
     const s = speakable(bullets(parseAns(h.a).EN)[k] || ''); if (!s) return;
     const box = $('#prac-' + i);
     box.innerHTML = `<div class="hbox" style="margin-top:10px"><div class="lbl">Luyện đọc</div><p class="best" style="font-size:17px">${esc(s)}</p>
@@ -892,8 +1005,9 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
     if (ds.q) { $('#ask-q').value = ds.q; ask(ds.q); return; }
     if (ds.range) { ASK.range = +ds.range; LS.set('mmh_ask_range', ASK.range); $$('[data-range]').forEach(b => b.classList.toggle('on', b === t)); paintList(); return; }
     if (ds.lens) { ASK.lens = ds.lens; LS.set('mmh_ask_lens', ASK.lens); $$('[data-lens]').forEach(b => b.classList.toggle('on', b === t)); paintList(); return; }
-    if (ds.replay != null) { const h = ASK.hist[+ds.replay]; if (h) { Voice.stop(); SPK.q = bullets(parseAns(h.a).EN).map(speakable); spkPump(); } return; }
-    if (ds.practice) { const [i, k] = ds.practice.split(':').map(Number); practice(i, k); return; }
+    if (ds.brief != null) { BR.cur = +ds.brief; paintBriefs(); return; }
+    if (ds.replay != null) { const h = getH(ds.replay); if (h) { Voice.stop(); SPK.q = bullets(parseAns(h.a).EN).map(speakable); spkPump(); } return; }
+    if (ds.practice) { const [i, k] = ds.practice.split(':'); practice(i, +k); return; }
     if (t.id === 'ask-mic') { askMic(); return; }
     if (ds.topic) { S.topic = ds.topic; LS.set('mmh_coach_topic', S.topic); renderHome(); return; }
     if (ds.lvl) { location.hash = `#/l/${encodeURIComponent(S.L.id)}/${ds.lvl}`; return; }
@@ -913,7 +1027,28 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
     if (ds.del != null) { WORDS.splice(+ds.del, 1); LS.set('mmh_coach_words', WORDS); renderWords(); return; }
     if (ds.know != null) { know(ds.know === '1'); return; }
     if (t.id === 'mic') { micToggle(S.lvl === 1 ? doneL1 : doneSpeak); return; }
+    if (ds.mytheme) { $('#my-theme').value = ds.mytheme; $('[data-act="my-go"]').click(); return; }
+    if (ds.mydel) {
+      if (t.dataset.sure) { LS.set('mmh_coach_my', myGet().filter(g => g.set !== ds.mydel)); $('#my-sets').innerHTML = mySetsHtml(); }
+      else { t.dataset.sure = 1; t.textContent = 'Bấm lần nữa để xoá'; }
+      return;
+    }
     switch (ds.act) {
+      case 'reopen': route(); return;
+      case 'my-go': {
+        const th = $('#my-theme').value.trim(); if (!th) { $('#my-theme').focus(); return; }
+        if (!CFG.gkey) { $('#my-msg').innerHTML = 'Cần Gemini key. Vào <a href="#/set">Cài đặt</a> để thêm.'; return; }
+        if (t.disabled) return; t.disabled = true;
+        const t0 = Date.now(); let msg = 'Gemini đang soạn 5 đoạn';
+        const tick = setInterval(() => { const m = $('#my-msg'); if (m) m.innerHTML = `<span class="spin"></span> ${msg}… ${Math.round((Date.now() - t0) / 1000)} giây`; }, 500);
+        try {
+          const ls = await myCreate(th, () => { msg = 'Google đang bận, đang thử lại'; });
+          clearInterval(tick); if (S.view !== 'home') return;
+          $('#my-msg').textContent = `Đã tạo ${ls.length} đoạn. Bấm vào đoạn đầu để học.`; $('#my-theme').value = '';
+          $('#my-sets').innerHTML = mySetsHtml(); $('#my-sets').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (er) { clearInterval(tick); const m = $('#my-msg'); if (m) m.textContent = er.message === 'NOKEY' ? 'Chưa có Gemini key.' : er.message; }
+        t.disabled = false; return;
+      }
       case 'ask-go': ask($('#ask-q').value); return;
       case 'ask-stop': if (ASK.ctl) ASK.ctl.abort(); SPK.q = []; Voice.stop(); return;
       case 'ask-sum': ask(`Tóm tắt ${ASK.sel.size} bài đã chọn: ý chính, PESTEL, ảnh hưởng tới MMH.`); return;
@@ -974,6 +1109,7 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
   $('#view').addEventListener('keydown', e => {
     if (e.target.id === 'typed-in' && e.key === 'Enter') { e.preventDefault(); $('[data-act="typed-go"]').click(); }
     if (e.target.id === 'ask-q' && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(e.target.value); }
+    if (e.target.id === 'my-theme' && e.key === 'Enter') { e.preventDefault(); $('[data-act="my-go"]').click(); }
   });
 
   window.COACH = { align, ideaHit, toks, S, CFG };
