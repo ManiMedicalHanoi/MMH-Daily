@@ -226,7 +226,7 @@
         <button class="ibtn" id="ls-back" type="button" aria-label="${L('Lùi 15 giây', 'Back 15 seconds')}" title="${L('Lùi 15 giây', 'Back 15 seconds')}">${$('#mini-back').innerHTML}</button>
         <button class="ibtn" id="ls-fwd" type="button" aria-label="${L('Tới 15 giây', 'Forward 15 seconds')}" title="${L('Tới 15 giây', 'Forward 15 seconds')}">${$('#mini-fwd').innerHTML}</button>
         <button class="spd" id="ls-spd" type="button" title="${L('Tốc độ đọc', 'Speed')}">${(store.get('mmh_daily_rate', 1)).toFixed(2).replace(/0$/, '')}×</button>
-        ${a ? `<a class="dl" href="${esc(a.file)}" download>${L('Tải MP3', 'Download MP3')}</a>` : `<span class="dl">${L('Âm thanh đang được tạo…', 'Audio is being made…')}</span>`}
+        ${a ? `<a class="dl" href="${esc(a.file + (/^blob:/.test(a.file) ? '' : '?v=' + (a.bytes || '')))}" download>${L('Tải MP3', 'Download MP3')}</a>` : `<span class="dl">${L('Âm thanh đang được tạo…', 'Audio is being made…')}</span>`}
       </div>
       <div class="nowsub" id="nowsub" aria-live="off"><span class="en"></span><span class="vi"></span></div>
       <div class="seek"><span id="ls-cur">0:00</span><div class="tr" id="ls-tr"><i id="ls-prog" style="width:0"></i></div><span id="ls-dur">${a ? mmss(a.dur) : '--:--'}</span></div>
@@ -251,10 +251,14 @@
   function setEp(ed) {
     const a = ed.podcast.audio;
     if (!a) { toast(L('Âm thanh của số này chưa sẵn sàng', 'The audio for this episode is not ready yet')); return false; }
-    if (S.ep?.date !== ed.date) {
-      S.ep = ed;
-      audio.src = a.file;
+    // Cùng ngày có thể dựng lại số (giữ tên file mp3) ⇒ gắn ?v= theo kích thước file để máy không phát lại tiếng cũ trong bộ nhớ đệm.
+    const aKey = ed.date + ':' + (a.bytes || a.dur || '');
+    if (S.epKey !== aKey) {
+      S.ep = ed; S.epKey = aKey;
+      audio.src = a.file + (/^blob:/.test(a.file) ? '' : (a.file.includes('?') ? '&' : '?') + 'v=' + (a.bytes || Math.round(a.dur || 0)));
       audio.playbackRate = store.get('mmh_daily_rate', 1);
+      const vk = store.get('mmh_daily_posv', {});
+      if (vk[ed.date] !== aKey) { const P = store.get('mmh_daily_pos', {}); delete P[ed.date]; store.set('mmh_daily_pos', P); vk[ed.date] = aKey; store.set('mmh_daily_posv', vk); }
       const pos = store.get('mmh_daily_pos', {})[ed.date];
       if (pos && pos < a.dur - 10) audio.currentTime = pos;
       $('#mini').hidden = false;
