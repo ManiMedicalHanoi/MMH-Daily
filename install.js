@@ -16,8 +16,8 @@
   const PLUS = '<svg class="ii" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   const guide = () => {
     if (inApp) return ['Bấm nút <b>⋯</b> (góc trên) ▸ <b>Mở bằng trình duyệt</b> (Safari / Chrome).', 'Trong trình duyệt, bấm lại <b>Cài app</b>.'];
-    if (ios) return [`Bấm nút <b>Chia sẻ</b> ${SHARE} ở thanh dưới (iPad: góc trên).`, `Kéo xuống, chọn <b>Thêm vào MH chính</b> ${PLUS}.`, 'Bấm <b>Thêm</b>. Biểu tượng MMH Daily xuất hiện trên màn hình chính.'];
-    if (macSafari) return ['Trên thanh menu, bấm <b>Tệp</b> (File) ▸ <b>Thêm vào Dock</b>.', 'Bấm <b>Thêm</b>. MMH Daily mở như một ứng dụng riêng từ Dock / Launchpad.'];
+    if (ios) return [`Bấm nút <b>Chia sẻ</b> ${SHARE} ở thanh dưới (iPad: góc trên).`, `Kéo xuống, chọn <b>Thêm vào MH chính</b> ${PLUS}.`, 'Bấm <b>Thêm</b>. Biểu tượng MMH Podcast xuất hiện trên màn hình chính.'];
+    if (macSafari) return ['Trên thanh menu, bấm <b>Tệp</b> (File) ▸ <b>Thêm vào Dock</b>.', 'Bấm <b>Thêm</b>. MMH Daily Podcast mở như một ứng dụng riêng từ Dock / Launchpad.'];
     return ['Mở menu trình duyệt <b>⋮</b> (góc trên bên phải).', 'Chọn <b>Cài đặt ứng dụng</b> / <b>Thêm vào màn hình chính</b>.', 'Bấm <b>Cài đặt</b>.'];
   };
   const open = () => { steps.innerHTML = guide().map(s => `<li>${s}</li>`).join(''); dlg.hidden = false; $('#inst-close').focus(); };

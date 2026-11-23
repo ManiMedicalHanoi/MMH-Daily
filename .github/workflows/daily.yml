@@ -7,7 +7,6 @@ name: MMH Daily
 on:
   schedule:
     - cron: '45 22 * * *'
-    - cron: '0 12 * * 0'
   push:
     branches: [main]
     paths: ['data/editions/**', 'data/inbox/**', 'data/requests/**']   # phiên Claude Code vừa viết số báo / bản tin nội bộ (đã khoá) ⇒ tạo giọng + đăng trang
@@ -147,7 +146,7 @@ jobs:
       - name: Dựng trang (kèm MP3 21 ngày + bản tin nội bộ 8 tuần, đã mã hoá)
         run: |
           mkdir -p _site/audio
-          cp -r index.html app.css app.js install.js update.js learn.js guide.js sw.js manifest.webmanifest icons data _site/
+          cp -r index.html app.css app.js install.js update.js learn.js guide.js sw.js manifest.webmanifest icons coach data _site/
           rm -f _site/data/pool.json
           cp audio/*.mp3 audio/*.enc _site/audio/ 2>/dev/null || true
           for d in $(ls data/editions | sort -r | head -21 | sed 's/.json//'); do

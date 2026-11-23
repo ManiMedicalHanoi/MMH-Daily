@@ -1,27 +1,90 @@
 {
  "id": "./",
- "name": "MMH Daily",
- "short_name": "MMH Daily",
- "description": "Tờ báo buổi sáng của MMH + podcast tiếng Anh phụ đề Việt: nha khoa, nhãn khoa, đấu thầu, thiết bị y tế, thị trường.",
+ "name": "MMH Daily Podcast",
+ "short_name": "MMH Podcast",
+ "description": "Bản tin + podcast tiếng Anh phụ đề Việt mỗi sáng (y tế, nha khoa, nhãn khoa, đấu thầu, pháp lý, thị trường), hỏi tin bằng AI và luyện nói tiếng Anh.",
  "start_url": "./?src=app",
  "scope": "./",
  "display": "standalone",
- "display_override": ["standalone", "minimal-ui"],
+ "display_override": [
+  "standalone",
+  "minimal-ui"
+ ],
  "orientation": "any",
  "background_color": "#FBF9F4",
  "theme_color": "#FBF9F4",
  "lang": "vi",
  "dir": "ltr",
- "categories": ["news", "business", "education"],
+ "categories": [
+  "news",
+  "business",
+  "education"
+ ],
  "icons": [
-  { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-  { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-  { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-  { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-  { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  {
+   "src": "icons/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/icon.svg",
+   "sizes": "any",
+   "type": "image/svg+xml",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/icon-maskable-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "maskable"
+  },
+  {
+   "src": "icons/icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
  ],
  "shortcuts": [
-  { "name": "Nghe podcast hôm nay", "short_name": "Nghe", "url": "./#/listen", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
-  { "name": "Bản tin nội bộ", "short_name": "Nội bộ", "url": "./#/noibo", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  {
+   "name": "Nghe podcast hôm nay",
+   "short_name": "Nghe",
+   "url": "./#/listen",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Hỏi tin",
+   "short_name": "Hỏi tin",
+   "url": "./coach/#/ask",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Luyện nói tiếng Anh",
+   "short_name": "Luyện nói",
+   "url": "./coach/",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  }
  ]
 }

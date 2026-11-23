@@ -13,10 +13,8 @@
       t: 'Học với Chế độ học', x: 'Ở trang Nghe, bấm Chế độ học: câu đang đọc nổi lên giữa màn hình. Nút lặp lại câu, câu trước / câu sau, giảm tốc 0,75×. Bật "Dừng sau mỗi câu" để nói theo; tắt Tiếng Việt để tự luyện nghe. Từ vựng được gạch chân, chạm để xem nghĩa.' },
     { ic: I('<path d="M24 6v6M24 36v6M6 24h6M36 24h6M11 11l4 4M33 33l4 4M11 37l4-4M33 15l4-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="24" cy="24" r="7" fill="none" stroke="currentColor" stroke-width="2.5"/>'),
       t: 'Tổng hợp ngay, chọn nguồn', x: 'Bấm Tổng hợp ngay (góc trên). Chọn chủ đề, bỏ / chọn từng báo trong Nguồn tin, chọn Claude viết (tự nhiên nhất) hoặc Tự động, chọn giọng ElevenLabs hoặc miễn phí, rồi bấm Cập nhật ngay. Cần đăng nhập email công ty. App tự mở số mới khi xong.' },
-    { ic: I('<rect x="10" y="20" width="28" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M16 20v-5a8 8 0 0 1 16 0v5" fill="none" stroke="currentColor" stroke-width="2.5"/>'),
-      t: 'Bản tin nội bộ Chủ nhật', x: 'Mục Nội bộ: tổng kết tuần từ Report Hub, CRM, thầu, đào tạo, có podcast riêng. Chỉ mở được khi đăng nhập email công ty; dữ liệu được mã hoá trên trang.' },
     { ic: I('<rect x="13" y="5" width="22" height="38" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M24 15v12m0 0-5-5m5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'),
-      t: 'Cài app lên máy', x: 'Bấm Cài app (góc trên). Android / máy tính: hộp cài hiện ra, bấm Cài đặt. iPhone: Chia sẻ ▸ Thêm vào MH chính. Sau đó mở MMH Daily từ biểu tượng như app thường.' },
+      t: 'Cài app lên máy', x: 'Bấm Cài app (góc trên). Android / máy tính: hộp cài hiện ra, bấm Cài đặt. iPhone: Chia sẻ ▸ Thêm vào MH chính. Sau đó mở MMH Podcast từ biểu tượng như app thường.' },
   ];
   const dlg = document.createElement('div');
   dlg.className = 'dlg gd'; dlg.id = 'gd'; dlg.hidden = true;

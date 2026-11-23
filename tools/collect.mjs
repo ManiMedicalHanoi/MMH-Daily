@@ -98,6 +98,7 @@ async function main() {
         if (!tn) continue;
         if (f.gnews && it.src) { it.title = it.title.replace(new RegExp('\\s+-\\s+' + it.src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'), ''); it.desc = ''; }
         if (it.title.length < 25 || it.title === it.title.toUpperCase()) continue;
+        if (KW.entertainment && count(norm(it.title + ' ' + (it.desc || '')), KW.entertainment)) { st.skipEnt = (st.skipEnt || 0) + 1; continue; }   // bỏ tin giải trí / thể thao (người dùng yêu cầu 23/11/2026)
         const d = it.date || NOW;
         if (d < since || d - NOW > DAY / 2) continue;
         const c = classify(it, f);

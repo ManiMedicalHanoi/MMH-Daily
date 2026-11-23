@@ -11,6 +11,7 @@
 
   const SEL_KEY = 'mmh_daily_sel2';
   let SRC = null, sel = Object.assign({ kind: 'daily', writer: 'auto', voice: 'edge', preset: 'news', topics: [], off: [] }, store.get(SEL_KEY, {}));
+  sel.kind = 'daily';  // bản tin nội bộ đã bỏ (23/11/2026)
   let flags = null, admin = false, login = null, running = store.get('mmh_daily_run', null), poll = null, preview = null;
   const save = () => store.set(SEL_KEY, sel);
 
@@ -45,7 +46,7 @@
     const [on, all] = nSel();
     const pr = SRC.voice?.presets || [];
     return `<div class="u2-head"><h2 id="upd-h">Tổng hợp bản tin ngay</h2><button type="button" class="u2-x" data-act="close" aria-label="Đóng">×</button></div>
-      <div class="u2-seg" role="tablist">${[['daily', 'Tin tức & thị trường'], ['weekly', 'Bản tin nội bộ']].map(([k, l]) => `<button type="button" role="tab" data-kind="${k}" class="${sel.kind === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <div class="u2-seg" role="tablist">${[['daily', 'Tin tức & thị trường']].map(([k, l]) => `<button type="button" role="tab" data-kind="${k}" class="${sel.kind === k ? 'on' : ''}">${l}</button>`).join('')}</div>
       ${sel.kind === 'daily' ? `
       <section class="u2-sec"><h3>Chủ đề <small>bỏ trống = tất cả · số trong ngoặc = tin 48 giờ qua</small></h3>
         <div class="u2-chips">${SRC.topics.map(t => `<button type="button" data-topic="${t.id}" class="${sel.topics.includes(t.id) ? 'on' : ''}">${esc(t.vi)} <i>${t.n}</i></button>`).join('')}</div></section>

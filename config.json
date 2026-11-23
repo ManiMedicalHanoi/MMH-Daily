@@ -97,7 +97,18 @@
   "dav.gov.vn": "Cục Quản lý Dược",
   "muasamcong.mpi.gov.vn": "Mua sắm công",
   "nikkei.com": "Nikkei",
-  "japantimes.co.jp": "The Japan Times"
+  "japantimes.co.jp": "The Japan Times",
+  "aao.org": "American Academy of Ophthalmology",
+  "ada.org": "American Dental Association",
+  "fdiworlddental.org": "FDI World Dental Federation",
+  "healio.com": "Healio",
+  "medtechdive.com": "MedTech Dive",
+  "statnews.com": "STAT News",
+  "mani.co.jp": "MANI, Inc.",
+  "bachmai.gov.vn": "BV Bạch Mai",
+  "vos.org.vn": "Hội Nhãn khoa Việt Nam",
+  "thuvienphapluat.vn": "Thư viện Pháp luật",
+  "vbpl.vn": "CSDL văn bản pháp luật"
  },
  "feeds": [
   {
@@ -346,6 +357,39 @@
     "site:vietnam-briefing.com (health OR hospital OR \"medical\" OR dental OR \"eye\" OR Japan OR yen) when:4d",
     "site:reuters.com Vietnam (health OR hospital OR medical OR Japan) when:5d",
     "site:asia.nikkei.com Vietnam (health OR hospital OR medical OR Japan) when:5d"
+   ]
+  },
+  {
+   "id": "gn-pro-vi",
+   "lang": "vi",
+   "sec": "health",
+   "name": "Bệnh viện, hội y học, đấu thầu, pháp lý",
+   "gnews": [
+    "site:benhvienmattrunguong.vn when:10d",
+    "site:rhmtw.vn when:10d",
+    "site:vos.org.vn when:14d",
+    "site:bachmai.gov.vn (\"kỹ thuật\" OR \"thiết bị\" OR \"phẫu thuật\") when:7d",
+    "site:kcb.vn when:7d",
+    "site:dav.gov.vn when:7d",
+    "site:baodauthau.vn (\"y tế\" OR \"thiết bị\" OR \"vật tư\" OR \"bệnh viện\" OR thuốc) when:4d",
+    "(site:thuvienphapluat.vn OR site:luatvietnam.vn) (\"thiết bị y tế\" OR \"đấu thầu\" OR \"khám bệnh, chữa bệnh\" OR \"bảo hiểm y tế\") when:7d",
+    "(\"hội nghị\" OR \"hội thảo\") (\"nhãn khoa\" OR \"răng hàm mặt\" OR \"nha khoa\") when:10d"
+   ]
+  },
+  {
+   "id": "gn-pro-en",
+   "lang": "en",
+   "sec": "health",
+   "name": "Ophthalmology, dentistry, medtech (international)",
+   "gnews": [
+    "site:aao.org when:10d",
+    "site:healio.com (ophthalmology OR cataract OR glaucoma OR dental OR dentistry) when:5d",
+    "site:ada.org when:10d",
+    "site:fdiworlddental.org when:21d",
+    "site:medtechdive.com when:5d",
+    "site:statnews.com (\"medical device\" OR medtech OR FDA) when:5d",
+    "site:mani.co.jp when:30d",
+    "(ophthalmic OR dental) (\"medical device\" OR surgery) (Japan OR Asia OR Vietnam) when:7d site:reuters.com"
    ]
   }
  ],
@@ -815,6 +859,31 @@
    "drug",
    "clinic",
    "ministry of health"
+  ],
+  "entertainment": [
+   "showbiz",
+   "ca sĩ",
+   "diễn viên",
+   "hoa hậu",
+   "người mẫu",
+   "youtuber",
+   "tiktoker",
+   "mukbang",
+   "thánh ăn",
+   "người nổi tiếng",
+   "sao việt",
+   "sao hàn",
+   "gameshow",
+   "phim truyền hình",
+   "concert",
+   "liveshow",
+   "celebrity",
+   "influencer",
+   "k-pop",
+   "box office",
+   "bóng đá",
+   "v-league",
+   "world cup"
   ]
  },
  "internal": {
@@ -925,7 +994,18 @@
     "baodauthau.vn",
     "benhvienmattrunguong.vn",
     "rhmtw.vn",
-    "vietq.vn"
+    "vietq.vn",
+    "vos.org.vn",
+    "bachmai.gov.vn",
+    "thuvienphapluat.vn",
+    "vbpl.vn",
+    "aao.org",
+    "ada.org",
+    "fdiworlddental.org",
+    "healio.com",
+    "medtechdive.com",
+    "statnews.com",
+    "mani.co.jp"
    ]
   },
   {

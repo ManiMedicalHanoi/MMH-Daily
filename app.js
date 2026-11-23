@@ -25,7 +25,7 @@
   // ── ảnh bìa podcast (SVG, theo màu chương trình) ──
   function cover(pod, date, big) {
     const c = pod?.color || '#0E7C6B';
-    const name = pod?.name || 'MMH Daily';
+    const name = pod?.name || 'MMH Daily Podcast';
     const words = name.split(' ');
     const lines = words.length > 2 ? [words.slice(0, Math.ceil(words.length / 2)).join(' '), words.slice(Math.ceil(words.length / 2)).join(' ')] : [name];
     const d = date ? new Date(date + 'T00:00:00Z') : null;
@@ -65,7 +65,8 @@
   // ── mẩu tin ──
   function kicker(x) {
     const tags = (x.tags || []).map(t => TAG[t]).filter(Boolean).slice(0, 2);
-    return `<div class="kick">${esc(SEC[x.sec]?.[0] || '')}${tags.map(t => `<span class="tg">· ${esc(t)}</span>`).join('')}${x.kind === 'doc' ? '<span class="red">· Văn bản mới</span>' : ''}</div>`;
+    const pe = window.PESTEL ? PESTEL.of(x).map(f => `<span class="pe pe-${f}" title="${esc(PESTEL.NAMES[f][1])}">${PESTEL.NAMES[f][0]}</span>`).join('') : '';
+    return `<div class="kick">${esc(SEC[x.sec]?.[0] || '')}${tags.map(t => `<span class="tg">· ${esc(t)}</span>`).join('')}${x.kind === 'doc' ? '<span class="red">· Văn bản mới</span>' : ''}${pe ? `<span class="pes">${pe}</span>` : ''}</div>`;
   }
   function byline(x) {
     return `<div class="by"><b>${esc(x.src)}</b><span>· ${esc(ago(x.d))}</span>${x.lang === 'en' ? '<span class="badge en">EN</span>' : ''}${x.also?.length ? `<span>· cũng đăng trên ${esc(x.also.slice(0, 3).join(', '))}</span>` : ''}</div>`;
@@ -215,7 +216,7 @@
       $('#mini-t').textContent = ed.podcast.name;
       $('#mini-s').textContent = viDate(ed.date) + ' · ' + ed.podcast.hosts.map(h => h.name).join(' & ');
       if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({ title: ed.podcast.title || ed.podcast.name, artist: 'MMH Daily', album: viDate(ed.date),
+        navigator.mediaSession.metadata = new MediaMetadata({ title: ed.podcast.title || ed.podcast.name, artist: 'MMH Daily Podcast', album: viDate(ed.date),
           artwork: [{ src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' }] });
       }
     }
@@ -291,7 +292,8 @@
   async function route() {
     const h = location.hash.replace(/^#\/?/, '');
     const [r, a] = h.split('/');
-    if (r === 'noibo') { if (!$('#m-date').textContent && S.index.editions[0]) $('#m-date').textContent = viDate(S.index.editions[0].date); document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === 'noibo')); return internalPage(); }
+    if (r === 'noibo') { location.replace('#/'); return; }  // 23/11/2026: bỏ bản tin nội bộ (người dùng yêu cầu)
+    if (r === 'noibo-old') { if (!$('#m-date').textContent && S.index.editions[0]) $('#m-date').textContent = viDate(S.index.editions[0].date); document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === 'noibo')); return internalPage(); }
     let date = S.index.editions[0]?.date;
     if ((r === 'e' || r === 'listen') && a) date = a;
     if (!date) { $('#view').innerHTML = '<div class="empty">Chưa có số báo nào. Số đầu tiên sẽ có sau lượt chạy sáng mai.</div>'; return; }
@@ -341,7 +343,7 @@
   function footer(ed) {
     const ok = (ed.sources || []).filter(s => s.ok).length;
     const writer = ed.writer === 'claude' ? 'Biên tập bằng Claude (AI) từ tin gom được' : 'Tin lấy nguyên văn từ báo · podcast đọc tin tiếng Anh';
-    return `<span><b>MMH Daily</b> · số ${ed.no} · cập nhật ${new Date(ed.updated).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</span>
+    return `<span><b>MMH Daily Podcast</b> · số ${ed.no} · cập nhật ${new Date(ed.updated).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</span>
       <span>${ok}/${(ed.sources || []).length} nguồn tin chạy</span><span>${writer}</span><span>Giọng đọc: giọng máy (Microsoft neural)</span><span>Bấm tiêu đề để đọc bài gốc</span>`;
   }
 
