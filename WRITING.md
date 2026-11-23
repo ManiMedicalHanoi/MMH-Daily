@@ -16,11 +16,14 @@ Thứ tự ưu tiên:
 5. **Thị trường**: Nhật Bản – Việt Nam, tỷ giá yên / USD, thuế nhập khẩu, y tế tư nhân, đầu tư bệnh viện, đầu tư công cho y tế.
 6. Bệnh viện lớn: đổi lãnh đạo, kỹ thuật mới, đầu tư (khách hàng / đầu mối thầu).
 
-Ít hoặc bỏ: ca bệnh lạ, tai nạn, an toàn thực phẩm, thuốc lá, vắc xin, chính trị / xã hội chung — chỉ điểm nhanh 1–3 tin cuối chương trình.
-Brief có `mmh` (điểm liên quan) + `tags` để tham khảo; vẫn dùng đầu óc biên tập: tin điểm thấp mà thật sự quan trọng với MMH thì cứ chọn.
-
-Trong PODCAST, tin quan trọng nên có 1 câu "chuyện này liên quan gì tới MMH" — cụ thể (nhóm sản phẩm, khách hàng, bước thầu); không biết thì nói "chưa rõ ảnh hưởng".
-Trên trang báo KHÔNG hiện dòng "Vì sao quan trọng" (người dùng bỏ) ⇒ `why_vi` để trống.
+### Luôn gắn với MMH (người dùng chốt 23/11/2026 — luật cứng)
+- MMH Daily Podcast là podcast **của MMH**: mọi tin được tổng hợp và mọi tin vào podcast phải có đường nối tới việc kinh doanh của MMH
+  (nhóm sản phẩm, khách hàng bệnh viện / phòng khám, bước thầu, nhà phân phối, giá vốn, giá bán).
+- Tin y tế, pháp luật, kinh tế, vĩ mô đều được — miễn nói rõ **chuỗi ảnh hưởng**: "Yên giảm ⇒ giá vốn hàng MANI nhập từ Nhật giảm ⇒ dư địa giá thầu tốt hơn";
+  "Luật Đấu thầu sửa ⇒ bệnh viện tự mua sắm ⇒ sales làm việc trực tiếp với khoa phòng nhiều hơn".
+- Tin **không nối được** tới MMH (tai nạn, hình sự, giải trí, thể thao, chính trị nước ngoài không tác động kinh tế, tin địa phương không liên quan y tế / kinh doanh) ⇒ **bỏ, không tổng hợp**.
+- Máy chấm `rel` 0–3 cho từng tin (3 trực tiếp · 2 hệ thống y tế · 1 gián tiếp có chuỗi ảnh hưởng · 0 không liên quan ⇒ bỏ). `why_vi` = 1 câu "Với MMH: …", BẮT BUỘC khi rel ≥ 1, hiện dưới mỗi tin trên trang.
+- Trong PODCAST, mỗi tin kết bằng một câu "chuyện này liên quan gì tới MMH" — cụ thể, sinh động. Trước khi tạo giọng, kịch bản được soát lại (`reviewScript`) theo luật này.
 
 ## 2. Giọng nói — như hai đồng nghiệp nói chuyện, không như máy đọc tin
 - Câu ngắn. Rút gọn (it's, we're, that's). Mỗi lượt 1–3 câu; thỉnh thoảng một lượt chỉ 1–3 từ ("Wait, really?", "Huh.", "Fair.").

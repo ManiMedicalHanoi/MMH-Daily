@@ -1172,8 +1172,8 @@
    "eleven": "Tự nhiên (ElevenLabs)"
   },
   "default": "eleven",
-  "model": "eleven_v3",
-  "note": "Có secret ELEVENLABS_API_KEY ⇒ podcast đọc bằng ElevenLabs v3 (thẻ cảm xúc trong kịch bản), lỗi / hết credit ⇒ giọng miễn phí. v3 ≈ 1 credit / ký tự; số báo 8 phút ≈ 6–8 nghìn ký tự.",
+  "model": "eleven_v4_turbo",
+  "note": "Có secret ELEVENLABS_API_KEY ⇒ podcast đọc bằng ElevenLabs v4 Turbo (thẻ cảm xúc trong kịch bản; người dùng chọn 23/11/2026, giá ≈ 0,04 USD / 1.000 ký tự), lỗi / hết credit ⇒ giọng miễn phí. Đổi mẫu: eleven_v4 / eleven_v3 (gấp đôi giá).",
   "presets": [
    {
     "id": "news",

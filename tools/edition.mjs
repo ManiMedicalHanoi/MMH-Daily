@@ -212,15 +212,34 @@ async function claudeWrite(ed, picked) {
   const SYSTEM = `You are the editor of MMH Daily Podcast, a morning news podcast for staff of MANI Medical Hanoi (MMH) who are learning English (level B1). Follow these house guides exactly
 (they are in Vietnamese; write stories and scripts in English with Vietnamese where asked):\n\n${fs.readFileSync(path.join(ROOT, 'WRITING.md'), 'utf8')}\n\n${fs.readFileSync(path.join(ROOT, 'PODCAST.md'), 'utf8')}`;
   // 1. tin song ngữ
-  const st = await askJson({ system: SYSTEM, effort: 'low', schema: J.obj({ stories: J.arr(J.obj({ id: J.str, h_en: J.str, h_vi: J.str, dek_en: J.str, s_vi: J.str, s_en: J.str, why_vi: J.str })) }),
-    user: `For EVERY story below write: h_en (sharp English headline), h_vi (Vietnamese headline), dek_en (one-line English standfirst),
-s_vi (2–3 sentence Vietnamese summary), s_en (2–3 sentence English summary), why_vi (one Vietnamese sentence: what this means for MMH specifically — which product group,
-customer or tender step; empty string if nothing useful).\n\nStories (JSON):\n${JSON.stringify(list)}` });
+  const st = await askJson({ system: SYSTEM, effort: 'low', schema: J.obj({ stories: J.arr(J.obj({ id: J.str, rel: { type: 'integer', enum: [0, 1, 2, 3] }, h_en: J.str, h_vi: J.str, dek_en: J.str, s_vi: J.str, s_en: J.str, why_vi: J.str })) }),
+    user: `For EVERY story below first rate rel = how much it matters to MMH's business (WRITING.md ▸ "Luôn gắn với MMH"):
+3 = direct (ophthalmic / dental / surgical products, medical-device tenders and procurement, distributors, MMH's hospital and clinic customers, competitors);
+2 = health system (hospitals, health insurance, health policy, medical devices / pharma regulation, medical societies, health investment);
+1 = indirect but real (exchange rate yen / USD, import duties and customs, public investment and hospital budgets, laws on bidding, tax, business, labour;
+    macro economy that changes customer demand or MMH's costs) — only if you can name the chain of impact;
+0 = no plausible link (crime, accidents, entertainment, sport, foreign politics without an economic effect, local news unrelated to health or business).
+Then write: h_en (sharp English headline), h_vi (Vietnamese headline), dek_en (one-line English standfirst),
+s_vi (2–3 sentence Vietnamese summary), s_en (2–3 sentence English summary), why_vi (one Vietnamese sentence, REQUIRED when rel ≥ 1: how it affects MMH concretely —
+which product group, customer, tender step, cost or price; for rel = 1 spell out the chain, e.g. "Yên giảm ⇒ giá vốn hàng MANI nhập từ Nhật giảm ⇒ dư địa giá thầu tốt hơn"; empty when rel = 0).
+For rel = 0 you may leave the other fields short — the story will be dropped.\n\nStories (JSON):\n${JSON.stringify(list)}` });
   const byId = new Map(st.stories.map(s => [s.id, s]));
-  for (const x of all) { const s = byId.get(x.id); if (s) Object.assign(x, { h_en: s.h_en, h_vi: s.h_vi, dek: s.dek_en, s_vi: s.s_vi, s_en: s.s_en, why: s.why_vi || undefined }); }
+  for (const x of all) { const s = byId.get(x.id); if (s) Object.assign(x, { h_en: s.h_en, h_vi: s.h_vi, dek: s.dek_en, s_vi: s.s_vi, s_en: s.s_en, why: s.why_vi || undefined, rel: s.rel }); }
+  // Luật người dùng (23/11/2026): chỉ giữ tin có liên quan tới MMH (rel ≥ 1); tin không liên quan không tổng hợp, không vào podcast.
+  const rel = x => (x.rel == null ? 1 : x.rel), okRel = x => rel(x) >= 1;
+  if (all.filter(okRel).length >= 6) {
+    for (const sec of Object.keys(picked.sections)) picked.sections[sec] = picked.sections[sec].filter(okRel).sort((a, b) => rel(b) - rel(a));
+    picked.docs = picked.docs.filter(okRel);
+    if (picked.read) picked.read = picked.read.filter(okRel);
+    const kept = new Set(all.filter(okRel).map(x => x.id));
+    for (const t of Object.keys(picked.desk)) picked.desk[t] = picked.desk[t].filter(id => kept.has(id) || !all.some(x => x.id === id));
+    if (!picked.lead || !okRel(picked.lead) || rel(picked.lead) < 2) picked.lead = [...(picked.sections.health || [])].sort((a, b) => rel(b) - rel(a) || (b.mmh || 0) - (a.mmh || 0))[0] || picked.lead;
+    ed.lead = picked.lead?.id; ed.docs = picked.docs.map(x => x.id);
+    console.log(`Tin liên quan MMH: giữ ${kept.size}/${all.length} (bỏ ${all.length - kept.size} tin không liên quan)`);
+  }
 
   // 2. podcast + phụ đề + lời biên tập + phân tích y tế + từ vựng
-  const pick = sec => (picked.sections[sec] || []).slice(0, sec === 'health' ? 8 : 4).map(x => ({ id: x.id, tags: x.tags, source: x.src, headline: x.h_en || x.t, summary: x.s_en || x.sum }));
+  const pick = sec => (picked.sections[sec] || []).slice(0, sec === 'health' ? 8 : 4).map(x => ({ id: x.id, tags: x.tags, source: x.src, headline: x.h_en || x.t, summary: x.s_en || x.sum, mmh_relevance: x.rel, mmh_impact: x.why || '' }));
   const hosts = show.hosts.map(h => `${h.id} = ${h.name} (${h.role})`).join('; ');
   const out = await askJson({ system: SYSTEM, effort: 'medium',
     schema: J.obj({ note: J.obj({ en: J.str, vi: J.str }), health: J.obj({ en: J.str, vi: J.str }), vocab: J.arr(J.obj({ en: J.str, vi: J.str, ex: J.str })),
@@ -232,8 +251,12 @@ Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'n
 3. vocab: 8 useful English terms used in the script, with Vietnamese meaning and a short example from the script. Do NOT reuse these terms taught in the last 14 days: ${AV.vocab.join(', ') || 'none'}.
 4. podcast: title, one-line desc, and turns for a 1,100–1,400 word script (about 8–10 minutes at a relaxed pace). Listener priorities, in this order: (1) the hottest, most-read health news;
    (2) new laws, decrees and circulars on medical-device tenders and procurement, health insurance and hospitals; (3) treatment trends in ophthalmology and dentistry;
-   (4) news from hospitals and medical societies. Stories that touch MMH's business come first and deepest, each with a concrete 'what this means for us';
-   general economy / politics / society only one or two sentences at the end, skip them if nothing matters for MMH. No entertainment or celebrity news. ${show.style === 'solo' ? 'One anchor only.' : show.style === 'qa' ? 'A asks short listener-style questions; B answers.' : show.style === 'desk' ? 'B is the health correspondent and carries health in depth; A wraps up other news briefly.' : show.style === 'deep' ? 'Spend half the show explaining the lead story step by step, then a quick round-up.' : 'Two hosts in real conversation.'}
+   (4) news from hospitals and medical societies. Stories that touch MMH's business come first and deepest.
+   ALWAYS TIE IT TO MMH (house rule): this is MMH's own podcast. EVERY story you include must end with a concrete link to MMH — a product group (ophthalmic knives,
+   sutures, Manipler, micro forceps, trabeculotomy hook, JIZAI files, DIA-BURS, MMG composite / bond), a customer (eye / dental / surgical hospitals and clinics), a tender step,
+   a distributor, a cost or price. Use mmh_impact as your starting point and make it vivid. Economy, law and macro stories (exchange rate, import rules, public investment,
+   bidding or tax law) are welcome only with the impact chain spelled out ("…so our import cost from Japan…"). If you cannot link a story to MMH, leave it out.
+   No entertainment or celebrity news. ${show.style === 'solo' ? 'One anchor only.' : show.style === 'qa' ? 'A asks short listener-style questions; B answers.' : show.style === 'desk' ? 'B is the health correspondent and carries health in depth; A wraps up other news briefly.' : show.style === 'deep' ? 'Spend half the show explaining the lead story step by step, then a quick round-up.' : 'Two hosts in real conversation.'}
    HOW TO PRESENT TODAY'S SHOW: ${HOW[ed.podcast.show] || ''}
    LEARNING SEGMENT (60–90 seconds, near the end): ${LEARN[ed.podcast.learn]}
    LANGUAGE FOR B1 LEARNERS: average 10–14 words per sentence, max about 18; everyday words; explain any industry term in plain words the first time; paraphrase each story's key point once; no hard idioms.
@@ -256,7 +279,61 @@ society: ${JSON.stringify(pick('society'))}` });
   ed.podcast.turns = out.podcast.turns.map(t => voiceTurn({ sp: t.sp, text: t.text, vi: t.vi, rep: t.rep }));
   const { PROVIDER, usedModel } = await import('./ai.mjs');
   ed.writer = PROVIDER || 'claude'; ed.model = usedModel();
+  try { await reviewScript(ed, SYSTEM); } catch (e) { console.log('Bỏ qua soát kịch bản: ' + e.message); }
   try { await coachWrite(ed, all, SYSTEM); } catch (e) { console.log('Bỏ qua soạn sẵn bài luyện / tóm tắt: ' + e.message); }
+  try { await studyWrite(ed, SYSTEM, AV.vocab); } catch (e) { console.log('Bỏ qua bài học từ podcast: ' + e.message); }
+}
+
+/* Soát kịch bản TRƯỚC khi tạo giọng (đỡ tốn credit ElevenLabs): mọi tin phải gắn MMH, thẻ cảm xúc đúng luật, không bịa — sửa / bỏ đúng lượt hỏng. */
+async function reviewScript(ed, SYSTEM) {
+  const { askJson, S: J } = await import('./ai.mjs');
+  const T = ed.podcast.turns, I = { type: 'integer' };
+  const script = T.map((t, i) => `${i}. ${t.sp}${t.rep ? ' (Listen & Repeat)' : ''}: ${t.say || t.text}`).join('\n');
+  const out = await askJson({ system: SYSTEM, effort: 'low', maxTokens: 16000,
+    schema: J.obj({ issues: J.arr(J.str), fixes: J.arr(J.obj({ turn: I, text: J.str, vi: J.str })), remove: J.arr(I) }),
+    user: `Review this MMH Daily Podcast script before it is sent to the paid voice engine. Check against the house rules:
+(a) every story is clearly linked to MMH's business (products, customers, tenders, distributors, costs) — add a short concrete link where it is missing;
+(b) stories with no possible link to MMH are removed (list their turn numbers in "remove");
+(c) delivery tags: at most one per turn, only [curious] [surprised] [thoughtful] [warmly] [excited] [serious] [chuckles] [sighs], none in Listen & Repeat turns, never cheerful tags on sad news;
+(d) spoken rhythm: no three long sentences in a row, one clear key point per story; (e) nothing invented beyond what is already stated.
+Only return turns that need changing ("fixes": full new English text with tags + its Vietnamese subtitle). Keep fixes few and small. If the script is fine return empty arrays.
+
+Script:
+${script}` });
+  const drop = new Set((out.remove || []).filter(i => Number.isInteger(i) && i >= 0 && i < T.length && !T[i].rep));
+  if (drop.size > T.length / 4) drop.clear();                   // phòng hờ: không để bản soát cắt quá nhiều
+  for (const f of out.fixes || []) if (Number.isInteger(f.turn) && T[f.turn] && !drop.has(f.turn) && f.text.trim())
+    T[f.turn] = voiceTurn({ sp: T[f.turn].sp, text: f.text, vi: f.vi || T[f.turn].vi, rep: T[f.turn].rep });
+  ed.podcast.turns = T.filter((_, i) => !drop.has(i));
+  console.log(`Soát kịch bản: sửa ${(out.fixes || []).length} lượt · bỏ ${drop.size} lượt${out.issues?.length ? ' · ' + out.issues.slice(0, 5).join(' | ') : ''}`);
+}
+
+/* Bài học từ podcast (trang Nghe ▸ "Học từ số này"): từ mới, cụm hay / câu móc, ngữ pháp, bài kiểm tra nghe — gắn với lượt lời để bấm nghe lại. */
+async function studyWrite(ed, SYSTEM, avoid) {
+  const { askJson, S: J } = await import('./ai.mjs');
+  const T = ed.podcast.turns, I = { type: 'integer' };
+  const script = T.map((t, i) => `${i}. ${t.sp}: ${t.text}`).join('\n');
+  const out = await askJson({ system: SYSTEM, effort: 'low', maxTokens: 24000, schema: J.obj({
+      words: J.arr(J.obj({ en: J.str, vi: J.str, ex: J.str, turn: I })),
+      phrases: J.arr(J.obj({ en: J.str, vi: J.str, use: J.str, turn: I })),
+      grammar: J.arr(J.obj({ p: J.str, vi: J.str, ex: J.str, turn: I })),
+      quiz: J.arr(J.obj({ kind: { type: 'string', enum: ['gist', 'detail', 'vocab', 'inference'] }, q: J.str, opts: J.arr(J.str), a: I, why: J.str, turn: I })) }),
+    user: `Build a listening lesson from today's MMH Daily podcast script for a B1 learner (MMH product & sales manager). Use ONLY what is in the script; "turn" = the line number where it is heard.
+words: 12 useful new words or terms from the script (work + health + business), not already taught recently: ${[...(ed.vocab || []).map(v => v.en), ...(avoid || [])].join(', ') || 'none'}.
+  vi = short Vietnamese meaning; ex = the exact sentence from the script that contains it.
+phrases: 6 natural chunks worth copying — hooks, collocations, everyday idioms, ways to react or hand over (e.g. "Here's the thing", "keep an eye on"). vi = meaning; use = one short Vietnamese tip on when to use it at work.
+grammar: 3 patterns used in the script (conditionals, passive, "as long as", reported speech…). p = the pattern, vi = one-sentence Vietnamese explanation, ex = the script sentence.
+quiz: 8 listening questions in English, in script order: 2 gist, 4 detail, 1 vocab-in-context, 1 inference. opts = 4 short options, exactly one correct, a = index of the correct option (0-3); vary the position of the answer.
+  why = one Vietnamese sentence explaining the answer.
+
+Script:
+${script}` });
+  const n = T.length, ok = x => Number.isInteger(x.turn) && x.turn >= 0 && x.turn < n;
+  ed.study = {
+    words: out.words.filter(ok).slice(0, 14), phrases: out.phrases.filter(ok).slice(0, 8), grammar: out.grammar.filter(ok).slice(0, 4),
+    quiz: out.quiz.filter(q => ok(q) && q.opts.length === 4 && q.a >= 0 && q.a < 4).slice(0, 10)
+  };
+  console.log(`Bài học từ podcast: ${ed.study.words.length} từ · ${ed.study.phrases.length} cụm · ${ed.study.grammar.length} ngữ pháp · ${ed.study.quiz.length} câu hỏi nghe`);
 }
 
 /* Soạn sẵn cho app (để mở ra là dùng ngay, không phải chờ AI trên điện thoại):
