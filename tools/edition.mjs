@@ -222,8 +222,10 @@ Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'n
 1. note: editor's note (60–90 words) in English and Vietnamese.
 2. health: analysis for MMH (180–240 words) in English and Vietnamese: dental, eye care, tenders, devices, insurance, market — what changed, who is affected, what MMH should watch.
 3. vocab: 8 useful English terms used in the script, with Vietnamese meaning and a short example from the script.
-4. podcast: title, one-line desc, and turns for a 1,200–1,500 word script (about 8–10 minutes). Stories that touch MMH's business come first and deepest, each with a concrete
-   'what this means for us'; general economy / politics / society only as a quick round-up at the end. ${show.style === 'solo' ? 'One anchor only.' : show.style === 'qa' ? 'A asks short listener-style questions; B answers.' : show.style === 'desk' ? 'B is the health correspondent and carries health in depth; A wraps up other news briefly.' : show.style === 'deep' ? 'Spend half the show explaining the lead story step by step, then a quick round-up.' : 'Two hosts in real conversation.'}
+4. podcast: title, one-line desc, and turns for a 1,200–1,500 word script (about 8–10 minutes). Listener priorities, in this order: (1) the hottest, most-read health news;
+   (2) new laws, decrees and circulars on medical-device tenders and procurement, health insurance and hospitals; (3) treatment trends in ophthalmology and dentistry;
+   (4) news from hospitals and medical societies. Stories that touch MMH's business come first and deepest, each with a concrete 'what this means for us';
+   general economy / politics / society only one or two sentences at the end, skip them if nothing matters for MMH. No entertainment or celebrity news. ${show.style === 'solo' ? 'One anchor only.' : show.style === 'qa' ? 'A asks short listener-style questions; B answers.' : show.style === 'desk' ? 'B is the health correspondent and carries health in depth; A wraps up other news briefly.' : show.style === 'deep' ? 'Spend half the show explaining the lead story step by step, then a quick round-up.' : 'Two hosts in real conversation.'}
    Sound like real people talking, not reading: contractions, short sentences, natural reactions and hand-offs, a light personal touch; numbers written to be spoken;
    no URLs or lists. Never sound cheerful about accidents or deaths. For every turn also give "vi": a natural Vietnamese subtitle of that turn.
 
@@ -234,9 +236,53 @@ society: ${JSON.stringify(pick('society'))}` });
   ed.note = out.note; ed.healthDesk.analysis = out.health; ed.vocab = out.vocab;
   ed.podcast.title = out.podcast.title; ed.podcast.desc = out.podcast.desc;
   ed.podcast.turns = out.podcast.turns.map(t => ({ sp: t.sp, text: speech(t.text), vi: t.vi }));
-  ed.writer = 'claude';
+  const { PROVIDER, usedModel } = await import('./ai.mjs');
+  ed.writer = PROVIDER || 'claude'; ed.model = usedModel();
+  try { await coachWrite(ed, all, SYSTEM); } catch (e) { console.log('Bỏ qua soạn sẵn bài luyện / tóm tắt: ' + e.message); }
 }
 
+/* Soạn sẵn cho app (để mở ra là dùng ngay, không phải chờ AI trên điện thoại):
+   ① bài luyện nói 3 mức cho 4 tin liên quan MMH nhất; ② tóm tắt theo chủ đề (đấu thầu, pháp quy, nhãn khoa, nha khoa, bệnh viện, PESTEL). */
+const BRIEFS = [
+  ['tender', 'Đấu thầu & trang thiết bị y tế: có gì mới?', 'tenders, procurement and medical devices/equipment'],
+  ['legal', 'Văn bản pháp quy mới liên quan đến MMH', 'new laws, decrees, circulars, decisions affecting medical devices, tenders, health insurance, hospitals'],
+  ['eye', 'Nhãn khoa: tin mới và xu hướng điều trị', 'ophthalmology / eye care news and treatment trends'],
+  ['dental', 'Nha khoa: tin mới và xu hướng điều trị', 'dentistry / oral health news and treatment trends'],
+  ['hospital', 'Bệnh viện: thông tin đáng chú ý', 'hospitals: new techniques, investment, capacity, management'],
+  ['pestel', 'PESTEL hôm nay: yếu tố nào ảnh hưởng MMH?', 'all stories, grouped by PESTEL factor, focusing on what matters for MMH']
+];
+async function coachWrite(ed, all, SYSTEM) {
+  const { askJson, S: J } = await import('./ai.mjs');
+  const rel = all.filter(x => x.sec === 'health' || (x.tags || []).some(t => ['tender', 'device', 'policy', 'insurance', 'eye', 'dental'].includes(t))).sort((a, b) => (b.mmh || 0) - (a.mmh || 0));
+  const top = rel.slice(0, 4);
+  const list = all.map(x => ({ id: x.id, sec: x.sec, tags: x.tags, source: x.src, date: x.d.slice(0, 10), title: x.h_en || x.t, title_vi: x.h_vi || (x.lang === 'vi' ? x.t : ''), summary: x.s_en || x.sum, summary_vi: x.s_vi || (x.lang === 'vi' ? x.sum : '') }));
+  const L = J.obj({ story: J.str, vi: J.str, en: J.str, d: J.arr(J.arr(J.str)), keys: J.arr(J.obj({ vi: J.str, en: J.str })), chunks: J.arr(J.obj({ vi: J.str, en: J.str })),
+    ideas: J.arr(J.obj({ vi: J.str, any: J.arr(J.arr(J.str)) })), grammar: J.arr(J.obj({ p: J.str, vi: J.str })), alt: J.arr(J.str) });
+  const B = J.obj({ id: J.str, src: J.arr(J.str), en: J.arr(J.str), vi: J.arr(J.str), pestel: J.arr(J.obj({ f: J.str, note: J.str })), mmh: J.str, words: J.arr(J.obj({ en: J.str, vi: J.str })) });
+  const out = await askJson({ system: SYSTEM, effort: 'low', maxTokens: 32000, schema: J.obj({ lessons: J.arr(L), briefs: J.arr(B) }),
+    user: `Prepare study material for the MMH Daily Podcast app. The learner is MMH's product & sales manager, English level B1.
+A. lessons: one speaking drill for EACH of these story ids: ${top.map(x => x.id).join(', ')}.
+   story = the story id. vi = 1-2 natural Vietnamese sentences (max 40 words) faithful to the story. en = natural English translation with EXACTLY 3 key words/short phrases marked [[like this]].
+   d = for each marked phrase in order, 2 clearly WRONG options a learner might confuse. keys = 3-6 difficult phrases {vi exactly as written in vi, en}.
+   chunks = 2-3 consecutive parts {vi, en} splitting the text. ideas = 3-5 meaning units {vi: short label, any: groups of lowercase English fragments; the idea counts as said when every group has one fragment in the answer; include synonyms and stems}.
+   grammar = 2 {p: pattern, vi: one-sentence Vietnamese explanation}. alt = 1-2 alternative English versions.
+B. briefs: one brief for EACH topic id below, using ONLY the stories provided (never invent facts). Skip nothing: if no story fits, return the brief with empty en/vi arrays.
+   src = ids of the stories used (most important first, max 6). en = 3-6 short B1-B2 English bullets; cite sources as [1], [2] … = position in YOUR src list. vi = the same bullets in Vietnamese with the same citations.
+   pestel = factors present {f: one of P, E, S, T, M (environment), L; note: short Vietnamese note with citation}. mmh = 1-3 Vietnamese sentences on the impact on MMH (dental, ophthalmic, surgical products, tenders, distributors); "Chưa thấy ảnh hưởng trực tiếp." if none.
+   words = 4-6 useful English terms from your bullets with Vietnamese meaning.
+   Topics: ${BRIEFS.map(([id, q, d]) => `${id} = ${d}`).join('; ')}.
+
+Stories (JSON): ${JSON.stringify(list)}` });
+  const fix = x => ({ story: x.story, vi: x.vi, en: x.en, d: x.d, keys: x.keys.map(k => [k.vi, k.en]), chunks: x.chunks.map(k => [k.vi, k.en]), ideas: x.ideas.map(i => [i.vi, i.any]), grammar: x.grammar.map(g => [g.p, g.vi]), alt: x.alt });
+  const ids = new Set(all.map(x => x.id));
+  ed.coach = {
+    lessons: Object.fromEntries((out.lessons || []).filter(x => ids.has(x.story) && /\[\[.+?\]\]/.test(x.en)).map(x => [x.story, fix(x)])),
+    briefs: (out.briefs || []).map(b => { const q = BRIEFS.find(z => z.id === b.id || z[0] === b.id); return q && b.en.length ? { id: q[0], q: q[1], src: b.src.filter(i => ids.has(i)), en: b.en, vi: b.vi, pestel: b.pestel, mmh: b.mmh, words: b.words } : null; }).filter(Boolean)
+  };
+  console.log(`Soạn sẵn: ${Object.keys(ed.coach.lessons).length} bài luyện nói · ${ed.coach.briefs.length} bản tóm tắt chủ đề`);
+}
+
+const KEEP_EDITIONS = +(process.env.DAILY_KEEP || 7);   // chỉ giữ 7 số / podcast gần nhất
 const slim = x => x && ({ id: x.id, t: x.t, u: x.u, src: x.src, d: x.d, lang: x.lang, sec: x.sec, tags: x.tags, mmh: x.mmh, docs: x.docs, img: x.img, also: x.also, kind: x.kind,
   sum: x.sum, h_en: x.h_en, h_vi: x.h_vi, dek: x.dek, s_vi: x.s_vi, s_en: x.s_en, why: x.why, mt: x.mt });
 
@@ -245,7 +291,7 @@ async function main() {
   if (!pool) throw new Error('Chưa có data/pool.json — chạy collect.mjs trước');
   const picked = pick(pool);
   let showId = process.env.DAILY_SHOW || showFor(DATE);
-  const useAI = !!process.env.ANTHROPIC_API_KEY;
+  const useAI = !!(process.env.ANTHROPIC_API_KEY || process.env.GEMINI_API_KEY);
   const index = readJson(path.join(ROOT, 'data', 'index.json'), { editions: [] });
   const no = (index.editions.find(e => e.date === DATE)?.no) || (index.editions.length ? Math.max(...index.editions.map(e => e.no || 0)) + 1 : 1);
   const ed = {
@@ -273,7 +319,7 @@ async function main() {
   };
   if (useAI) {
     try { await claudeWrite(ed, picked); }
-    catch (e) { console.log('Claude lỗi, dùng bản miễn phí: ' + e.message); await freeWrite(); }
+    catch (e) { console.log('AI lỗi, dùng bản miễn phí: ' + e.message); await freeWrite(); }
   } else await freeWrite();
 
   const keep = new Map();
@@ -290,7 +336,9 @@ async function main() {
   fs.writeFileSync(path.join(ED_DIR, DATE + '.json'), JSON.stringify(ed));
   const lead = ed.stories[ed.lead];
   const row = { date: DATE, no, show: showId, title: ed.podcast.title, lead: lead ? (lead.h_en || lead.t) : '', writer: ed.writer, words };
-  index.editions = [row, ...index.editions.filter(e => e.date !== DATE)].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 400);
+  index.editions = [row, ...index.editions.filter(e => e.date !== DATE)].sort((a, b) => b.date.localeCompare(a.date)).slice(0, KEEP_EDITIONS);
+  const keepDates = new Set(index.editions.map(e => e.date));
+  for (const f of fs.readdirSync(ED_DIR)) { const d = f.replace(/\.json$/, ''); if (/^\d{4}-\d{2}-\d{2}$/.test(d) && !keepDates.has(d)) fs.unlinkSync(path.join(ED_DIR, f)); }
   index.updated = iso(NOW);
   fs.writeFileSync(path.join(ROOT, 'data', 'index.json'), JSON.stringify(index));
   console.log(`Số ${no} · ${DATE} · ${SHOWS[showId].name} · viết bằng ${ed.writer} · ${words} từ · ${Object.keys(ed.stories).length} tin`);

@@ -68,3 +68,10 @@ Trang riêng trong cùng app (menu **Luyện nói**, lối tắt app). Mỗi đo
 Hỏi bằng chữ hoặc giọng nói (Việt / Anh) về tin của 7 số gần nhất ⇒ chọn tối đa 12 tin khớp nhất (hoặc các tin người dùng tick) ⇒ Gemini trả lời **dạng chữ, hiện dần** (stream SSE, tắt "suy nghĩ" để nhanh):
 English (có trích nguồn [n]) · Tiếng Việt · PESTEL · Ảnh hưởng tới MMH · Từ vựng (tự vào Sổ từ) · 3 câu hỏi tiếp. Đọc to từng câu ngay khi viết xong (giọng trình duyệt / Azure, miễn phí), "Luyện đọc" từng câu (chấm từng từ).
 Chỉ trả lời từ các tin đưa vào (tóm tắt của báo, không đọc toàn văn bài). Nhãn PESTEL trên mỗi tin: `pestel.js` (luật từ khoá, chạy trên trình duyệt, dùng chung trang báo + Hỏi tin).
+
+## Soạn sẵn bằng Gemini trên máy chủ (từ 23/11/2026)
+Secret **`GEMINI_API_KEY`** (Settings ▸ Secrets and variables ▸ Actions; key miễn phí ở aistudio.google.com) ⇒ `tools/ai.mjs` viết bằng Gemini khi không có `ANTHROPIC_API_KEY`
+(tự chọn mẫu Flash ổn định nhất, Google bận ⇒ chờ / thử lại / đổi mẫu; không in khoá ra log). Ngoài tin song ngữ + kịch bản podcast, `coachWrite` (edition.mjs) soạn sẵn
+`ed.coach.lessons` (bài luyện nói 3 mức cho 4 tin liên quan MMH nhất) và `ed.coach.briefs` (tóm tắt: đấu thầu & thiết bị · văn bản pháp quy · nhãn khoa · nha khoa · bệnh viện · PESTEL)
+⇒ app mở là dùng, không gọi Gemini trên điện thoại. Podcast ưu tiên: tin y tế đọc nhiều (VnExpress tin xem nhiều) · văn bản đấu thầu / thiết bị · xu hướng nhãn khoa, nha khoa · bệnh viện, hội y học.
+Chỉ giữ **7 số / podcast gần nhất** (`DAILY_KEEP`), Releases `ep-*` cũ hơn tự xoá.

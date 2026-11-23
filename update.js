@@ -56,7 +56,7 @@
       </details></section>` : `<p class="u2-note">${ICO.lock} Tổng kết tuần từ Report Hub, CRM, thầu, đào tạo. Dữ liệu được mã hoá; chỉ nhân sự đăng nhập email công ty mới nghe / đọc được.</p>`}
       <section class="u2-sec"><h3>Người viết</h3><div class="u2-opts">
         ${opt('writer', 'claude', 'Claude viết', 'Lời thoại tự nhiên nhất, chọn tin có chủ đích. 10–20 phút. Dùng gói Claude, không tốn thêm.', flags && !(sel.kind === 'weekly' ? flags.claudeIn : flags.claude) ? 'Chưa kết nối — sẽ chạy bản tự động' : '')}
-        ${opt('writer', 'auto', 'Tự động', 'Khoảng 5 phút, câu mẫu + dịch máy. Miễn phí.')}</div></section>
+        ${opt('writer', 'auto', 'Tự động (Gemini)', 'Khoảng 5–8 phút. Máy chủ có Gemini key: AI viết song ngữ, kịch bản tự nhiên, soạn sẵn bài luyện nói + tóm tắt chủ đề. Chưa có key: câu mẫu + dịch máy. Miễn phí.')}</div></section>
       <section class="u2-sec"><h3>Giọng đọc</h3><div class="u2-opts">
         ${opt('voice', 'eleven', 'Tự nhiên (ElevenLabs)', 'Giọng người thật hơn, ngắt nghỉ tự nhiên. Tốn credit ElevenLabs (~6–8 nghìn ký tự / số).')}
         ${opt('voice', 'edge', 'Miễn phí (Microsoft)', 'Rõ ràng, hơi đều giọng.')}</div>

@@ -2,7 +2,7 @@
 #  • Mỗi sáng 05:45 (giờ VN): gom tin ⇒ số báo ⇒ podcast ⇒ MP3 lên Releases ⇒ đăng trang.
 #  • Tối Chủ nhật 19:00: BẢN TIN NỘI BỘ (Report Hub, CRM, thầu, đào tạo) ⇒ viết ⇒ giọng đọc ⇒ MÃ HOÁ (secret DAILY_INTERNAL_KEY) ⇒ chỉ lưu bản mã hoá.
 #    Chưa có DAILY_INTERNAL_KEY ⇒ bỏ qua bản tin nội bộ (không bao giờ lưu bản rõ). Admin lấy khoá: app ▸ Nội bộ ▸ Thiết lập (Admin).
-#  • Tuỳ chọn: secret ANTHROPIC_API_KEY ⇒ Claude Haiku 5.5 viết song ngữ + kịch bản tự nhiên (~15k đ/tháng). Không có ⇒ bản miễn phí.
+#  • Tuỳ chọn: secret GEMINI_API_KEY (miễn phí, aistudio.google.com) hoặc ANTHROPIC_API_KEY ⇒ AI viết song ngữ, kịch bản tự nhiên, soạn sẵn bài luyện nói + tóm tắt chủ đề. Không có ⇒ bản mẫu miễn phí.
 name: MMH Daily
 on:
   schedule:
@@ -64,7 +64,7 @@ jobs:
         run: node tools/collect.mjs
       - name: Dựng số báo
         if: env.DO_DAILY == 'true'
-        env: { ANTHROPIC_API_KEY: '${{ secrets.ANTHROPIC_API_KEY }}', DAILY_SHOW: '${{ inputs.show || env.REQ_SHOW }}', DAILY_SOURCES: '${{ inputs.sources || env.REQ_SOURCES }}', DAILY_TOPICS: '${{ inputs.topics || env.REQ_TOPICS }}', DAILY_BY: '${{ inputs.by }}' }
+        env: { ANTHROPIC_API_KEY: '${{ secrets.ANTHROPIC_API_KEY }}', GEMINI_API_KEY: '${{ secrets.GEMINI_API_KEY }}', DAILY_SHOW: '${{ inputs.show || env.REQ_SHOW }}', DAILY_SOURCES: '${{ inputs.sources || env.REQ_SOURCES }}', DAILY_TOPICS: '${{ inputs.topics || env.REQ_TOPICS }}', DAILY_BY: '${{ inputs.by }}' }
         run: node tools/edition.mjs
       - name: Tạo podcast
         if: env.DO_DAILY == 'true'
@@ -77,6 +77,13 @@ jobs:
           node -e "const f='data/editions/$D.json',fs=require('fs'),e=JSON.parse(fs.readFileSync(f));if(e.podcast.audio)e.podcast.audio.alt='$URL';fs.writeFileSync(f,JSON.stringify(e))"
           gh release delete "ep-$D" -y --cleanup-tag 2>/dev/null || true
           gh release create "ep-$D" "audio/$D.mp3" --title "MMH Daily $D" --notes "Podcast $D" --latest=false
+      - name: Xoá podcast cũ (chỉ giữ 7 ngày)
+        if: env.DO_DAILY == 'true'
+        run: |
+          CUT=$(date -u -d '8 days ago' +%Y-%m-%d)
+          gh release list --limit 200 --json tagName --jq '.[].tagName' | grep -E '^ep-[0-9]{4}-[0-9]{2}-[0-9]{2}$' | while read -r T; do
+            [ "${T#ep-}" \< "$CUT" ] && { gh release delete "$T" -y --cleanup-tag && echo "đã xoá $T"; } || true
+          done
 
       # ── số báo do Claude Code viết (push) ⇒ chỉ tạo lại giọng đọc ──
       - name: Giọng đọc cho số báo Claude Code viết
@@ -149,7 +156,7 @@ jobs:
           cp -r index.html app.css app.js install.js update.js learn.js guide.js sw.js manifest.webmanifest icons coach data _site/
           rm -f _site/data/pool.json
           cp audio/*.mp3 audio/*.enc _site/audio/ 2>/dev/null || true
-          for d in $(ls data/editions | sort -r | head -21 | sed 's/.json//'); do
+          for d in $(ls data/editions | sort -r | head -7 | sed 's/.json//'); do
             [ -f "_site/audio/$d.mp3" ] || gh release download "ep-$d" -p "$d.mp3" -D _site/audio 2>/dev/null || true
           done
           for d in $(node -e "try{console.log(require('./data/internal/index.json').weeks.slice(0,8).map(w=>w.date).join(' '))}catch{}"); do

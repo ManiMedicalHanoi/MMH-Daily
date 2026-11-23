@@ -112,6 +112,15 @@
  },
  "feeds": [
   {
+   "id": "vne-hot",
+   "lang": "vi",
+   "sec": null,
+   "name": "Tin đọc nhiều (VnExpress)",
+   "urls": [
+    "https://vnexpress.net/rss/tin-xem-nhieu.rss"
+   ]
+  },
+  {
    "id": "bcp-yt",
    "lang": "vi",
    "sec": "health",
