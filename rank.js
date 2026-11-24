@@ -195,6 +195,7 @@
     const me = meC();
     document.querySelectorAll('[data-dy-tab]').forEach(el => { el.innerHTML = me ? av(me.avatar, 24) : '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'; });
     document.querySelectorAll('[data-dy-streak]').forEach(el => { el.textContent = me && me.streak ? me.streak : ''; el.hidden = !(me && me.streak); });
+    document.documentElement.classList.toggle('is-admin', !!(me && me.admin));   // nút "Tổng hợp ngay" chỉ cho tài khoản tạo số
   }
 
   /* ── trang Bảng xếp hạng ── */
