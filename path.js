@@ -35,19 +35,35 @@
     if (res && res.quizN && res.quiz / res.quizN >= 0.8 && (res.speak == null || res.speak >= 70) && stars >= 2) stars = 3;
     return { stars, started: !!(l.step && l.step !== 'words') || stars > 0, step: l.step };
   }
-  function units() {   // chặng 1 = podcast 7 ngày (số có bài học); các chặng sau = bài Luyện nói theo chủ đề công việc (coach/lessons.js)
-    const eds = (D.S.index?.editions || []).filter(e => e.study).slice().reverse();
-    const U = eds.length ? [{ kind: 'pod', name: L('Podcast mỗi ngày', 'Daily podcast'), sub: L('7 ngày gần nhất', 'last 7 days'), items: eds.map(e => ({ kind: 'pod', e })) }] : [];
+  // Thứ tự chặng: ① HÔM NAY (podcast mới + bài nói từ bản tin hôm nay — có bài mới mỗi sáng) ② podcast các ngày trước ③ Luyện nói theo chủ đề công việc (coach/lessons.js).
+  // Chặng đã xong thu gọn; học hết ⇒ bài tiếp theo là "lên mức" (mức 2, 3 của bài nói) ⇒ lộ trình không bao giờ đứng yên.
+  let TODAY = null;   // số mới nhất (có bài nói từ bản tin: ed.coach.lessons)
+  function units() {
+    const all = (D.S.index?.editions || []), latest = all[0], eds = all.filter(e => e.study);
+    const U = [];
+    if (latest) {
+      const items = [];
+      if (latest.study) items.push({ kind: 'pod', e: latest });
+      const ed = TODAY && TODAY.date === latest.date ? TODAY : null;
+      if (ed && ed.coach && ed.coach.lessons) Object.keys(ed.coach.lessons).filter(sid => ed.stories && ed.stories[sid]).slice(0, 4)
+        .forEach(sid => { const st = ed.stories[sid]; items.push({ kind: 'news', id: `n-${latest.date}-${sid}`, t: D.S.lang === 'en' ? (st.h_en || st.t) : (st.h_vi || st.t) }); });
+      if (items.length) U.push({ key: 'today', name: L('Hôm nay', 'Today') + ' · ' + fmt(latest.date), sub: L('Bài mới mỗi sáng', 'New lessons every morning'), items });
+    }
+    const old = eds.filter(e => !latest || e.date !== latest.date).slice().reverse();
+    if (old.length) U.push({ key: 'pod', name: L('Podcast các ngày trước', 'Earlier podcasts'), sub: L('Podcast', 'Podcast'), items: old.map(e => ({ kind: 'pod', e })) });
     (window.COACH_TOPICS || []).forEach(t => {
       const ls = (window.COACH_LESSONS || []).filter(x => x.topic === t.id); if (!ls.length) return;
-      U.push({ kind: 'coach', name: t.vi, sub: L('Luyện nói', 'Speaking'), items: ls.map(x => ({ kind: 'coach', x })) });
+      U.push({ key: 'c-' + t.id, name: t.vi, sub: L('Luyện nói', 'Speaking'), items: ls.map(x => ({ kind: 'coach', x })) });
     });
     return U;
   }
   const PASS = 70;
   function coachStars(id) { const p = (store.get('mmh_coach_prog', {}) || {})[id] || {}; return [1, 2, 3].filter(l => (p['l' + l] || 0) >= PASS).length; }
-  const starsOf = it => it.kind === 'pod' ? stateOf(it.e.date).stars : coachStars(it.x.id);
-  const startedOf = it => it.kind === 'pod' ? stateOf(it.e.date).started : !!((store.get('mmh_coach_prog', {}) || {})[it.x.id]);
+  const cid = it => it.kind === 'news' ? it.id : it.x.id;
+  const starsOf = it => it.kind === 'pod' ? stateOf(it.e.date).stars : coachStars(cid(it));
+  const startedOf = it => it.kind === 'pod' ? stateOf(it.e.date).started : !!((store.get('mmh_coach_prog', {}) || {})[cid(it)]);
+  const isDone = it => starsOf(it) >= (it.kind === 'pod' ? 2 : 1);
+  const OPEN = new Set();   // chặng đã xong mà người dùng bấm mở lại
   /* ── nhiệm vụ hằng ngày (từ nhật ký máy chủ hôm nay) ── */
   // nhiệm vụ hằng ngày: bấm vào ⇒ tới đúng việc cần làm tiếp
   const latestStudy = () => (D.S.index?.editions || []).find(e => e.study) || (D.S.index?.editions || [])[0];
@@ -75,32 +91,45 @@
   const OFF = [0, 46, 78, 46, 0, -46, -78, -46];
   function page() {
     const me = R.meC(), U = units();
-    let cur = null;
-    for (const u of U) for (const it of u.items) if (!cur && starsOf(it) < (it.kind === 'pod' ? 2 : 1)) cur = it;
+    let cur = null, lvl = 0;
+    for (const u of U) for (const it of u.items) if (!cur && !isDone(it)) cur = it;
+    if (!cur) for (const u of U) for (const it of u.items) if (!cur && it.kind !== 'pod' && starsOf(it) < 3) { cur = it; lvl = starsOf(it) + 1; }   // học hết ⇒ lên mức
     const w = (R.me() || {}).week || [], xp = w.length ? w[w.length - 1].xp : 0;
     const head = `<div class="pa-top">${me ? `<a href="#/me" class="pa-me">${R.av(me.avatar, 34)}</a><span class="pa-s fire">${R.flame}${me.streak}</span><span class="pa-s gem">${ICON.star}${R.num(me.xp)}</span><span class="pa-s lg">${esc(R.lgN(me.league))}</span><span class="pa-s">${xp}/${me.goal || 50} XP</span>`
       : `<button type="button" class="st-go" data-rk="login">${L('Đăng nhập / Tạo tài khoản', 'Sign in / Create account')}</button>`}</div>`;
+    const todayDone = U[0] && U[0].key === 'today' && U[0].items.every(isDone);
+    const banner = todayDone ? `<div class="pa-done">${R.av(me ? me.avatar : 'chip', 56, 'cheer')}<div><b>${L('Xong bài hôm nay rồi!', 'Today is done!')}</b><span>${L('Số podcast + bài nói mới có lúc 6 giờ sáng mai. Trong lúc chờ: học bài cũ hoặc lên mức ở các bài nói bên dưới.', 'New podcast + speaking lessons arrive at 6 am tomorrow. Meanwhile, review older lessons or level up the speaking lessons below.')}</span></div></div>` : '';
     let k = 0;
     const body = U.map((u, ui) => {
-      const done = u.items.filter(it => starsOf(it) >= (it.kind === 'pod' ? 2 : 1)).length;
+      const done = u.items.filter(isDone).length, hasCur = u.items.includes(cur), shut = done === u.items.length && !hasCur && !OPEN.has(u.key);
+      const hdr = `<header class="pa-uh${shut ? ' shut' : ''}" style="--i:${ui % 4}"${shut || OPEN.has(u.key) ? ` data-pa="unit" data-k="${esc(u.key)}" role="button" tabindex="0"` : ''}><div><small>${L('Chặng', 'Unit')} ${ui + 1} · ${esc(u.sub)}</small><b>${esc(u.name)}</b></div><span>${shut ? `${OKI} ${L('Xong', 'Done')}` : `${done}/${u.items.length}`}</span></header>`;
+      if (shut) return `<section class="pa-u">${hdr}</section>`;
       const nodes = u.items.map(it => {
-        const st = starsOf(it), off = OFF[k++ % OFF.length], isCur = it === cur, pod = it.kind === 'pod', fin = st >= (pod ? 2 : 1);
-        const col = pod ? (COL[it.e.show] || '#0E7C6B') : ['#2E7D8C', '#B8641B', '#3949AB', '#5B3F8C', '#1F5E8C', '#A23B3B'][ui % 6];
-        const lab = pod ? `<b>${esc(D.showName ? D.showName(it.e.show) : (SHOW[it.e.show] || it.e.show))}</b> · ${fmt(it.e.date)}` : `<b>${esc(it.x.vi.length > 34 ? it.x.vi.slice(0, 32) + '…' : it.x.vi)}</b>`;
+        const st = starsOf(it), off = OFF[k++ % OFF.length], isCur = it === cur, pod = it.kind === 'pod', fin = isDone(it);
+        const col = pod ? (COL[it.e.show] || '#0E7C6B') : it.kind === 'news' ? '#2E7D32' : ['#2E7D8C', '#B8641B', '#3949AB', '#5B3F8C', '#1F5E8C', '#A23B3B'][ui % 6];
+        const txt = it.kind === 'news' ? it.t : it.kind === 'coach' ? it.x.vi : '';
+        const lab = pod ? `<b>${esc(D.showName ? D.showName(it.e.show) : (SHOW[it.e.show] || it.e.show))}</b> · ${fmt(it.e.date)}` : `${it.kind === 'news' ? `<em>${L('Bản tin', 'News')}</em> ` : ''}<b>${esc(txt.length > 34 ? txt.slice(0, 32) + '…' : txt)}</b>`;
+        const tip = isCur ? (lvl ? L(`Lên mức ${lvl}`, `Level ${lvl}`) : startedOf(it) ? L('Học tiếp', 'Continue') : L('Bắt đầu', 'Start')) : '';
         return `<div class="pa-n${isCur ? ' cur' : ''}${fin ? ' done' : ''}" style="--o:${off}px">
-          ${isCur ? `<div class="pa-tip">${startedOf(it) ? L('Học tiếp', 'Continue') : L('Bắt đầu', 'Start')}</div>` : ''}
-          <button type="button" ${pod ? `data-pa="open" data-date="${it.e.date}"` : `data-pa="coach" data-id="${esc(it.x.id)}"`} style="--c:${col}" aria-label="${pod ? 'Podcast ' + fmt(it.e.date) : esc(it.x.vi)}">${fin ? ICON.star : pod ? ICON.play : ICON.mic}</button>
+          ${tip ? `<div class="pa-tip">${tip}</div>` : ''}
+          <button type="button" ${pod ? `data-pa="open" data-date="${it.e.date}"` : `data-pa="coach" data-id="${esc(cid(it))}"${isCur && lvl ? ` data-lvl="${lvl}"` : ''}`} style="--c:${col}" aria-label="${esc(pod ? 'Podcast ' + fmt(it.e.date) : txt)}">${fin && !isCur ? ICON.star : pod ? ICON.play : ICON.mic}</button>
           <span class="pa-st">${[1, 2, 3].map(i => `<i class="${i <= st ? 'on' : ''}">${ICON.star}</i>`).join('')}</span>
           <span class="pa-l">${lab}</span>
           ${isCur ? `<span class="pa-mas">${R.av(me ? me.avatar : 'chip', 64, startedOf(it) ? 'think' : 'wave')}</span>` : ''}</div>`;
       }).join('');
       const chest = `<div class="pa-n chest${done === u.items.length ? ' open' : ''}" style="--o:${OFF[k++ % OFF.length]}px"><button type="button" data-pa="review" aria-label="${L('Ôn tập', 'Review')}">${ICON.chest}</button><span class="pa-l"><b>${L('Ôn tập', 'Review')}</b> · ${L('Sổ từ', 'Word book')}</span></div>`;
-      return `<section class="pa-u"><header class="pa-uh" style="--i:${ui % 4}"><div><small>${L('Chặng', 'Unit')} ${ui + 1} · ${esc(u.sub)}</small><b>${esc(u.name)}</b></div><span>${done}/${u.items.length}</span></header><div class="pa-path">${nodes}${chest}</div></section>`;
+      return `<section class="pa-u">${hdr}<div class="pa-path">${nodes}${chest}</div></section>`;
     }).join('');
-    return `<div class="rk dy pa">${head}${questHtml()}${body || `<div class="rk-empty">${L('Chưa có bài nào.', 'No lessons yet.')}</div>`}
+    return `<div class="rk dy pa">${head}${banner}${questHtml()}${body || `<div class="rk-empty">${L('Chưa có bài nào.', 'No lessons yet.')}</div>`}
       <p class="rk-foot"><a class="rk-link" href="#/archive">${L('Số cũ hơn ›', 'Older episodes ›')}</a></p></div>`;
   }
-  function after() { setTimeout(() => document.querySelector('.pa-n.cur')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 200); }
+  const OKI = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="m5 12.5 4.2 4.2L19 7"/></svg>';
+  function repaint() { const v = document.getElementById('view'); if (v && v.querySelector('.pa') && location.hash.startsWith('#/learn')) v.innerHTML = page(); }
+  function after() {
+    setTimeout(() => document.querySelector('.pa-n.cur')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 200);
+    const latest = (D.S.index?.editions || [])[0];   // nạp số mới nhất để có bài nói từ bản tin hôm nay
+    if (latest && (!TODAY || TODAY.date !== latest.date)) D.loadEd(latest.date).then(ed => { TODAY = ed; repaint(); setTimeout(() => document.querySelector('.pa-n.cur')?.scrollIntoView({ block: 'center' }), 50); }).catch(() => {});
+  }
 
   /* ── hiệu quả học + trình độ ước tính (trang Tôi) ── */
   function skills(d) {
@@ -146,7 +175,8 @@
       return;
     }
     if (t.dataset.pa === 'review') { location.href = 'coach/#/words'; return; }
-    if (t.dataset.pa === 'coach') { location.href = 'coach/#/l/' + encodeURIComponent(t.dataset.id); return; }
+    if (t.dataset.pa === 'coach') { location.href = 'coach/#/l/' + encodeURIComponent(t.dataset.id) + (t.dataset.lvl ? '/' + t.dataset.lvl : ''); return; }
+    if (t.dataset.pa === 'unit') { const k = t.dataset.k; OPEN.has(k) ? OPEN.delete(k) : OPEN.add(k); repaint(); return; }
     const date = t.dataset.date; t.disabled = true;
     try { const ed = await D.loadEd(date); if (window.STUDY && ed.study && (ed.study.quiz?.length || ed.study.words?.length)) STUDY.open(ed); else { location.hash = '#/listen/' + date; } }
     catch { D.toast(L('Không tải được bài này', 'Could not load this lesson')); }

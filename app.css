@@ -995,3 +995,10 @@ button.pa-qi:hover{background:rgba(255,255,255,.04);border-color:var(--dline)}
 .st-hist{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font:500 12.5px var(--sans);color:var(--dtext3)}
 .st-hist b{color:var(--dtext2);margin-right:2px}
 .st-hist span{border:1px solid var(--dline);border-radius:999px;padding:3px 10px}.st-hist span.new{color:#BFF0D9;border-color:color-mix(in srgb,var(--mint) 40%,transparent)}
+/* v19 — lộ trình: chặng Hôm nay, chặng đã xong thu gọn, học hết ⇒ lên mức */
+.pa-done{display:flex;gap:12px;align-items:center;margin:4px 0 14px;padding:14px 16px;border-radius:var(--r-lg);border:1px solid color-mix(in srgb,var(--mint) 40%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--mint) 16%,#16191E),#14171C);font-family:var(--sans)}
+.pa-done b{display:block;font:800 16px var(--sans);color:var(--dtext)}.pa-done span{color:var(--dtext2);font-size:13px}
+.pa-uh.shut{cursor:pointer;opacity:.78;box-shadow:none;margin-bottom:8px}
+.pa-uh.shut:hover{opacity:1}
+.pa-l em{font-style:normal;color:#8FD08F;font-weight:700}
+@media (max-width:620px){.pa-top{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.pa-top::-webkit-scrollbar{display:none}.pa-s{flex:none;padding:5px 10px;font-size:13px}}
