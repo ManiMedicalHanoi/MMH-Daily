@@ -187,6 +187,7 @@
   async function rankBox() {
     const el = document.getElementById('ls2-rank'); if (!el || !window.RANK) return;
     const r = result(), sig = JSON.stringify(r);
+    store.set('mmh_dy_res:' + ed.date, { ...r, at: Date.now() });   // path.js ▸ sao bài + hiệu quả học
     const link = `<button type="button" class="ls2-lnk" data-ls2="rank">${TL('Xem bảng xếp hạng ›', 'View the ranking ›')}</button>`;
     if (L.sentSig === sig && L.sentMsg) { el.innerHTML = L.sentMsg + link; return; }
     el.innerHTML = TL('Đang lưu XP…', 'Saving XP…');

@@ -602,7 +602,7 @@ async function main() {
   fs.mkdirSync(ED_DIR, { recursive: true });
   fs.writeFileSync(path.join(ED_DIR, DATE + '.json'), JSON.stringify(ed));
   const lead = ed.stories[ed.lead];
-  const row = { date: DATE, no, show: showId, title: ed.podcast.title, lead: lead ? (lead.h_en || lead.t) : '', writer: ed.writer, words };
+  const row = { date: DATE, no, show: showId, title: ed.podcast.title, lead: lead ? (lead.h_en || lead.t) : '', writer: ed.writer, words, study: (ed.study && ed.study.quiz && ed.study.quiz.length) || 0 };   // path.js ▸ lộ trình học chỉ lấy số có bài học
   index.editions = [row, ...index.editions.filter(e => e.date !== DATE)].sort((a, b) => b.date.localeCompare(a.date)).slice(0, KEEP_EDITIONS);
   const keepDates = new Set(index.editions.map(e => e.date));
   for (const f of fs.readdirSync(ED_DIR)) { const d = f.replace(/\.json$/, ''); if (/^\d{4}-\d{2}-\d{2}$/.test(d) && !keepDates.has(d)) fs.unlinkSync(path.join(ED_DIR, f)); }
