@@ -119,13 +119,16 @@
 
   // gắn nút "Chế độ học" vào trang Nghe và trang Nội bộ (mỗi lần trang vẽ lại)
   const inject = () => {
-    const ctl = document.querySelector('#view .ls-ctl'); if (!ctl || ctl.querySelector('.learn-btn')) return;
+    const ctl = document.querySelector('#view .ls-ctl'); if (!ctl) return;
     const L = D.L || (v => v);
     // 25/11/2026 (người dùng): nút BÀI HỌC (kiểm tra + thực hành, study.js) đứng ngay cạnh nút phát; "Chế độ học" lùi xuống thành nút phụ.
     const cur = D.S.cur, st = cur && cur.study;
-    if (st && (st.quiz?.length || st.words?.length)) ctl.insertAdjacentHTML('beforeend', '<button type="button" class="lesson-btn" data-ls2="open" title="' + L('Từ khoá · nghe · kiểm tra · nói theo', 'Keywords · listen · quiz · speak') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' + L('Bài học', 'Lesson') + '</button>');
-    ctl.insertAdjacentHTML('beforeend', '<button type="button" class="learn-btn" title="' + L('Chế độ học: phụ đề chạy theo từng câu, lặp câu, nói theo', 'Study mode: line-by-line subtitles, repeat a line, speak along') + '" aria-label="' + L('Chế độ học', 'Study mode') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5 12 3l9 3.5-9 3.5z M7 8.6V13c0 1.7 2.2 3 5 3s5-1.3 5-3V8.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="lb">' + L('Chế độ học', 'Study mode') + '</span></button>');
-    ctl.querySelector('.learn-btn').onclick = () => open(D.S.cur);
+    if (st && (st.quiz?.length || st.words?.length) && !ctl.querySelector('.lesson-btn')) ctl.insertAdjacentHTML('beforeend', '<button type="button" class="lesson-btn" data-ls2="open" title="' + L('Từ khoá · nghe · kiểm tra · nói theo', 'Keywords · listen · quiz · speak') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' + L('Bài học', 'Lesson') + '</button>');
+    // 24/11/2026: "Chế độ học" (phụ đề lớn theo từng câu) chuyển vào thanh của khung Lời thoại — "Xem theo câu"
+    const bar = document.querySelector('#view #tx-bar'), host = bar || ctl;
+    if (host.querySelector('.learn-btn')) return;
+    host.insertAdjacentHTML('beforeend', '<button type="button" class="learn-btn" title="' + L('Toàn màn hình: phụ đề to theo từng câu, lặp câu, dừng sau mỗi câu để nói theo', 'Full screen: big line-by-line subtitles, repeat a line, pause to speak along') + '" aria-label="' + L('Xem theo câu', 'Line by line') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lb">' + L('Xem theo câu', 'Line by line') + '</span></button>');
+    host.querySelector('.learn-btn').onclick = () => open(D.S.cur);
   };
   new MutationObserver(inject).observe(document.getElementById('view'), { childList: true, subtree: false });
   inject();

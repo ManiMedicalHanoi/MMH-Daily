@@ -93,10 +93,11 @@
   async function friends(force) {
     if (!R.tok()) return null;
     if (FR && !force && Date.now() - FRAT < 60e3) return FR;
-    try { const d = await D.hub('dyFriends', { tk: R.tok() }); if (R.authFail(d)) return null; if (d.ok) { FR = d; FRAT = Date.now(); FS = new Set(d.friends.map(x => x.id)); } } catch { /* mạng */ }
+    try { const d = await D.hub('dyFriends', { tk: R.tok() }); if (R.authFail(d)) return null; if (d.ok) { FR = d; FRAT = Date.now(); FS = new Set(d.friends.map(x => x.id)); if (window.DUEL) DUEL.badge(); } } catch { /* mạng */ }
     return FR;
   }
   R.friendSet = async () => { await friends(); return FS || new Set(); };
+  R.frIn = () => (FR ? FR.inbox.length : 0);
   R.addBtn = id => (FS && FS.has(id)) || (FR && FR.sent.some(x => x.id === id)) ? '' : `<button type="button" class="dy-add" data-dys="req" data-id="${esc(id)}" title="${L('Gửi lời mời kết bạn', 'Send a friend request')}">+</button>`;
   const link = id => `${APP}#/add/${id}`;
   let qrLib = null;
@@ -115,18 +116,20 @@
         <p class="dy-code">${R.av(me.avatar, 26)} ${esc(me.nick)} · ${L('mã', 'code')} <b>${esc(id)}</b></p>
         <div class="dy-btns"><button type="button" class="st-go" data-dys="share" data-id="${esc(id)}">${L('Chia sẻ', 'Share')}</button><button type="button" class="st-go dy-sec" data-dys="copy" data-id="${esc(id)}">${L('Sao chép link', 'Copy link')}</button><button type="button" class="st-go dy-sec" data-dys="qrpng" data-id="${esc(id)}">${L('Tải ảnh QR', 'Save QR')}</button></div></div></section>`;
   }
-  function row(x, acts) {
-    return `<div class="dy-fr">${R.av(x.avatar, 42, x.studiedToday ? 'happy' : 'sleepy')}<p><b>${esc(x.nick)}</b><small>${L('Cấp', 'Lv')} ${x.lvl} · ${esc(R.lgN(x.league))}${x.streak ? ` · <span class="dy-fl">${R.flame}${x.streak}</span>` : ''}${x.week != null ? ` · ${R.num(x.week)} XP ${L('tuần này', 'this week')}` : ''}${x.email ? ` · ${esc(x.email)}` : ''}${x.lastSeen ? ` · ${R.ago(x.lastSeen)}` : ''}</small></p><span class="dy-acts">${acts}</span></div>`;
+  function row(x, acts, du) {
+    return `<div class="dy-fr${du ? ' du' : ''}">${du ? `<a class="dy-frw" href="#" data-du="path" data-id="${esc(x.id)}" title="${L('Xem lộ trình của', 'View the path of')} ${esc(x.nick)}">` : ''}${R.av(x.avatar, 42, x.studiedToday ? 'happy' : 'sleepy')}<p><b>${esc(x.nick)}</b><small>${L('Cấp', 'Lv')} ${x.lvl} · ${esc(R.lgN(x.league))}${x.streak ? ` · <span class="dy-fl">${R.flame}${x.streak}</span>` : ''}${x.week != null ? ` · ${R.num(x.week)} XP ${L('tuần này', 'this week')}` : ''}${x.email ? ` · ${esc(x.email)}` : ''}${x.lastSeen ? ` · ${R.ago(x.lastSeen)}` : ''}</small></p>${du ? '</a>' : ''}<span class="dy-acts">${acts}</span></div>`;
   }
   function friendsPane() {
     const me = R.meC(); if (!me) return '';
     if (!FR) { friends().then(() => { if (document.getElementById('dy-frp')) R.repaint(); }); return `<div id="dy-frp" class="rk-empty">${L('Đang tải…', 'Loading…')}</div>`; }
     const b = (op, id, t, sec) => `<button type="button" class="dy-mini${sec ? ' sec' : ''}" data-dys="${op}" data-id="${esc(id)}">${t}</button>`;
-    return `<div id="dy-frp">${shareCard(FR.id || me.id, me)}
-      <form class="ls-box dy-addf" data-dys-form="code"><label>${L('Thêm bạn bằng mã', 'Add a friend by code')}<input name="code" maxlength="64" placeholder="${L('Mã 10 ký tự hoặc link mời', '10-character code or invite link')}"></label><button class="st-go dy-sec" type="submit">${L('Gửi lời mời', 'Send request')}</button></form>
+    const DU = window.DUEL;
+    return `<div id="dy-frp"><div id="du-inbox">${DU ? DU.inboxHtml() : ''}</div>
       ${FR.inbox.length ? `<h3 class="dy-h3">${L('Lời mời kết bạn', 'Friend requests')} · ${FR.inbox.length}</h3>${FR.inbox.map(x => row(x, b('accept', x.id, L('Đồng ý', 'Accept')) + b('decline', x.id, L('Từ chối', 'Decline'), 1))).join('')}` : ''}
       <h3 class="dy-h3">${L('Bạn bè', 'Friends')} · ${FR.friends.length}</h3>
-      ${FR.friends.length ? FR.friends.map(x => row(x, b('remove', x.id, L('Bỏ bạn', 'Unfriend'), 1))).join('') : `<p class="rk-none">${L('Chưa có bạn bè. Gửi QR hoặc link ở trên cho đồng nghiệp nhé!', 'No friends yet. Send the QR or link above to your colleagues!')}</p>`}
+      ${FR.friends.length ? FR.friends.map(x => row(x, DU ? DU.acts(x) : b('remove', x.id, L('Bỏ bạn', 'Unfriend'), 1), DU)).join('') : `<p class="rk-none">${L('Chưa có bạn bè. Gửi QR hoặc link bên dưới cho đồng nghiệp nhé!', 'No friends yet. Send the QR or link below to your colleagues!')}</p>`}
+      ${shareCard(FR.id || me.id, me)}
+      <form class="ls-box dy-addf" data-dys-form="code"><label>${L('Thêm bạn bằng mã', 'Add a friend by code')}<input name="code" maxlength="64" placeholder="${L('Mã 10 ký tự hoặc link mời', '10-character code or invite link')}"></label><button class="st-go dy-sec" type="submit">${L('Gửi lời mời', 'Send request')}</button></form>
       ${FR.sent.length ? `<h3 class="dy-h3">${L('Đã gửi lời mời', 'Sent requests')}</h3>${FR.sent.map(x => row(x, b('cancel', x.id, L('Huỷ', 'Cancel'), 1))).join('')}` : ''}</div>`;
   }
   R.tabs = [me => ['friends', L('Bạn bè', 'Friends'), FR && FR.inbox.length ? FR.inbox.length : 0], me => (me && me.admin ? ['all', L('Mọi người', 'Everyone')] : null)];
@@ -308,6 +311,7 @@
         if (k === 'remove' && !t.dataset.sure) { t.dataset.sure = 1; t.textContent = L('Chắc chưa?', 'Sure?'); return; }
         t.disabled = true; const d = await D.hub('dyFriendAct', { tk: R.tok(), id, op: k }); if (!d.ok) throw new Error(d.error);
         if (k === 'accept') D.toast(L('Đã thành bạn bè!', 'You are now friends!'));
+        if (k === 'remove' && window.DUEL) DUEL.close();
         FR = null; ALL = null; await friends(true); if (t.dataset.go) return R.addLoad(id); R.repaint(); return;
       }
       if (k === 'addall') { if (!t.dataset.sure) { t.dataset.sure = 1; t.textContent = L('Bấm lần nữa để gửi', 'Tap again to confirm'); return; } t.disabled = true; let n = 0; for (const u of (ALL ? ALL.users : []).filter(u => u.rel === 'none' || u.rel === 'p-in')) { const d = await D.hub(u.rel === 'p-in' ? 'dyFriendAct' : 'dyFriendReq', { tk: R.tok(), id: u.id, op: 'accept' }); if (d.ok) n++; } D.toast(L(`Đã kết bạn thêm ${n} người`, `Added ${n} friends`)); FR = null; ALL = null; R.repaint(); return; }

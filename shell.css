@@ -1,0 +1,85 @@
+/* MMH Daily Podcast — khung chung (shell.js, 24/11/2026): thanh điều hướng 5 mục giống nhau ở MỌI trang
+   (điện thoại: thanh dưới đáy · máy tính: cột trái), logo gọn đầu trang, thanh phân đoạn #segs. Dùng cho index.html và coach/index.html. */
+:root{
+  --sh-rail:84px;--sh-sans:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;--sh-display:'Playfair Display',Georgia,serif;
+  --sh-bg:rgba(251,249,244,.93);--sh-line:#D9D3C7;--sh-t:#6B6B6B;--sh-ton:#0B5E52;--sh-onbg:#E7F2EF;--sh-ink:#121212;
+  --sh-seg:#EFEAE0;--sh-segon:#fff;--sh-segt:#4A4A4A;--sh-segton:#121212;--sh-mint:#0E7C6B;--sh-red:#E5484D;
+}
+body.dark{
+  --sh-bg:rgba(14,16,19,.9);--sh-line:#2B3038;--sh-t:#8A919C;--sh-ton:#fff;--sh-onbg:#1C2027;--sh-ink:#F2F3F5;
+  --sh-seg:#16191E;--sh-segon:#F2F3F5;--sh-segt:#A9B0BB;--sh-segton:#111;--sh-mint:#6FD6BF;
+}
+
+/* logo gọn ở đầu trang */
+.mlogo{font:800 20px/1 var(--sh-display);text-decoration:none;color:var(--sh-ink);white-space:nowrap;letter-spacing:-.2px}
+.mlogo i{font-style:italic;color:var(--sh-mint)}
+
+/* thanh phân đoạn trong một mục: Podcast · Bản tin · MMH Report / Bài nói · Phiên dịch · Sổ từ */
+.segs{display:flex;gap:4px;padding:4px;margin:12px auto 4px;max-width:560px;border-radius:999px;background:var(--sh-seg);border:1px solid var(--sh-line);font-family:var(--sh-sans)}
+.segs[hidden]{display:none}
+.segs a{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:6px 10px;border-radius:999px;text-decoration:none;font:600 14px var(--sh-sans);color:var(--sh-segt);white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:background .15s,color .15s}
+.segs a:hover{color:var(--sh-segton)}
+.segs a.on{background:var(--sh-segon);color:var(--sh-segton);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+.segs a i{font:700 11px/1 var(--sh-sans);font-style:normal;background:var(--sh-red);color:#fff;border-radius:999px;padding:3px 6px}
+
+/* thanh điều hướng chính */
+.tabbar{display:none}
+.tabbar a{position:relative;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.tb-n{position:absolute;top:2px;left:calc(50% + 6px);font:800 9.5px/1 var(--sh-sans);font-style:normal;color:#fff;background:var(--sh-red);border-radius:999px;padding:2px 5px}
+.tb-n[hidden]{display:none}
+.tab-av{display:grid;place-items:center;width:24px;height:24px}
+.tab-av .dy-av{width:24px;height:24px;border-radius:50%;overflow:hidden;display:inline-grid;box-shadow:none}
+.tab-av .dy-av svg{width:100%;height:100%;display:block}
+.tab-st{position:absolute;top:2px;left:calc(50% + 6px);font:800 9.5px/1 var(--sh-sans);font-style:normal;color:#111;background:#F5A33B;border-radius:999px;padding:2px 5px}
+.tab-st[hidden]{display:none}
+.tab-st:not([hidden])~.tb-n{left:auto;right:calc(50% + 8px)}
+
+@media (max-width:760px){
+  body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:45;padding:5px 4px calc(5px + env(safe-area-inset-bottom));
+    background:var(--sh-bg);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);border-top:1px solid var(--sh-line)}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px 5px;font:600 11px var(--sh-sans);color:var(--sh-t);border-radius:12px}
+  .tabbar a svg{width:24px;height:24px}
+  .tabbar a.on{color:var(--sh-ton)}
+  .tabbar a.on::before{content:"";position:absolute;top:-5px;left:32%;right:32%;height:3px;border-radius:0 0 3px 3px;background:var(--sh-mint)}
+  .tabbar a.on svg{stroke-width:2.2}
+  .tb-logo{display:none!important}
+  .segs{margin:10px 0 4px}
+  .segs a{font-size:13.5px;padding:6px 8px}
+}
+@media (min-width:761px){
+  body{padding-left:var(--sh-rail)}
+  .tabbar{display:flex;flex-direction:column;gap:4px;position:fixed;left:0;top:0;bottom:0;width:var(--sh-rail);z-index:45;padding:14px 8px;
+    background:var(--sh-bg);border-right:1px solid var(--sh-line);overflow-y:auto;scrollbar-width:none}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:14px;font:600 11.5px var(--sh-sans);color:var(--sh-t);transition:background .15s,color .15s}
+  .tabbar a:hover{background:var(--sh-onbg);color:var(--sh-ton)}
+  .tabbar a.on{background:var(--sh-onbg);color:var(--sh-ton)}
+  .tabbar a svg{width:25px;height:25px;flex:none}
+  .tabbar .tab-av,.tabbar .tab-av .dy-av{width:26px;height:26px}
+  .tb-logo{margin-bottom:12px;padding:6px 4px!important}
+  .tb-logo:hover{background:none!important}
+  .tb-logo img{width:38px;height:38px;border-radius:11px;display:block}
+  .tb-logo span{display:none}
+  .tb-n,.tab-st{top:6px}
+}
+@media (min-width:1180px){
+  :root{--sh-rail:228px}
+  .tabbar{padding:22px 14px}
+  .tabbar a{flex-direction:row;justify-content:flex-start;gap:14px;padding:11px 14px;font-size:15px}
+  .tb-logo{gap:10px!important;margin-bottom:18px}
+  .tb-logo span{display:inline;font:800 17px/1.05 var(--sh-display);color:var(--sh-ink);white-space:nowrap}
+  .mlogo{visibility:hidden}   /* cột trái đã có tên app */
+  .tb-logo span i{font-style:italic;color:var(--sh-mint)}
+  .tb-n,.tab-st{top:5px;left:34px}
+  .tab-st:not([hidden])~.tb-n{left:auto;right:auto;left:8px}
+}
+
+/* đầu trang gọn dùng chung (trang Luyện nói / Phiên dịch / Sổ từ) */
+.sh-hd{padding:max(8px,env(safe-area-inset-top)) 16px 4px;border-bottom:1px solid var(--sh-line)}
+.sh-row{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:860px;margin:0 auto;min-height:36px}
+.sh-tools{display:flex;gap:8px;align-items:center}
+.sh-ib{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--sh-line);color:var(--sh-segt);text-decoration:none;background:none}
+.sh-ib svg{width:19px;height:19px}
+.sh-ib:hover,.sh-ib.on{color:var(--sh-segton);background:var(--sh-segon);border-color:var(--sh-segon)}
+.sh-hd .segs{margin:10px auto 8px}
+@media (min-width:761px){ .sh-hd{padding:10px 24px 4px} }

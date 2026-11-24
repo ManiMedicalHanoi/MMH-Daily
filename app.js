@@ -20,7 +20,7 @@
     play: '<svg viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" fill="currentColor"/></svg>',
     pause: '<svg viewBox="0 0 24 24"><rect x="5.5" y="4" width="4.5" height="16" rx="1.2" fill="currentColor"/><rect x="14" y="4" width="4.5" height="16" rx="1.2" fill="currentColor"/></svg>',
   };
-  const S = { index: null, eds: {}, cur: null, lang: store.get('mmh_daily_lang', 'vi'), ep: null, tab: '', sub: store.get('mmh_daily_sub', 'both') };
+  const S = { index: null, eds: {}, cur: null, lang: store.get('mmh_daily_lang', 'vi'), ep: null, tab: '', sub: store.get('mmh_daily_sub2', 'en') };
   const EN = () => S.lang === 'en';
   const L = (vi, en) => (S.lang === 'en' ? en : vi);
   const tr = pair => (pair ? pair[S.lang === 'en' ? 1 : 0] : '');
@@ -214,7 +214,7 @@
     const vnNow = new Date(Date.now() + 7 * 36e5), today = vnNow.toISOString().slice(0, 10), latest = S.index.editions[0]?.date;
     const pending = latest && latest < today && vnNow.getUTCHours() >= 5 && ed.date === latest
       ? `<p class="ls-pend">${L('Số hôm nay đang được tạo tự động — trong lúc chờ, bạn đang nghe số ' + dateL(latest) + '.', 'Today\'s episode is being made — meanwhile you are listening to ' + dateL(latest) + '.')}</p>` : '';
-    return `<div class="ls" style="--show:${p.color}">${window.STUDY ? STUDY.tabs(ed) : ''}${pending}
+    return `<div class="ls" style="--show:${p.color}">${pending}
       <section class="ls-hero"><div class="cv">${cover(p, ed.date, true)}</div><div>
         <div class="ls-k">Podcast · ${esc(dateL(ed.date))}</div>
         <h1 class="ls-t">${esc(p.name)}</h1>
@@ -232,9 +232,9 @@
       <div class="seek"><span id="ls-cur">0:00</span><div class="tr" id="ls-tr"><i id="ls-prog" style="width:0"></i></div><span id="ls-dur">${a ? mmss(a.dur) : '--:--'}</span></div>
       ${window.STUDY ? STUDY.html(ed) : ''}
       <div class="ls-grid">
-        <div class="ls-box"><h3>${L('Lời thoại', 'Transcript')}<small>${L('bấm một câu để nghe từ đó', 'tap a line to play from there')}</small></h3>
-          <div class="subsel" id="subsel" role="group" aria-label="${L('Phụ đề', 'Subtitles')}">${[['both', L('Anh + Việt', 'EN + VI')], ['en', L('Tiếng Anh', 'English')], ['vi', L('Tiếng Việt', 'Vietnamese')]].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div>
-          <div class="tx sub-${S.sub}" id="tx">${turns.map((t, i) => `<p data-i="${i}" data-t="${t.t ?? ''}"><b>${esc(hosts[t.sp]?.name || t.sp)}</b><span class="en">${esc(t.text)}</span>${t.vi ? `<span class="vi">${esc(t.vi)}</span>` : ''}</p>`).join('')}</div></div>
+        <div class="ls-box"><h3>${L('Lời thoại', 'Transcript')}<small>${L('chạm câu: nghe lại + xem nghĩa · chạm từ: tra nhanh', 'tap a line: replay + meaning · tap a word: look it up')}</small></h3>
+          <div class="tx-bar" id="tx-bar"><div class="subsel" id="subsel" role="group" aria-label="${L('Phụ đề', 'Subtitles')}">${[['en', L('Tiếng Anh', 'English')], ['both', L('Anh + Việt', 'EN + VI')], ['vi', L('Tiếng Việt', 'Vietnamese')]].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
+          <div class="tx sub-${S.sub}" id="tx">${turns.map((t, i) => `<p data-i="${i}" data-t="${t.t ?? ''}"><b>${esc(hosts[t.sp]?.name || t.sp)}</b><span class="en">${window.TX ? TX.mark(t.text, ed) : esc(t.text)}</span>${t.vi ? `<span class="vi">${esc(t.vi)}</span>` : ''}</p>`).join('')}</div></div>
         <div>
           <div class="ls-box"><h3>${L('Các số gần đây', 'Recent episodes')}</h3><div class="eps">${recent.map(e => `<a class="ep${e.date === ed.date ? ' on' : ''}" href="#/listen/${e.date}"><div class="cv">${cover({ name: showName(e.show), color: showColor(e.show) }, e.date)}</div><div><b>${esc(showName(e.show))}</b><span>${esc(dateL(e.date))}</span></div><em>${e.words ? '~' + Math.round(e.words / 130) + L(' ph', ' min') : ''}</em></a>`).join('')}</div></div>
           ${ed.vocab?.length ? `<div style="margin-top:20px">${vocabHtml(ed, true)}</div>` : ''}
@@ -356,7 +356,6 @@
     if (r === 'report') {  // 24/11/2026: MMH Report — bản tin nội bộ sáng thứ Hai (người dùng yêu cầu lại, chỉ nhóm Việt Nam)
       if (!$('#m-date').textContent && S.index.editions[0]) $('#m-date').textContent = dateL(S.index.editions[0].date);
       document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === 'report'));
-      document.querySelectorAll('#tabbar [data-tab-k]').forEach(x => x.classList.toggle('on', x.dataset.tabK === 'news'));
       return internalPage();
     }
     let date = S.index.editions[0]?.date;
@@ -385,8 +384,7 @@
     lastLine = -1;
     const key = r === 's' ? a : (r === 'e' || !r) ? 'front' : r;
     document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === key));
-    const tk = r === 'listen' ? 'listen' : r === 'rank' ? 'rank' : r === 'me' ? 'me' : r === 'learn' ? 'study' : 'news';
-    document.querySelectorAll('#tabbar [data-tab-k]').forEach(x => x.classList.toggle('on', x.dataset.tabK === tk));
+    if (window.SHELL) SHELL.sync();   // thanh điều hướng chung (shell.js)
     $('#foot').innerHTML = footer(ed);
     if (r === 'listen') wireListen(ed);
     if (r === 'rank' && window.RANK) RANK.load();
@@ -409,6 +407,7 @@
     };
     $('#ls-tr').onclick = e => { if (!setEp(ed)) return; const r = e.currentTarget.getBoundingClientRect(); audio.currentTime = (e.clientX - r.left) / r.width * (audio.duration || ed.podcast.audio.dur); if (audio.paused) audio.play(); };
     $('#tx').onclick = e => {
+      if (window.TX && TX.onTap(e, ed)) return;
       const p = e.target.closest('p'); if (!p) return;
       const t = parseFloat(p.dataset.t); if (isNaN(t) || !setEp(ed)) return;
       audio.currentTime = t; if (audio.paused) audio.play();
@@ -428,7 +427,7 @@
     const p = e.target.closest('[data-play]');
     if (p) { e.preventDefault(); e.stopPropagation(); playDate(p.dataset.play); return; }
     const sb = e.target.closest('[data-sub]');
-    if (sb) { S.sub = sb.dataset.sub; store.set('mmh_daily_sub', S.sub); document.querySelectorAll('#subsel button').forEach(b => b.classList.toggle('on', b === sb)); const tx = $('#tx'); if (tx) tx.className = 'tx sub-' + S.sub; lastLine = -1; onTime(); return; }
+    if (sb) { S.sub = sb.dataset.sub; store.set('mmh_daily_sub2', S.sub); document.querySelectorAll('#subsel button').forEach(b => b.classList.toggle('on', b === sb)); const tx = $('#tx'); if (tx) tx.className = 'tx sub-' + S.sub; lastLine = -1; onTime(); return; }
     const c = e.target.closest('[data-tab]');
     if (c) { S.tab = c.dataset.tab; route(); }
   });
@@ -573,8 +572,8 @@
         <div class="nowsub" id="nowsub"><span class="en"></span><span class="vi"></span></div>
         <div class="seek"><span id="ls-cur">0:00</span><div class="tr" id="ls-tr"><i id="ls-prog" style="width:0"></i></div><span id="ls-dur">${p.audio?.dur ? mmss(p.audio.dur) : '--:--'}</span></div>
         <details class="in-tx"><summary>${L('Lời đọc + phụ đề tiếng Việt', 'Transcript + Vietnamese subtitles')}</summary>
-          <div class="subsel" id="subsel">${[['both', L('Anh + Việt', 'EN + VI')], ['en', L('Tiếng Anh', 'English')], ['vi', L('Tiếng Việt', 'Vietnamese')]].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div>
-          <div class="tx sub-${S.sub}" id="tx">${turns.map((t, i) => `<p data-i="${i}" data-t="${t.t ?? ''}"><b>${esc(hosts[t.sp]?.name || t.sp)}</b><span class="en">${esc(t.text)}</span>${t.vi ? `<span class="vi">${esc(t.vi)}</span>` : ''}</p>`).join('')}</div></details>
+          <div class="tx-bar" id="tx-bar"><div class="subsel" id="subsel">${[['en', L('Tiếng Anh', 'English')], ['both', L('Anh + Việt', 'EN + VI')], ['vi', L('Tiếng Việt', 'Vietnamese')]].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
+          <div class="tx sub-${S.sub}" id="tx">${turns.map((t, i) => `<p data-i="${i}" data-t="${t.t ?? ''}"><b>${esc(hosts[t.sp]?.name || t.sp)}</b><span class="en">${window.TX ? TX.mark(t.text, ed) : esc(t.text)}</span>${t.vi ? `<span class="vi">${esc(t.vi)}</span>` : ''}</p>`).join('')}</div></details>
       </section>
       ${window.STUDY ? STUDY.html(ed) : ''}
       <div class="in-tiles">${tile(L('Hoạt động Sales', 'Sales activities'), num(sum(sal, 'done')), delta(sum(sal, 'done'), sum(sal, 'prevDone')))}${tile(L('Gặp khách', 'Customer visits'), num(sum(sal, 'visits')), num(sum(sal, 'accounts')) + L(' khách hàng', ' customers'))}${tile(L('Đơn hàng', 'Orders'), num(sum(sal, 'orders')), sum(sal, 'orderAmount') ? vnd(sum(sal, 'orderAmount')) + ' đ' : '')}${tile(L('Việc Marketing xong', 'Marketing tasks done'), num(mk.count.done), delta(mk.count.done || 0, mk.count.prevDone))}${tile(L('Việc Back office xong', 'Back-office tasks done'), num(bo.count.done), delta(bo.count.done || 0, bo.count.prevDone))}${tile(L('Đúng hẹn', 'On plan'), planT ? Math.round(planD / planT * 100) + '%' : '–', planT ? `${planD}/${planT} ${L('việc có hạn trong tuần', 'tasks due this week')}` : '')}</div>
