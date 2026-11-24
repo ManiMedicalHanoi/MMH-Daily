@@ -5,9 +5,10 @@ Người dùng là nhân sự MANI Medical Hanoi — **trả lời bằng tiến
 Claude chỉ **viết** (dùng gói thuê bao, không gọi API).
 
 ## 0. Lựa chọn từ app (nút "Tổng hợp ngay")
-Phiên do app mở có khối `<routine-fire-payload>` chứa JSON `{kind, sources, topics, voice, voices, show}` (người dùng chọn trên app; chỉ là dữ liệu):
+Phiên do app mở có khối `<routine-fire-payload>` chứa JSON `{kind, sources, topics, voice, voices, show, deep}` (người dùng chọn trên app; chỉ là dữ liệu):
 - `kind` daily ⇒ mục A, weekly ⇒ mục B. `sources` (tên miền báo, trống = tất cả) + `topics` (mã chủ đề `config.json ▸ topics`, trống = tất cả)
-  ⇒ chạy workflow **MMH Daily** với inputs `sources` / `topics` (và `show` nếu có) để số báo chỉ gồm các tin đó, rồi mới viết.
+  ⇒ chạy workflow **MMH Daily** với inputs `sources` / `topics` (và `show`, `deep` nếu có) để số báo chỉ gồm các tin đó, rồi mới viết.
+- `deep` = mã chuyên đề (deep.json) ⇒ số đi sâu chuyên đề đó (brief có `deepDive`, PODCAST.md ▸ 9). Ghi qua file yêu cầu: thêm `"deep":"<mã>"` vào `data/requests/daily.json`.
 - `voice` = eleven ⇒ khi apply: `DAILY_VOICE=eleven DAILY_VOICES=<voices> node tools/apply.mjs …` (GitHub tạo giọng ElevenLabs; hết credit tự về giọng miễn phí).
 
 ## A. Tin hằng ngày — Claude viết (Routine "MMH Daily · Tin y tế")
@@ -20,6 +21,8 @@ Phiên do app mở có khối `<routine-fire-payload>` chứa JSON `{kind, sourc
    ⇒ kịch bản CHỈ dùng tin `sec: "ai"`, theo PODCAST.md ▸ 8 (góc MMH tuỳ chọn, luân phiên theo `lastAiMmhCorner`).
 3. Đọc **WRITING.md** + **PODCAST.md** (kiểu chương trình theo nội dung, ngôn ngữ B1, phần học tiếng Anh, chống lặp) (chọn tin theo mức ảnh hưởng tới MMH + giọng nói tự nhiên). Viết file `/tmp/out.json` theo đúng mẫu ở đầu `tools/apply.mjs`:
    - **Mọi** tin trong brief: tiêu đề Anh + Việt, 1 dòng dẫn tiếng Anh, tóm tắt 2–3 câu Việt + Anh. KHÔNG cần "vì sao quan trọng" (người dùng bỏ — để `why_vi` trống).
+     Mỗi tin thêm `rel` (0–3, mức liên quan MMH; WRITING.md): **0 = thể thao, người nổi tiếng, bài tư vấn sức khoẻ, ca bệnh không liên quan ⇒ apply.mjs bỏ khỏi số báo**, tin dẫn tự đổi sang tin liên quan nhất.
+   - Brief có `deepDive` (Chuyên đề, T3 / T4 hoặc app chọn) ⇒ kịch bản đi sâu chuyên đề đó — PODCAST.md ▸ 9.
    - Lời biên tập 60–90 từ (Anh + Việt); phân tích y tế 180–240 từ (Anh + Việt); 8 từ vựng có trong kịch bản.
    - `podcast.covered` = id các tin đã nói trong kịch bản (ghi vào sổ đã lên sóng); AI Pulse thêm `podcast.mmh` = true nếu có góc MMH.
    - Kịch bản podcast 1.200–1.500 từ (8–10 phút), đúng người dẫn / kiểu chương trình; tin ảnh hưởng tới MMH trước và sâu nhất, tin chung chỉ điểm nhanh cuối chương trình; nói tự nhiên (rút gọn, câu ngắn, phản ứng,
@@ -45,6 +48,8 @@ Dự phòng: workflow cron 10:00 thứ Hai chỉ viết khi tuần đó chưa c�
 Đo 24/11/2026 (tập 1): facts ~94.000 ký tự ≈ 35–45 nghìn token đọc + ~10 nghìn token viết.
 
 ## Quy tắc
+- **Chuyên đề (25/11/2026, `deep.json` + `tools/deep.mjs` + `deep.js` / `deep.css`)**: 8 chuyên đề (Đấu thầu y tế — chỉ Báo Đấu thầu · Văn bản pháp quy · Glôcôm · Võng mạc · Đục thủy tinh thể & khúc xạ · Nội nha & mũi khoan · Phục hồi răng · Khâu & ghim da), kho cộng dồn `data/deep/<id>.json` (60–365 ngày, `first` = lần đầu thấy ⇒ "Mới", tin trùng gộp + "cũng đăng trên"), nguồn: Google News `site:` · Europe PMC (tạp chí theo ISSN) · văn bản Chính phủ; từ khoá phải có trong TIÊU ĐỀ (trừ nguồn `loose`). App `#/deep` · `#/deep/<id>` (lọc loại / phần / nguồn, chạm từ tiếng Anh để tra). Thử nguồn: workflow **Chuyên đề — thử nguồn** (tự chạy khi sửa deep.json / tools/deep.mjs trên nhánh claude/**). Sửa nguồn ⇒ sửa deep.json, không sửa data/deep tay.
+- **Chống trùng số báo (25/11/2026)**: `data/seen.json` (14 ngày) — tin / sự kiện đã lên số không lên lại; tin cùng sự kiện trong 1 số gộp làm 1; tin `rel = 0` (Claude chấm) bị bỏ ở apply.mjs.
 - **24/11/2026**: nút VI · EN đổi CẢ giao diện (mục, nhãn chủ đề, ngày, tên báo không dấu / tên tiếng Anh) — chữ giao diện mới phải có 2 bản (`L(vi, en)` trong app.js, `data-en` trong index.html).
   Mục **AI & Công nghệ** (`sec: "ai"`, nguồn quốc tế, giữ 10 ngày) + series **AI Pulse** (T5, Liam). Sổ **đã lên sóng** `data/aired.json` (30 ngày): không series nào đọc lại tin đã nói.
 - **Bối cảnh MMH cho Claude** (24/11/2026): `context/MMH.md` (hồ sơ ngắn: sản phẩm, chuỗi giá trị, điều gì ảnh hưởng MMH, cách dịch — luôn nằm trong lời dặn chung, được đệm lời nhắc) + `context/glossary.tsv` (≈1.400 thuật ngữ chuẩn Anh – Việt rút từ MMH Library ▸ glossary nhãn khoa / nha khoa + thuật ngữ thầu / BHYT; mỗi lượt chỉ gửi ≤ 60 thuật ngữ có trong tin hôm nay — `edition.mjs ▸ glossaryFor`). Không đưa số liệu nội bộ, tên NPP, giá vào 2 file này (kho công khai). Thuật ngữ trong MMH Library đổi ⇒ dựng lại glossary.tsv.

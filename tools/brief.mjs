@@ -13,13 +13,16 @@ const idx = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'index.json'), 'u
 const show = SHOWS[ed.podcast.show];
 const AIR = airedCheck(date);
 console.error('Đọc WRITING.md + PODCAST.md trước khi viết. Tin xếp theo điểm liên quan MMH (mmh) cao ⇒ thấp. Tin "aired": true = đã lên sóng ở series khác — KHÔNG đưa vào kịch bản.'
-  + (show.ai ? ' Hôm nay là AI Pulse: kịch bản CHỈ dùng tin sec = "ai" (xem PODCAST.md ▸ 8).' : ''));
+  + (show.ai ? ' Hôm nay là AI Pulse: kịch bản CHỈ dùng tin sec = "ai" (xem PODCAST.md ▸ 8).' : '')
+  + (ed.deepDive ? ` Hôm nay có CHUYÊN ĐỀ "${ed.deepDive.vi}" (deepDive.items): phần chính của kịch bản đi sâu 3–5 bài trong đó — xem PODCAST.md ▸ 9.` : ''));
 const ids = [...new Set([...Object.values(ed.sections).flat(), ...ed.docs, ...Object.values(ed.healthDesk.groups).flat()])];
 console.log(JSON.stringify({
   date, show: { id: ed.podcast.show, name: show.name, style: show.style, desc: show.desc, ai: !!show.ai, hosts: show.hosts.map(h => ({ id: h.id, name: h.name, role: h.role, bio: h.bio })) },
   lastAiMmhCorner: show.ai ? !!JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'history.json'), 'utf8')).find(h => h.show === 'aipulse' && h.date < date)?.mmh : undefined,
   airedRecently: loadAired().filter(r => r.date < date).slice(0, 10).map(r => `${r.date} ${r.show}: ${(r.heads || []).slice(0, 8).join(' | ')}`),
   lead: ed.lead, sections: ed.sections, healthGroups: ed.healthDesk.groups,
+  deepDive: ed.deepDive ? { topics: ed.deepDive.ids, vi: ed.deepDive.vi, en: ed.deepDive.en, items: ed.deepDive.items.map(id => { const x = ed.stories[id]; return x && { id, kind: x.dk, tier: x.tier, src: x.src, date: String(x.d).slice(0, 10),
+    title: x.t, title_en: x.h_en, sum: (x.sum || '').slice(0, 600), sum_en: x.s_en, journal: x.jr }; }).filter(Boolean) } : undefined,
   recentShows: idx.editions.filter(e => e.date < date).slice(0, 5).map(e => `${e.date} ${e.show}: ${e.lead}`),
   stories: ids.map(id => { const x = ed.stories[id]; return x && { id, sec: x.sec, tags: x.tags, mmh: x.mmh || 0, lang: x.lang, src: x.src, kind: x.fk, views: x.views, title: x.t, sum: (x.sum || '').slice(0, 450), docs: x.docs,
     aired: ed.podcast.show !== 'weekly' && AIR.is({ ...x, id }) || undefined }; }).filter(Boolean)

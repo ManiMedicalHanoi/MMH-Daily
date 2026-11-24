@@ -47,3 +47,36 @@ export function recordAired(date, show, stories) {
   fs.writeFileSync(AIRED_F, JSON.stringify(list));
   return stories.length;
 }
+
+// ── Sổ "đã đăng" (data/seen.json, 14 ngày, 25/11/2026): tin đã lên số báo (mọi mục) không lên lại ở số sau, kể cả khi báo khác đăng lại cùng sự kiện
+// với tiêu đề khác (so từ đặc trưng của tiêu đề, cùng luật với sổ đã lên sóng). Người dùng: "thông tin luôn mới, không trùng lặp với các thông tin cũ".
+export const SEEN_F = path.join(ROOT, 'data', 'seen.json');
+export const SEEN_DAYS = 14;
+const sameEvent = (W, H) => { let n = 0; for (const w of W) if (H.has(w)) n++; return n >= 4 && n / Math.min(W.length, H.size) >= 0.6; };
+export function seenCheck(date) {
+  let list = []; try { list = JSON.parse(fs.readFileSync(SEEN_F, 'utf8')); } catch { /* chưa có */ }
+  const rows = list.filter(r => r.date < date && day(date) - day(r.date) <= SEEN_DAYS);
+  const ids = new Set(rows.flatMap(r => r.ids || []));
+  const heads = rows.flatMap(r => r.heads || []).map(h => new Set(wordsOf(h))).filter(w => w.size >= 4);
+  const hit = t => { const W = wordsOf(t); return W.length >= 4 && heads.some(H => sameEvent(W, H)); };
+  return { is: x => !!x && (ids.has(x.id) || hit(x.t) || (x.h_en && hit(x.h_en))), n: rows.length };
+}
+export function recordSeen(date, stories) {
+  let list = []; try { list = JSON.parse(fs.readFileSync(SEEN_F, 'utf8')); } catch { /* chưa có */ }
+  list = list.filter(r => r.date !== date && day(date) - day(r.date) <= SEEN_DAYS + 2);
+  list.unshift({ date, ids: stories.map(x => x.id), heads: stories.map(x => [x.t, x.h_en].filter(Boolean).join(' · ').slice(0, 260)) });
+  list.sort((a, b) => b.date.localeCompare(a.date));
+  fs.writeFileSync(SEEN_F, JSON.stringify(list));
+  return stories.length;
+}
+/** gom tin cùng sự kiện trong một danh sách (đã xếp hạng cao ⇒ thấp): giữ tin đầu, các báo khác ghi vào "cũng đăng trên" */
+export function clusterSame(xs) {
+  const keep = [];
+  for (const x of xs) {
+    const W = wordsOf(x.t);
+    const k = W.length >= 4 && keep.find(c => c.x.lang === x.lang && sameEvent(W, c.H));
+    if (k) { const also = new Set([...(k.x.also || []), x.src, ...(x.also || [])]); also.delete(k.x.src); k.x.also = [...also]; continue; }
+    keep.push({ x, H: new Set(W) });
+  }
+  return keep.map(c => c.x);
+}
