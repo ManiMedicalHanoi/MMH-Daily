@@ -312,6 +312,24 @@ From a Vietnamese news summary (and a rough machine translation), return JSON on
     const d = dayStat(); d.n = (d.n || 0) + 1;
     if (!d.done) { d.done = true; d.streak = d.prevDone === addDays(today(), -1) ? (d.streak || 0) + 1 : 1; }
     LS.set('mmh_coach_day', d);
+    dyCoach(id, l, score);
+  }
+  // XP tài khoản học viên (MMH Daily ▸ rank.js / Training Hub dyEvent kind=coach): 1 lần / đoạn / mức / ngày; chưa đăng nhập ⇒ hàng chờ mmh_dy_q (app chính tự gửi)
+  const DY_HUB = 'https://script.google.com/macros/s/AKfycbwsX4cQEoH4LNlmcNfe8qWIM9K6EiDEXy7PjhP9bHY2citL6xHn5L1unsAlQJHyL9EP/exec';
+  async function dyCoach(id, l, score) {
+    const key = today() + '|coach|' + id + '|' + l, seen = LS.get('mmh_dy_coach', {});
+    if (seen[key]) return; seen[key] = 1; LS.set('mmh_dy_coach', Object.fromEntries(Object.entries(seen).slice(-60)));
+    const it = { kind: 'coach', pct: Math.round(score), show: 'coach', rid: 'dc' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), key };
+    let tk = ''; try { tk = localStorage.getItem('mmh_daily_tk') || (localStorage.getItem('mmh_daily_out') ? '' : localStorage.getItem('mmh_tk')) || ''; } catch {}
+    const queue = () => { const q = LS.get('mmh_dy_q', []); q.push(it); LS.set('mmh_dy_q', q.slice(-40)); };
+    if (!tk) return queue();
+    try {
+      const { key: _k, ...p } = it;
+      const r = await fetch(DY_HUB + '?' + new URLSearchParams({ action: 'dyEvent', tk, ...p }), { credentials: 'omit' }), d = await r.json();
+      if (!d.ok) return queue();
+      if (d.me) LS.set('mmh_dy_me', d.me);
+      if (d.xp) toast(d.levelUp ? 'Lên cấp ' + d.levelUp + '! +' + d.xp + ' XP' : '+' + d.xp + ' XP');
+    } catch { queue(); }
   }
   let lastAct = 0;
   ['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, () => { lastAct = Date.now(); }, { passive: true }));

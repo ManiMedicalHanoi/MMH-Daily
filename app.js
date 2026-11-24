@@ -353,7 +353,7 @@
     const row = S.index.editions.find(e => e.date === date);
     $('#m-date').textContent = dateL(date);
     $('#m-no').textContent = `${L('Số', 'No.')} ${row?.no || ed.no} · ${L('Hà Nội', 'Hanoi')}`;
-    const dark = r === 'listen' || r === 'rank';
+    const dark = r === 'listen' || r === 'rank' || r === 'me';
     document.body.classList.toggle('dark', dark);
     document.querySelector('meta[name=theme-color]').content = dark ? '#0E1013' : '#FBF9F4';
     let html;
@@ -362,16 +362,18 @@
     else if (r === 'listen') html = listenPage(ed);
     else if (r === 'archive') html = archivePage();
     else if (r === 'rank' && window.RANK) html = RANK.page();
+    else if (r === 'me' && window.RANK) html = RANK.mePage();
     else html = front(ed);
     $('#view').innerHTML = html;
     lastLine = -1;
     const key = r === 's' ? a : (r === 'e' || !r) ? 'front' : r;
     document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === key));
-    const tk = r === 'listen' ? 'listen' : r === 'rank' ? 'rank' : 'news';
+    const tk = r === 'listen' ? 'listen' : r === 'rank' ? 'rank' : r === 'me' ? 'me' : 'news';
     document.querySelectorAll('#tabbar [data-tab-k]').forEach(x => x.classList.toggle('on', x.dataset.tabK === tk));
     $('#foot').innerHTML = footer(ed);
     if (r === 'listen') wireListen(ed);
     if (r === 'rank' && window.RANK) RANK.load();
+    if (r === 'me' && window.RANK) RANK.meLoad();
     syncUi();
     if (!S.routed) S.routed = true; else window.scrollTo({ top: 0 });
   }
@@ -450,8 +452,15 @@
   // Dữ liệu trên trang đã MÃ HOÁ (AES-256-GCM); khoá lấy từ Training Hub ▸ dailyKey bằng phiên `mmh_tk` (dùng chung Report Hub / CRM).
   const HUB = 'https://script.google.com/macros/s/AKfycbwsX4cQEoH4LNlmcNfe8qWIM9K6EiDEXy7PjhP9bHY2citL6xHn5L1unsAlQJHyL9EP/exec';
   const IN = { key: null, kid: '', admin: false, idx: null, eds: {} };
-  const tkGet = () => { try { return localStorage.getItem('mmh_tk') || ''; } catch { return ''; } };
-  const tkSet = t => { try { t ? localStorage.setItem('mmh_tk', t) : localStorage.removeItem('mmh_tk'); } catch { /* riêng tư */ } };
+  // Phiên: tài khoản học viên (`dy…`, rank.js) lưu riêng mmh_daily_tk — KHÔNG ghi đè mmh_tk của Report Hub / CRM (cùng trang github.io).
+  // Chưa có ⇒ dùng phiên công ty mmh_tk (máy chủ tự tạo tài khoản học viên), trừ khi đã bấm Đăng xuất trong app này (mmh_daily_out).
+  const tkGet = () => { try { return localStorage.getItem('mmh_daily_tk') || (localStorage.getItem('mmh_daily_out') ? '' : localStorage.getItem('mmh_tk')) || ''; } catch { return ''; } };
+  const tkSet = t => {
+    try {
+      if (t) { localStorage.setItem(t.startsWith('dy') ? 'mmh_daily_tk' : 'mmh_tk', t); localStorage.removeItem('mmh_daily_out'); return; }
+      const cur = tkGet(); localStorage.removeItem('mmh_daily_tk'); if (cur && !cur.startsWith('dy')) localStorage.removeItem('mmh_tk');   // phiên hỏng
+    } catch { /* riêng tư */ }
+  };
   async function hub(action, params) {
     const q = new URLSearchParams({ action, ...params });
     try {
