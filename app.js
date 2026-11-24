@@ -353,7 +353,7 @@
     const row = S.index.editions.find(e => e.date === date);
     $('#m-date').textContent = dateL(date);
     $('#m-no').textContent = `${L('Số', 'No.')} ${row?.no || ed.no} · ${L('Hà Nội', 'Hanoi')}`;
-    const dark = r === 'listen' || r === 'rank' || r === 'me';
+    const dark = r === 'listen' || r === 'rank' || r === 'me' || r === 'add';
     document.body.classList.toggle('dark', dark);
     document.querySelector('meta[name=theme-color]').content = dark ? '#0E1013' : '#FBF9F4';
     let html;
@@ -363,6 +363,7 @@
     else if (r === 'archive') html = archivePage();
     else if (r === 'rank' && window.RANK) html = RANK.page();
     else if (r === 'me' && window.RANK) html = RANK.mePage();
+    else if (r === 'add' && window.RANK && RANK.addPage) html = RANK.addPage(a);
     else html = front(ed);
     $('#view').innerHTML = html;
     lastLine = -1;
@@ -374,6 +375,7 @@
     if (r === 'listen') wireListen(ed);
     if (r === 'rank' && window.RANK) RANK.load();
     if (r === 'me' && window.RANK) RANK.meLoad();
+    if (window.RANK && RANK.after) RANK.after(r, ed, a);
     syncUi();
     if (!S.routed) S.routed = true; else window.scrollTo({ top: 0 });
   }

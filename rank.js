@@ -5,6 +5,7 @@
 // XP do máy chủ tính: mọi hoạt động học gửi dyEvent (hàng chờ mmh_dy_q khi chưa đăng nhập / mất mạng, tự gửi lại).
 (function () {
   const D = window.DAILY; if (!D) return;
+  const R = window.RANK = window.RANK || {};   // social.js gắn thêm: tabs / panes / extraSet / friendSet / addBtn / onNew / celebrate
   const esc = D.esc, store = D.store, L = (vi, en) => (D.L ? D.L(vi, en) : vi);
   const SHOW = { talk: 'MMH Talk', clinicroom: 'The Clinic Room', lawdesk: 'Law & Tender Desk', headlines: 'Morning Headlines', english: 'English at Work', aipulse: 'AI Pulse', weekly: 'Week in Review' };
   const KIND = { listen: ['Nghe podcast', 'Listened'], quiz: ['Kiểm tra nghe', 'Listening quiz'], vocab: ['Từ khoá', 'Keywords'], read: ['Đọc', 'Reading'], dictation: ['Chép chính tả', 'Dictation'],
@@ -12,6 +13,7 @@
   const AV = { chip: ['Chíp', '#0E7C6B'], mochi: ['Mochi', '#7C8BA1'], tofu: ['Tofu', '#D98B3A'], capy: ['Capy', '#8B6A4E'], pip: ['Pip', '#3A5CAA'], kiko: ['Kiko', '#C8553D'], bao: ['Bảo', '#4A4A4A'],
     rang: ['Răng Xinh', '#3FA7B4'], iris: ['Iris', '#2F8F83'], bit: ['Bit', '#5B6CD9'], so: ['Sò', '#9A6B3F'], nhim: ['Nhím', '#7A5C3A'], hana: ['Hana', '#D9708F'] };
   const PICK = Object.keys(AV).filter(k => k !== 'chip');
+  const pickFor = me => (me && me.admin ? ['chip', ...PICK] : PICK);
   const LEAGUES = [['Đồng', 'Bronze', '#B87A4B'], ['Bạc', 'Silver', '#A9B0BB'], ['Vàng', 'Gold', '#D4A43A'], ['Ngọc', 'Sapphire', '#4FA3D9'], ['Kim cương', 'Diamond', '#9FE3F0']];
   const GOALS = [[20, 'Nhẹ nhàng', 'Casual'], [50, 'Đều đặn', 'Regular'], [100, 'Nghiêm túc', 'Serious'], [150, 'Bứt phá', 'Intense']];
 
@@ -25,9 +27,10 @@
   }
   function authFail(d) { if (d && d.code === 'AUTH') { D.tkSet(''); store.set('mmh_dy_me', null); paintTab(); return true; } return false; }
   function logout() { try { localStorage.removeItem('mmh_daily_tk'); localStorage.setItem('mmh_daily_out', '1'); } catch { /* riêng tư */ } store.set('mmh_dy_me', null); paintTab(); }
-  const av = (k, size = 40) => {
+  const av = (k, size = 40, mood = 'happy') => {   // nhân vật vẽ bằng SVG (chars.js); chưa tải được ⇒ vòng tròn chữ cái
+    if (window.CHARS) return `<span class="dy-av" style="--s:${size}px" aria-hidden="true">${CHARS.svg(k || 'chip', mood, { bg: '#F3EFE7', round: true })}</span>`;
     const a = AV[k] || AV.chip;
-    return `<span class="dy-av" style="--c:${a[1]};--s:${size}px" aria-hidden="true"><b>${esc(a[0].slice(0, 1))}</b><img src="media/chars/${esc(k || 'chip')}.png" alt="" loading="lazy" onerror="this.remove()"></span>`;
+    return `<span class="dy-av dy-av0" style="--c:${a[1]};--s:${size}px" aria-hidden="true"><b>${esc(a[0].slice(0, 1))}</b></span>`;
   };
   const lgN = i => LEAGUES[i] ? L(LEAGUES[i][0], LEAGUES[i][1]) : '';
   const num = n => Number(n || 0).toLocaleString(D.S.lang === 'en' ? 'en-US' : 'vi-VN');
@@ -113,7 +116,7 @@
         try { if (k === 'forgot') await sendCode('reset'); if (k === 'resend') await sendCode(st.why); } catch (er) { paint(er.message); }
       });
       const ok = d => {
-        D.tkSet(d.token); setMe(d.me); dlg.remove();
+        D.tkSet(d.token); setMe(d.me); dlg.remove(); if (d.isNew && R.onNew) setTimeout(() => R.onNew(d.me), 400);
         D.toast(d.isNew ? L('Chào mừng bạn! Bắt đầu học thôi.', 'Welcome! Let’s start learning.') : L('Đã đăng nhập', 'Signed in'));
         flush(); done(true);
       };
@@ -140,7 +143,8 @@
   }
   function cheer(o) {
     if (!o || !o.me) return;
-    if (o.levelUp) D.toast(L(`Lên cấp ${o.levelUp}!`, `Level ${o.levelUp} reached!`));
+    if (o.levelUp && R.celebrate) R.celebrate(L(`Lên cấp ${o.levelUp}!`, `Level ${o.levelUp}!`), o.me);
+    else if (o.levelUp) D.toast(L(`Lên cấp ${o.levelUp}!`, `Level ${o.levelUp} reached!`));
     else if (o.goalHit) D.toast(L('Đạt mục tiêu hôm nay!', 'Daily goal reached!'));
     else if (o.xp) D.toast(`+${o.xp} XP`);
   }
@@ -198,15 +202,15 @@
   function page() {
     return `<div class="rk dy"><div class="rk-head"><div><p class="ls-k">${L('Thi đua học tiếng Anh', 'English learning challenge')}</p><h1 class="ls-t">${L('Bảng xếp hạng', 'Ranking')}</h1>
         <p class="rk-sub">${L('XP có được khi nghe podcast, làm bài kiểm tra, học từ khoá, nói theo và luyện nói. Làm lại một bài chỉ được 20% XP.', 'Earn XP by listening, taking quizzes, learning keywords, repeating lines and speaking practice. Repeating a lesson gives 20% XP.')}</p></div>
-        <div class="ls2-sub rk-per">${[['league', L('Giải đấu', 'League')], ['week', L('Tuần này', 'This week')], ['month', L('Tháng này', 'This month')]].map(([k, n]) => `<button type="button" data-rk="per" data-k="${k}" class="${period === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+        <div class="ls2-sub rk-per">${[['league', L('Giải đấu', 'League')], ['friends', L('Bạn bè', 'Friends')], ['week', L('Tuần', 'Week')], ['month', L('Tháng', 'Month')]].map(([k, n]) => `<button type="button" data-rk="per" data-k="${k}" class="${period === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
       <div id="rk-body"><div class="rk-empty">${L('Đang tải…', 'Loading…')}</div></div></div>`;
   }
-  const gate = (t, s) => `<div class="dy-gate">${av('chip', 88)}<h2>${t}</h2><p>${s}</p><button class="st-go" type="button" data-rk="login">${L('Đăng nhập / Tạo tài khoản', 'Sign in / Create account')}</button></div>`;
+  const gate = (t, s) => `<div class="dy-gate">${av('chip', 96, 'wave')}<h2>${t}</h2><p>${s}</p><button class="st-go" type="button" data-rk="login">${L('Đăng nhập / Tạo tài khoản', 'Sign in / Create account')}</button></div>`;
   async function load() {
     const el = document.getElementById('rk-body'); if (!el) return;
     if (!tok()) { el.innerHTML = gate(L('Cùng đồng nghiệp thi đua', 'Compete with your colleagues'), L('Tạo tài khoản miễn phí bằng email để lưu XP, giữ chuỗi ngày học và leo hạng từ Đồng lên Kim cương.', 'Create a free account with your email to save XP, keep your streak and climb from Bronze to Diamond.')); return; }
     flush();
-    let d; try { d = await D.hub('dyBoard', { tk: tok(), period }); } catch (e) { el.innerHTML = `<div class="rk-empty">${esc(e.message)}</div>`; return; }
+    let d; try { d = await D.hub('dyBoard', { tk: tok(), period: period === 'friends' ? 'week' : period }); if (period === 'friends' && d.ok && R.friendSet) { const fs = await R.friendSet(); d.rows = d.rows.filter(x => x.me || fs.has(x.id)); d.recent = (d.recent || []).filter(x => fs.has(x.id) || x.id === (meC() || {}).id); } } catch (e) { el.innerHTML = `<div class="rk-empty">${esc(e.message)}</div>`; return; }
     if (authFail(d)) return load();
     if (!d.ok) { el.innerHTML = `<div class="rk-empty">${esc(d.error || L('Không tải được bảng xếp hạng.', 'Could not load the ranking.'))}</div>`; return; }
     if (!document.getElementById('rk-body')) return;
@@ -218,7 +222,7 @@
     el.innerHTML = `${lgBar}<p class="rk-range">${fmtD(d.from)} – ${fmtD(d.to)} · ${rows.length} ${L('người tham gia', 'learners')}${mine >= 0 ? ` · ${L('bạn đang', 'you are')} <b>${L('hạng ', '#')}${mine + 1}</b>` : ` · ${L('bạn chưa có XP trong kỳ này', 'no XP yet this period')}`}</p>
       ${rows.length ? `<div class="rk-pod">${rows.slice(0, 3).map((x, i) => `<div class="rk-p${x.me ? ' me' : ''}" style="--m:${medal[i]}">${av(x.avatar, 54)}<i>${i + 1}</i><b>${esc(x.nick)}</b><span>${num(x.xp)} XP</span></div>`).join('')}</div>` : ''}
       <ol class="rk-list">${rows.map((x, i) => `<li class="${x.me ? 'me' : ''}"><span class="rk-n">${i + 1}</span><span class="rk-who dy-who">${av(x.avatar, 36)}<span><b>${esc(x.nick)}</b><small>${L('Cấp', 'Lv')} ${x.lvl} · ${esc(lgN(x.league))}</small></span></span>
-        <span class="rk-st">${x.streak ? `<span class="dy-fl">${flame}${x.streak}</span>` : ''}${x.lessons ? ` · ${x.lessons} ${L('bài', 'lessons')}` : ''}</span><span class="rk-pt">${num(x.xp)}<small>XP</small></span></li>`).join('') || `<li class="rk-none">${L('Chưa ai có XP trong kỳ này. Hãy là người đầu tiên!', 'No XP yet this period. Be the first!')}</li>`}</ol>
+        <span class="rk-st">${x.streak ? `<span class="dy-fl">${flame}${x.streak}</span>` : ''}${x.lessons ? ` · ${x.lessons} ${L('bài', 'lessons')}` : ''}</span><span class="rk-pt">${num(x.xp)}<small>XP</small>${!x.me && x.id && R.addBtn ? R.addBtn(x.id) : ''}</span></li>`).join('') || `<li class="rk-none">${period === 'friends' ? L('Chưa có bạn bè nào có XP tuần này. Mời bạn học cùng ở trang Tôi ▸ Bạn bè.', 'No friends with XP this week. Invite friends from Me ▸ Friends.') : L('Chưa ai có XP trong kỳ này. Hãy là người đầu tiên!', 'No XP yet this period. Be the first!')}</li>`}</ol>
       <h2 class="ls-sh">${L('Hoạt động gần đây', 'Recent activity')}</h2>
       <div class="rk-feed dy-feed">${(d.recent || []).map(x => `<div>${av(x.avatar, 32)}<p><b>${esc(x.nick)}</b> · ${esc(L(...(KIND[x.kind] || [x.kind, x.kind])))}${x.date ? ` <a href="#/listen/${esc(x.date)}">${esc(SHOW[x.show] || x.show || '')} ${fmtD(x.date)}</a>` : ''}<small>${ago(x.at)}</small></p><em>+${x.xp} XP</em></div>`).join('') || `<p class="rk-none">${L('Chưa có hoạt động.', 'No activity yet.')}</p>`}</div>
       ${me ? `<p class="rk-foot">${av(me.avatar, 22)} ${esc(me.nick)} · <a class="rk-link" href="#/me">${L('Trang của tôi ›', 'My profile ›')}</a></p>` : ''}`;
@@ -262,10 +266,18 @@
       </div>
       ${!me.studiedToday ? `<a class="dy-cta" href="#/listen">${L('Hôm nay chưa học — nghe số mới 8 phút để giữ chuỗi', 'Not studied today — listen to today’s episode to keep your streak')} ›</a>` : ''}
       ${week.length ? `<section class="ls-box dy-week"><h3>${L('7 ngày qua', 'Last 7 days')}</h3><div class="dy-bars" style="--g:${Math.round(goal / max * 100)}%">${week.map(w => `<div title="${w.xp} XP"><i style="height:${Math.round(w.xp / max * 100)}%" class="${w.xp >= goal ? 'ok' : ''}"></i><small>${esc(wd(w.d))}</small></div>`).join('')}</div><p class="dy-small">${L('Vạch ngang = mục tiêu mỗi ngày', 'Line = daily goal')}</p></section>` : ''}
-      <div class="ls2-sub dy-tabs">${[['stat', L('Lịch sử', 'History')], ['set', L('Cài đặt', 'Settings')]].map(([k, n]) => `<button type="button" data-dy="tab" data-k="${k}" class="${meTab === k ? 'on' : ''}">${n}</button>`).join('')}</div>
-      <div id="dy-pane">${meTab === 'set' ? setHtml(me) : histHtml(d.log)}</div>
+      <div class="ls2-sub dy-tabs">${tabs(me).map(([k, n, c]) => `<button type="button" data-dy="tab" data-k="${k}" class="${meTab === k ? 'on' : ''}">${n}${c ? `<i class="dy-dot">${c}</i>` : ''}</button>`).join('')}</div>
+      <div id="dy-pane">${pane(meTab, d)}</div>
       <p class="rk-foot"><a class="rk-link" href="#/rank">${L('Xem bảng xếp hạng ›', 'View the ranking ›')}</a></p>`;
   }
+  function tabs(me) {
+    const t = [['stat', L('Lịch sử', 'History')]];
+    (R.tabs || []).forEach(f => { const x = f(me); if (x) t.push(x); });
+    t.push(['set', L('Cài đặt', 'Settings')]);
+    if (!t.some(x => x[0] === meTab)) meTab = 'stat';
+    return t;
+  }
+  function pane(k, d) { if (k === 'set') return setHtml(d.me); if (R.panes && R.panes[k]) return R.panes[k](d); return histHtml(d.log); }
   function histHtml(log) {
     if (log == null) return `<div class="rk-empty">${L('Đang tải…', 'Loading…')}</div>`;
     const rows = log.filter(x => KIND[x.kind] && x.xp > 0);
@@ -276,7 +288,8 @@
   function setHtml(me) {
     return `<form class="ls-box dy-set" data-dy-form="prof">
         <label>${L('Biệt danh', 'Nickname')}<input name="nick" maxlength="24" value="${esc(me.nick)}"></label>
-        <p class="dy-lbl">${L('Nhân vật', 'Character')}</p><div class="dy-pick">${PICK.map(k => `<button type="button" data-dy="pav" data-k="${k}" class="${k === me.avatar ? 'on' : ''}" title="${esc(AV[k][0])}">${av(k, 44)}<small>${esc(AV[k][0])}</small></button>`).join('')}</div>
+        <p class="dy-lbl">${L('Nhân vật', 'Character')}</p><div class="dy-pick">${pickFor(me).map(k => `<button type="button" data-dy="pav" data-k="${k}" class="${k === me.avatar ? 'on' : ''}" title="${esc(AV[k][0])}">${av(k, 44)}<small>${esc(AV[k][0])}</small></button>`).join('')}${String(me.avatar).startsWith('c:') ? `<button type="button" data-dy="pav" data-k="${esc(me.avatar)}" class="on">${av(me.avatar, 44)}<small>${L('Của tôi', 'Mine')}</small></button>` : ''}</div>
+        ${R.extraSet ? R.extraSet(me) : ''}
         <p class="dy-lbl">${L('Mục tiêu mỗi ngày', 'Daily goal')}</p><div class="dy-goals">${GOALS.map(([g, v, e]) => `<button type="button" data-dy="goal" data-k="${g}" class="${g === me.goal ? 'on' : ''}"><b>${g} XP</b><small>${L(v, e)}</small></button>`).join('')}</div>
         <label class="dy-sw"><input type="checkbox" name="notify" ${me.notify ? 'checked' : ''}><span>${L('Email nhắc học buổi tối khi hôm đó chưa học', 'Evening reminder email when I haven’t studied')}</span></label>
         <button class="st-go" type="submit">${L('Lưu thay đổi', 'Save changes')}</button></form>
@@ -314,7 +327,7 @@
     if (k === 'per') { period = t.dataset.k; store.set('mmh_dy_per', period); document.querySelectorAll('[data-rk="per"]').forEach(b => b.classList.toggle('on', b === t)); return load(); }
     if (k === 'login') { if (await login()) { load(); meLoad(); } return; }
     if (k === 'out') { logout(); D.toast(L('Đã đăng xuất', 'Signed out')); return meLoad(); }
-    if (k === 'tab') { meTab = t.dataset.k; document.querySelectorAll('[data-dy="tab"]').forEach(b => b.classList.toggle('on', b === t)); const p = document.getElementById('dy-pane'); if (p && ME) p.innerHTML = meTab === 'set' ? setHtml(ME.me) : histHtml(ME.log); return; }
+    if (k === 'tab') { meTab = t.dataset.k; document.querySelectorAll('[data-dy="tab"]').forEach(b => b.classList.toggle('on', b === t)); const p = document.getElementById('dy-pane'); if (p && ME) { p.innerHTML = pane(meTab, ME); R.onPane && R.onPane(meTab); } return; }
     if (k === 'pav' || k === 'goal') { t.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === t)); return; }
   });
 
@@ -323,9 +336,9 @@
   setTimeout(async () => {
     if (!tok()) return;
     await flush();
-    try { const d = await D.hub('dyMe', { tk: tok() }); if (authFail(d)) return; if (d.ok) { if (d.token) D.tkSet(d.token); setMe(d.me); } } catch { /* mạng */ }
+    try { const d = await D.hub('dyMe', { tk: tok() }); if (authFail(d)) return; if (d.ok) { if (d.token) D.tkSet(d.token); setMe(d.me); if (!ME) ME = d; } } catch { /* mạng */ }
   }, 3000);
   try { localStorage.removeItem('mmh_daily_score_q'); } catch { /* cũ (v3.48) */ }
 
-  window.RANK = { page, load, mePage, meLoad, submit, event, login, flush, logout, pending: () => Q().length, av };
+  Object.assign(R, { page, load, mePage, meLoad, submit, event, login, flush, logout, pending: () => Q().length, av, tok, post, meC, setMe, authFail, gate, num, ago, fmtD, lgN, LEAGUES, flame, KIND, SHOW, L, me: () => ME, repaint: () => { const el = document.getElementById('me-body'); if (el && ME) el.innerHTML = meHtml(ME); } });
 })();
