@@ -265,6 +265,7 @@
         <div class="dy-tile"><b>${me.words}</b><small>${L('từ đã ghi Sổ từ', 'words saved')}</small></div>
       </div>
       ${!me.studiedToday ? `<a class="dy-cta" href="#/listen">${L('Hôm nay chưa học — nghe số mới 8 phút để giữ chuỗi', 'Not studied today — listen to today’s episode to keep your streak')} ›</a>` : ''}
+      ${R.stats ? R.stats(d) : ''}
       ${week.length ? `<section class="ls-box dy-week"><h3>${L('7 ngày qua', 'Last 7 days')}</h3><div class="dy-bars" style="--g:${Math.round(goal / max * 100)}%">${week.map(w => `<div title="${w.xp} XP"><i style="height:${Math.round(w.xp / max * 100)}%" class="${w.xp >= goal ? 'ok' : ''}"></i><small>${esc(wd(w.d))}</small></div>`).join('')}</div><p class="dy-small">${L('Vạch ngang = mục tiêu mỗi ngày', 'Line = daily goal')}</p></section>` : ''}
       <div class="ls2-sub dy-tabs">${tabs(me).map(([k, n, c]) => `<button type="button" data-dy="tab" data-k="${k}" class="${meTab === k ? 'on' : ''}">${n}${c ? `<i class="dy-dot">${c}</i>` : ''}</button>`).join('')}</div>
       <div id="dy-pane">${pane(meTab, d)}</div>
@@ -336,7 +337,7 @@
   setTimeout(async () => {
     if (!tok()) return;
     await flush();
-    try { const d = await D.hub('dyMe', { tk: tok() }); if (authFail(d)) return; if (d.ok) { if (d.token) D.tkSet(d.token); setMe(d.me); if (!ME) ME = d; } } catch { /* mạng */ }
+    try { const d = await D.hub('dyMe', { tk: tok(), log: 1 }); if (authFail(d)) return; if (d.ok) { if (d.token) D.tkSet(d.token); setMe(d.me); if (!ME) ME = d; } } catch { /* mạng */ }
   }, 3000);
   try { localStorage.removeItem('mmh_daily_score_q'); } catch { /* cũ (v3.48) */ }
 

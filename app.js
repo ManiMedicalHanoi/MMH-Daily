@@ -353,7 +353,7 @@
     const row = S.index.editions.find(e => e.date === date);
     $('#m-date').textContent = dateL(date);
     $('#m-no').textContent = `${L('Số', 'No.')} ${row?.no || ed.no} · ${L('Hà Nội', 'Hanoi')}`;
-    const dark = r === 'listen' || r === 'rank' || r === 'me' || r === 'add';
+    const dark = r === 'listen' || r === 'rank' || r === 'me' || r === 'add' || r === 'learn';
     document.body.classList.toggle('dark', dark);
     document.querySelector('meta[name=theme-color]').content = dark ? '#0E1013' : '#FBF9F4';
     let html;
@@ -364,18 +364,20 @@
     else if (r === 'rank' && window.RANK) html = RANK.page();
     else if (r === 'me' && window.RANK) html = RANK.mePage();
     else if (r === 'add' && window.RANK && RANK.addPage) html = RANK.addPage(a);
+    else if (r === 'learn' && window.RANK && RANK.learnPage) html = RANK.learnPage();
     else html = front(ed);
     $('#view').innerHTML = html;
     lastLine = -1;
     const key = r === 's' ? a : (r === 'e' || !r) ? 'front' : r;
     document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === key));
-    const tk = r === 'listen' ? 'listen' : r === 'rank' ? 'rank' : r === 'me' ? 'me' : 'news';
+    const tk = r === 'listen' ? 'listen' : r === 'rank' ? 'rank' : r === 'me' ? 'me' : r === 'learn' ? 'study' : 'news';
     document.querySelectorAll('#tabbar [data-tab-k]').forEach(x => x.classList.toggle('on', x.dataset.tabK === tk));
     $('#foot').innerHTML = footer(ed);
     if (r === 'listen') wireListen(ed);
     if (r === 'rank' && window.RANK) RANK.load();
     if (r === 'me' && window.RANK) RANK.meLoad();
     if (window.RANK && RANK.after) RANK.after(r, ed, a);
+    if (r === 'learn' && window.RANK && RANK.learnAfter) RANK.learnAfter();
     syncUi();
     if (!S.routed) S.routed = true; else window.scrollTo({ top: 0 });
   }
@@ -427,11 +429,7 @@
     document.dispatchEvent(new CustomEvent('mmh-lang', { detail: S.lang }));
   };
   window.addEventListener('hashchange', route);
-  // thanh tab dưới đáy (điện thoại): "Học bài" mở bài học 4 bước của podcast đang xem (chưa ở trang Nghe ⇒ vào trang Nghe rồi mở)
-  document.querySelector('#tabbar [data-tab-k=study]')?.addEventListener('click', async () => {
-    if (!/^#\/listen/.test(location.hash)) { location.hash = '#/listen'; await new Promise(r => setTimeout(r, 450)); }
-    if (window.STUDY && S.cur?.study) STUDY.open(S.cur); else toast(L('Số này chưa có bài học', 'No lesson for this episode yet'));
-  });
+  // thanh tab dưới đáy: "Học bài" = Lộ trình học kiểu Duolingo (#/learn, path.js)
   new MutationObserver(() => document.body.classList.toggle('has-mini', !$('#mini').hidden)).observe($('#mini'), { attributes: true, attributeFilter: ['hidden'] });
   document.addEventListener('keydown', e => {
     if (e.target.closest('input,textarea')) return;
@@ -658,6 +656,6 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !dlg.hidden) close(); });
   })();
 
-  window.DAILY = { S, L, tr, EN, dateL, route, playDate, IN, setEp, loadEd, hub, tkGet, tkSet, inKey, toast, store, esc, audio, viDate, mmss, ICON, loadIndex, seekBy, HUB };
+  window.DAILY = { showName, showColor, S, L, tr, EN, dateL, route, playDate, IN, setEp, loadEd, hub, tkGet, tkSet, inKey, toast, store, esc, audio, viDate, mmss, ICON, loadIndex, seekBy, HUB };
   boot();
 })();
