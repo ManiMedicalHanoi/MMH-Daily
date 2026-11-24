@@ -50,6 +50,7 @@ const CASE = BASE.kw.case || [];
 const TECH = ['kỹ thuật', 'phẫu thuật', 'laser', 'lần đầu', 'thành công', 'triển khai', 'hội nghị', 'hội thảo', 'công nghệ', 'thiết bị', 'nghiên cứu', 'thử nghiệm', 'robot', 'ai',
   'technique', 'surgery', 'surgical', 'device', 'trial', 'study', 'approval', 'fda', 'launch', 'launches', 'new', 'first', 'innovation', 'technology', 'guideline'];
 const CRIME = ['tạm giữ', 'khởi tố', 'bắt giữ', 'truy nã', 'lừa đảo', 'giết', 'án mạng', 'arrested', 'murder', 'lawsuit'];
+const JUNK = /\b(weekly|newsletter|insert issue|issue \d|photos?|webinar|symposium|podcast|e-?connect|journal update|case challenge|editorial|table of contents|in this issue)\b|^(nl|de|uk|us|fr)\s-\s/i;
 const DOC_HEAD = /^(nghị định|thông tư|quyết định|luật|nghị quyết|chỉ thị|công văn|dự thảo)\b/i;
 const cleanGnTitle = (t, src) => (src ? t.replace(new RegExp('\\s+-\\s+' + src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'), '') : t).trim();
 const titleCase = s => String(s || '').replace(/(^|\s)([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(Of|And|The|In|For|On)\b(?!$)/g, w => w.toLowerCase()).replace(/^the\b/, 'The');
@@ -115,9 +116,10 @@ async function feed(src, t, since) {
     const d = it.date || NOW;
     if (d < since || d - NOW > DAY / 2) { seen.old++; continue; }
     if (countKw(raw, n, ENT) || countKw(raw, n, t.not)) { seen.junk++; continue; }
-    // RSS / báo đại chúng: tiêu đề (hoặc tóm tắt RSS) phải có từ khoá của chuyên đề; nguồn chuyên ngành qua Google News: tin theo truy vấn
-    const strict = !gn || di[2] === 'press';
-    if (strict && !countKw(gn ? title : raw, gn ? nt : n, t.kw)) { seen.kw++; continue; }
+    // TIÊU ĐỀ (RSS: tiêu đề + tóm tắt) phải có từ khoá của chuyên đề — Google News khớp cả chữ trong thân bài / cột bên nên dễ lạc đề.
+    // Riêng nguồn 'loose' (trang chỉ viết về đúng chủ đề, vd. Glaucoma Today) nhận theo truy vấn.
+    if (!src.loose && !countKw(gn ? title : raw, gn ? nt : n, t.kw)) { seen.kw++; continue; }
+    if (JUNK.test(title) || title.split(/\s+/).length < 5) { seen.junk++; continue; }   // số báo / bản tin tuần / ảnh / hội thảo trực tuyến
     const clinical = t.group !== 'law';
     const crime = countKw(title, nt, CRIME) > 0, advice = countKw(title, nt, ADVICE) > 0, tech = countKw(raw, n, TECH) > 0;
     if (clinical && crime) { seen.junk++; continue; }
@@ -162,12 +164,14 @@ const GLOSS = (() => {
   try {
     return fs.readFileSync(path.join(ROOT, 'context', 'glossary.tsv'), 'utf8').split('\n').slice(1).map(l => l.split('\t')).filter(r => r[0] && r[1]).map(([en, vi, dm]) => {
       const main = en.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s*\/.*$/, '').trim(), abbr = (en.match(/\(([A-Z0-9-]{2,8})\)/) || [])[1];
+      // bỏ thuật ngữ có ghi chú ngữ cảnh "(Primary Teeth)", có "/", hoặc là một chữ thông thường (Control, Root, Skin…)
+      if (/\([^)]*[a-z][^)]*\)/.test(en) || /\//.test(en) || (!main.includes(' ') && main.length < 8 && !abbr)) return null;
       return { en: en.trim(), vi: vi.trim(), dm: (dm || '').trim(), keys: [main.toLowerCase(), abbr].filter(k => k && k.length >= 3) };
-    });
+    }).filter(Boolean);
   } catch { return []; }
 })();
 function vocabOf(t, items) {
-  const dm = { eye: ['eye', 'biz'], dental: ['dental', 'biz'], surgery: ['eye', 'dental', 'biz'], law: ['biz'] }[t.group] || [];
+  const dm = { eye: ['eye', 'biz'], dental: ['dental', 'biz'], surgery: ['eye', 'biz'], law: ['biz'] }[t.group] || [];
   const texts = items.map(x => (x.lang === 'en' ? x.t + ' ' + (x.sum || '') : (x.h_en || '') + ' ' + (x.s_en || '')));
   const N = texts.map(s => norm(s));
   const out = [];
@@ -175,10 +179,11 @@ function vocabOf(t, items) {
     if (!dm.includes(g.dm)) continue;
     let c = 0;
     N.forEach((n, i) => { if (g.keys.some(k => (/^[A-Z0-9-]+$/.test(k) ? new RegExp('\\b' + k + '\\b').test(texts[i]) : hasKw(n, k)))) c++; });
-    if (c) out.push([g.en, g.vi, c]);
+    if (c >= (items.length > 30 ? 2 : 1)) out.push([g.en, g.vi, c, g.keys]);
   }
   const seen = new Set();
-  return out.sort((a, b) => b[2] - a[2] || a[0].length - b[0].length).filter(([en]) => { const k = en.toLowerCase().replace(/\s*\(.*$/, ''); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 18);
+  return out.sort((a, b) => b[2] - a[2] || a[0].length - b[0].length)
+    .filter(([en, , , keys]) => { if (keys.some(k => seen.has(k))) return false; keys.forEach(k => seen.add(k)); return true; }).slice(0, 18).map(([en, vi, c]) => [en, vi, c]);
 }
 
 // ── chạy song song có giới hạn ──
@@ -249,7 +254,7 @@ async function main() {
     const srcN = {}; for (const x of clean) srcN[x.src] = (srcN[x.src] || 0) + 1;
     rows.set(t.id, {
       id: t.id, group: t.group, vi: t.vi, en: t.en, color: t.color, icon: t.icon, show: t.show, desc: t.desc, n: clean.length,
-      new7: cnt(x => +NOW - new Date(x.first) <= 7 * DAY), last: clean[0]?.d, updated: iso(NOW),
+      new7: cnt(x => +NOW - new Date(x.first) <= 7 * DAY), fr: clean.map(x => x.first).sort().reverse().slice(0, 80), last: clean[0]?.d, updated: iso(NOW),
       kinds: Object.fromEntries(['news', 'doc', 'study', 'pr'].map(k => [k, cnt(x => x.kind === k)])),
       srcs: Object.entries(srcN).sort((a, b) => b[1] - a[1]).slice(0, 14),
       subs: (t.subs || []).map(s => ({ id: s.id, vi: s.vi, en: s.en, n: cnt(x => x.sub?.includes(s.id)) })),
