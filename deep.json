@@ -1,0 +1,248 @@
+{
+  "_ghi_chu": "CHUYÊN ĐỀ (25/11/2026, người dùng: 'đi sâu vào một chủ đề — đấu thầu chỉ đọc Báo Đấu Thầu, văn bản pháp quy từ Thư viện Pháp luật về đấu thầu & trang thiết bị y tế, glôcôm, bệnh võng mạc, xu hướng & kỹ thuật điều trị mới, tài liệu của các hãng'). Mỗi chuyên đề: chỉ các tên miền trong 'doms' (hoặc nhóm uy tín trong 'tiers'), từ khoá bắt buộc 'kw', bỏ 'not', cửa sổ 'keepDays' ngày. Nguồn: rss · gn (Google News, [ngôn ngữ, truy vấn]) · epmc (Europe PMC: bài báo khoa học có tóm tắt, chỉ các tạp chí trong 'issn') · vbcp (văn bản Chính phủ). tools/deep.mjs ⇒ data/deep/<id>.json. Sửa file này rồi chạy lại workflow MMH Daily (kind = deep).",
+  "keepDays": 150,
+  "max": 90,
+  "tierW": { "gov": 3, "sci": 3, "pro": 2.5, "press": 1.5, "pr": 1.2 },
+  "tierName": {
+    "gov": ["Cơ quan nhà nước", "Government"],
+    "sci": ["Tạp chí khoa học", "Peer-reviewed journal"],
+    "pro": ["Chuyên ngành", "Specialist source"],
+    "press": ["Báo lớn", "Major newspaper"],
+    "pr": ["Thông tin của hãng", "Company news"]
+  },
+  "kindName": {
+    "news": ["Tin tức", "News"],
+    "doc": ["Văn bản", "Legal documents"],
+    "study": ["Nghiên cứu", "Research"],
+    "pr": ["Thông tin hãng", "Company news"]
+  },
+  "doms": {
+    "chinhphu.vn": ["Cổng TTĐT Chính phủ", "gov"], "vanban.chinhphu.vn": ["Văn bản Chính phủ", "gov"], "baochinhphu.vn": ["Báo Chính phủ", "gov"],
+    "moh.gov.vn": ["Bộ Y tế", "gov"], "dmec.moh.gov.vn": ["Cục Hạ tầng và Thiết bị y tế", "gov"], "kcb.vn": ["Cục Quản lý Khám chữa bệnh", "gov"],
+    "dav.gov.vn": ["Cục Quản lý Dược", "gov"], "baohiemxahoi.gov.vn": ["BHXH Việt Nam", "gov"], "quochoi.vn": ["Quốc hội", "gov"],
+    "daibieunhandan.vn": ["Đại biểu Nhân dân", "gov"], "mof.gov.vn": ["Bộ Tài chính", "gov"], "vbpl.vn": ["CSDL văn bản pháp luật", "gov"],
+    "muasamcong.mpi.gov.vn": ["Mua sắm công", "gov"], "bachmai.gov.vn": ["BV Bạch Mai", "gov"],
+    "thuvienphapluat.vn": ["Thư viện Pháp luật", "pro"], "luatvietnam.vn": ["Luật Việt Nam", "pro"], "baodauthau.vn": ["Báo Đấu thầu", "pro"],
+    "suckhoedoisong.vn": ["Sức khỏe & Đời sống", "pro"], "benhvienmattrunguong.vn": ["BV Mắt Trung ương", "pro"], "vos.org.vn": ["Hội Nhãn khoa Việt Nam", "pro"],
+    "rhmtw.vn": ["BV Răng Hàm Mặt TW", "pro"],
+    "vnexpress.net": ["VnExpress", "press"], "tuoitre.vn": ["Tuổi Trẻ", "press"], "thanhnien.vn": ["Thanh Niên", "press"], "nhandan.vn": ["Nhân Dân", "press"],
+    "vietnamplus.vn": ["VietnamPlus", "press"], "dantri.com.vn": ["Dân trí", "press"], "vtv.vn": ["VTV", "press"], "vov.vn": ["VOV", "press"],
+    "laodong.vn": ["Lao Động", "press"], "vietnamnet.vn": ["VietNamNet", "press"], "tienphong.vn": ["Tiền Phong", "press"], "nld.com.vn": ["Người Lao Động", "press"],
+    "plo.vn": ["Pháp luật TP.HCM", "press"], "sggp.org.vn": ["Sài Gòn Giải Phóng", "press"], "baotintuc.vn": ["Báo Tin tức (TTXVN)", "press"], "hanoimoi.vn": ["Hà Nội Mới", "press"],
+    "e.vnexpress.net": ["VnExpress International", "press"], "en.vietnamplus.vn": ["VietnamPlus English", "press"], "vietnamnews.vn": ["Viet Nam News", "press"],
+    "reuters.com": ["Reuters", "press"], "apnews.com": ["AP", "press"], "bbc.com": ["BBC", "press"], "nytimes.com": ["The New York Times", "press"], "theguardian.com": ["The Guardian", "press"],
+    "statnews.com": ["STAT", "pro"], "medpagetoday.com": ["MedPage Today", "pro"], "medscape.com": ["Medscape", "pro"], "fiercebiotech.com": ["Fierce Biotech", "pro"],
+    "fiercepharma.com": ["Fierce Pharma", "pro"], "medtechdive.com": ["MedTech Dive", "pro"], "massdevice.com": ["MassDevice", "pro"], "biopharmadive.com": ["BioPharma Dive", "pro"],
+    "nature.com": ["Nature", "sci"], "thelancet.com": ["The Lancet", "sci"], "jamanetwork.com": ["JAMA Network", "sci"], "nejm.org": ["NEJM", "sci"], "bmj.com": ["BMJ", "sci"],
+    "sciencedaily.com": ["ScienceDaily", "pro"], "nih.gov": ["NIH", "gov"], "fda.gov": ["U.S. FDA", "gov"], "who.int": ["WHO", "gov"],
+    "aao.org": ["American Academy of Ophthalmology", "pro"], "healio.com": ["Healio", "pro"], "ophthalmologytimes.com": ["Ophthalmology Times", "pro"],
+    "reviewofophthalmology.com": ["Review of Ophthalmology", "pro"], "eyeworld.org": ["EyeWorld", "pro"], "crstoday.com": ["CRSToday", "pro"],
+    "glaucomatoday.com": ["Glaucoma Today", "pro"], "retinatoday.com": ["Retina Today", "pro"], "modernretina.com": ["Modern Retina", "pro"],
+    "theophthalmologist.com": ["The Ophthalmologist", "pro"], "ophthalmologybreakingnews.com": ["Ophthalmology Breaking News", "pro"], "eyewire.news": ["Eyewire+", "pro"],
+    "optometrytimes.com": ["Optometry Times", "pro"], "reviewofoptometry.com": ["Review of Optometry", "pro"], "glaucoma.org": ["Glaucoma Research Foundation", "pro"],
+    "ascrs.org": ["ASCRS", "pro"], "escrs.org": ["ESCRS", "pro"], "aaojournal.org": ["Ophthalmology (AAO journal)", "sci"],
+    "ada.org": ["American Dental Association", "pro"], "aae.org": ["American Association of Endodontists", "pro"], "fdiworlddental.org": ["FDI World Dental Federation", "pro"],
+    "dentistrytoday.com": ["Dentistry Today", "pro"], "dental-tribune.com": ["Dental Tribune", "pro"], "dentaleconomics.com": ["Dental Economics", "pro"],
+    "dentistryiq.com": ["DentistryIQ", "pro"], "insidedentistry.net": ["Inside Dentistry", "pro"], "drbicuspid.com": ["DrBicuspid", "pro"],
+    "decisionsindentistry.com": ["Decisions in Dentistry", "pro"], "oralhealthgroup.com": ["Oral Health", "pro"], "compendiumlive.com": ["Compendium", "pro"],
+    "dentalproductsreport.com": ["Dental Products Report", "pro"], "dentistry.co.uk": ["Dentistry.co.uk", "pro"], "the-dentist.co.uk": ["The Dentist", "pro"],
+    "facs.org": ["American College of Surgeons", "pro"], "generalsurgerynews.com": ["General Surgery News", "pro"], "outpatientsurgery.net": ["Outpatient Surgery", "pro"],
+    "businesswire.com": ["Business Wire", "pr"], "prnewswire.com": ["PR Newswire", "pr"], "globenewswire.com": ["GlobeNewswire", "pr"],
+    "alcon.com": ["Alcon", "pr"], "glaukos.com": ["Glaukos", "pr"], "zeiss.com": ["ZEISS", "pr"], "bausch.com": ["Bausch + Lomb", "pr"], "jnj.com": ["Johnson & Johnson", "pr"],
+    "jnjmedtech.com": ["J&J MedTech", "pr"], "santen.com": ["Santen", "pr"], "abbvie.com": ["AbbVie", "pr"], "regeneron.com": ["Regeneron", "pr"], "roche.com": ["Roche", "pr"],
+    "gene.com": ["Genentech", "pr"], "novartis.com": ["Novartis", "pr"], "bayer.com": ["Bayer", "pr"], "sightsciences.com": ["Sight Sciences", "pr"], "topcon.com": ["Topcon", "pr"],
+    "lumenis.com": ["Lumenis", "pr"], "iridex.com": ["IRIDEX", "pr"], "staar.com": ["STAAR Surgical", "pr"], "rxsight.com": ["RxSight", "pr"], "ocularis.com": ["Ocular Therapeutix", "pr"],
+    "dentsplysirona.com": ["Dentsply Sirona", "pr"], "ivoclar.com": ["Ivoclar", "pr"], "kerrdental.com": ["Kerr Dental", "pr"], "envistaco.com": ["Envista", "pr"],
+    "coltene.com": ["COLTENE", "pr"], "gc.dental": ["GC", "pr"], "solventum.com": ["Solventum", "pr"], "3m.com": ["3M", "pr"], "ultradent.com": ["Ultradent", "pr"],
+    "septodont.com": ["Septodont", "pr"], "straumann.com": ["Straumann", "pr"], "voco.dental": ["VOCO", "pr"], "kulzer.com": ["Kulzer", "pr"], "fkg.ch": ["FKG", "pr"],
+    "mani.co.jp": ["MANI", "pr"], "medtronic.com": ["Medtronic", "pr"], "bd.com": ["BD", "pr"], "bbraun.com": ["B. Braun", "pr"], "teleflex.com": ["Teleflex", "pr"],
+    "smith-nephew.com": ["Smith+Nephew", "pr"], "baxter.com": ["Baxter", "pr"]
+  },
+  "groups": [
+    { "id": "law", "vi": "Thầu & pháp lý", "en": "Tenders & law" },
+    { "id": "eye", "vi": "Nhãn khoa", "en": "Ophthalmology" },
+    { "id": "dental", "vi": "Nha khoa", "en": "Dentistry" },
+    { "id": "surgery", "vi": "Ngoại khoa", "en": "Surgery" }
+  ],
+  "topics": [
+    {
+      "id": "dauthau", "group": "law", "vi": "Đấu thầu y tế", "en": "Medical tenders", "color": "#5B3F8C", "icon": "gavel", "show": "lawdesk", "keepDays": 60, "max": 100,
+      "desc": ["Chỉ đọc Báo Đấu thầu: gói thầu y tế, quy định lựa chọn nhà thầu, sai phạm và kiến nghị.", "Bidding Newspaper only: medical tenders, contractor-selection rules, violations and complaints."],
+      "doms": ["baodauthau.vn"],
+      "src": [
+        { "t": "rss", "u": "https://baodauthau.vn/rss/dau-thau-2.rss" },
+        { "t": "rss", "u": "https://baodauthau.vn/rss/thoi-su-14.rss" },
+        { "t": "gn", "lang": "vi", "q": "site:baodauthau.vn (\"y tế\" OR \"bệnh viện\" OR \"thiết bị y tế\" OR \"vật tư y tế\" OR \"trang thiết bị\") when:30d" },
+        { "t": "gn", "lang": "vi", "q": "site:baodauthau.vn (thuốc OR \"hóa chất\" OR \"sinh phẩm\" OR \"xét nghiệm\" OR \"sở y tế\" OR \"trung tâm y tế\") when:30d" },
+        { "t": "gn", "lang": "vi", "q": "site:baodauthau.vn (\"Luật Đấu thầu\" OR \"lựa chọn nhà thầu\" OR \"đấu thầu qua mạng\" OR \"mua sắm tập trung\" OR \"đàm phán giá\") when:30d" }
+      ],
+      "kw": ["y tế", "bệnh viện", "thiết bị y tế", "trang thiết bị", "vật tư y tế", "vật tư", "thuốc", "dược", "hóa chất", "sinh phẩm", "xét nghiệm", "sở y tế", "trung tâm y tế", "bhyt", "bảo hiểm y tế",
+        "luật đấu thầu", "lựa chọn nhà thầu", "đấu thầu qua mạng", "mua sắm tập trung", "đàm phán giá", "nghị định", "thông tư", "hồ sơ mời thầu", "hsmt"],
+      "subs": [
+        { "id": "goi", "vi": "Gói thầu y tế", "en": "Medical packages", "kw": ["y tế", "bệnh viện", "thiết bị y tế", "trang thiết bị", "vật tư y tế", "thuốc", "hóa chất", "sinh phẩm", "xét nghiệm", "sở y tế", "trung tâm y tế"] },
+        { "id": "luat", "vi": "Quy định & hướng dẫn", "en": "Rules & guidance", "kw": ["luật", "nghị định", "thông tư", "quy định", "hướng dẫn", "dự thảo", "sửa đổi", "mẫu hồ sơ", "lựa chọn nhà thầu"] },
+        { "id": "canh", "vi": "Sai phạm & kiến nghị", "en": "Violations & complaints", "kw": ["sai phạm", "vi phạm", "kiến nghị", "thanh tra", "kiểm toán", "hủy thầu", "huỷ thầu", "bất thường", "cảnh báo", "khởi tố", "dấu hiệu", "bị loại", "khiếu nại"] },
+        { "id": "kq", "vi": "Kết quả & giá trúng", "en": "Results & winning prices", "kw": ["trúng thầu", "kết quả", "giá trúng", "tiết kiệm", "giảm giá", "trúng"] }
+      ]
+    },
+    {
+      "id": "phapquy", "group": "law", "vi": "Văn bản pháp quy", "en": "Laws & regulations", "color": "#3F4E8C", "icon": "doc", "show": "lawdesk", "keepDays": 365, "max": 150,
+      "desc": ["Nghị định, thông tư, quyết định về đấu thầu, trang thiết bị y tế, BHYT và khám chữa bệnh — từ Thư viện Pháp luật, Luật Việt Nam, Chính phủ, Bộ Y tế.", "Decrees, circulars and decisions on tenders, medical devices, health insurance and care — from Law Library, LuatVietnam, the Government and the Ministry of Health."],
+      "doms": ["thuvienphapluat.vn", "luatvietnam.vn", "vbpl.vn", "chinhphu.vn", "baochinhphu.vn", "moh.gov.vn", "quochoi.vn", "daibieunhandan.vn", "baohiemxahoi.gov.vn", "mof.gov.vn", "kcb.vn"],
+      "src": [
+        { "t": "gn", "lang": "vi", "q": "site:thuvienphapluat.vn (\"thiết bị y tế\" OR \"trang thiết bị y tế\" OR \"vật tư y tế\") when:60d" },
+        { "t": "gn", "lang": "vi", "q": "site:thuvienphapluat.vn (\"đấu thầu\" OR \"lựa chọn nhà thầu\" OR \"mua sắm\") (\"y tế\" OR thuốc OR \"bệnh viện\" OR \"công lập\") when:60d" },
+        { "t": "gn", "lang": "vi", "q": "site:thuvienphapluat.vn (\"bảo hiểm y tế\" OR \"giá dịch vụ\" OR \"khám bệnh, chữa bệnh\") when:30d" },
+        { "t": "gn", "lang": "vi", "q": "site:luatvietnam.vn (\"thiết bị y tế\" OR \"đấu thầu\" OR \"bảo hiểm y tế\" OR \"khám bệnh, chữa bệnh\") when:60d" },
+        { "t": "gn", "lang": "vi", "q": "site:moh.gov.vn (\"thông tư\" OR \"nghị định\" OR \"quyết định\" OR \"dự thảo\" OR \"hướng dẫn\") when:60d" },
+        { "t": "gn", "lang": "vi", "q": "site:chinhphu.vn (\"thiết bị y tế\" OR \"đấu thầu\" OR \"bảo hiểm y tế\" OR \"y tế\") (\"nghị định\" OR \"quyết định\" OR \"thông tư\") when:60d" },
+        { "t": "gn", "lang": "vi", "q": "site:baochinhphu.vn (\"thiết bị y tế\" OR \"vật tư y tế\" OR \"đấu thầu thuốc\" OR \"bảo hiểm y tế\") (\"nghị định\" OR \"thông tư\" OR \"quyết định\") when:60d" },
+        { "t": "vbcp", "u": "https://vanban.chinhphu.vn/he-thong-van-ban" }
+      ],
+      "kw": ["thiết bị y tế", "trang thiết bị", "vật tư y tế", "đấu thầu", "lựa chọn nhà thầu", "mua sắm", "bảo hiểm y tế", "bhyt", "giá dịch vụ", "khám bệnh", "chữa bệnh", "y tế", "bệnh viện", "dược", "thuốc"],
+      "not": ["thú y", "thủy sản", "thức ăn chăn nuôi"],
+      "subs": [
+        { "id": "thau", "vi": "Đấu thầu & mua sắm", "en": "Tenders & procurement", "kw": ["đấu thầu", "lựa chọn nhà thầu", "mua sắm", "gói thầu", "đàm phán giá", "nhà thầu"] },
+        { "id": "ttbyt", "vi": "Trang thiết bị y tế", "en": "Medical devices", "kw": ["thiết bị y tế", "trang thiết bị", "vật tư y tế", "số lưu hành", "lưu hành", "phân loại", "nhập khẩu", "cấp phép"] },
+        { "id": "bhyt", "vi": "BHYT & giá dịch vụ", "en": "Insurance & fees", "kw": ["bảo hiểm y tế", "bhyt", "giá dịch vụ", "thanh toán", "viện phí", "giá khám"] },
+        { "id": "kcb", "vi": "Khám chữa bệnh", "en": "Medical care", "kw": ["khám bệnh", "chữa bệnh", "giấy phép hành nghề", "cơ sở khám", "chuyên môn", "kỹ thuật"] }
+      ]
+    },
+    {
+      "id": "glaucoma", "group": "eye", "vi": "Glôcôm", "en": "Glaucoma", "color": "#1F6F8C", "icon": "eye", "show": "clinicroom",
+      "desc": ["Phẫu thuật glôcôm (cắt bè, mở vùng bè, MIGS), laser, thuốc mới, chẩn đoán sớm — tin chuyên ngành, nghiên cứu từ tạp chí đầu ngành và thông tin các hãng.", "Glaucoma surgery (trabeculectomy, trabeculotomy, MIGS), lasers, new drugs, early diagnosis — specialist news, top-journal research and company news."],
+      "tiers": ["gov", "sci", "pro", "press", "pr"],
+      "src": [
+        { "t": "gn", "lang": "en", "q": "glaucoma (MIGS OR stent OR trabeculectomy OR trabeculotomy OR SLT OR laser OR implant OR \"new treatment\") when:60d" },
+        { "t": "gn", "lang": "en", "q": "(iStent OR Hydrus OR \"XEN Gel\" OR PreserFlo OR \"OMNI Surgical\" OR Durysta OR iDose OR canaloplasty OR goniotomy OR \"Kahook Dual Blade\") when:90d" },
+        { "t": "gn", "lang": "en", "q": "glaucoma (FDA OR approval OR \"clinical trial\" OR study OR screening) when:30d" },
+        { "t": "gn", "lang": "en", "q": "site:glaucomatoday.com when:90d" },
+        { "t": "gn", "lang": "en", "q": "(site:aao.org OR site:healio.com OR site:ophthalmologytimes.com OR site:reviewofophthalmology.com) glaucoma when:45d" },
+        { "t": "gn", "lang": "vi", "q": "(glôcôm OR glocom OR \"tăng nhãn áp\" OR \"cườm nước\") when:90d" },
+        { "t": "gn", "lang": "vi", "q": "(\"cắt bè\" OR \"nhãn áp\" OR \"mở vùng bè\") (\"phẫu thuật\" OR \"kỹ thuật\" OR laser) when:120d" },
+        { "t": "epmc", "terms": ["glaucoma", "intraocular pressure", "trabeculectomy", "trabeculotomy", "minimally invasive glaucoma", "laser trabeculoplasty", "ocular hypertension", "goniotomy"],
+          "issn": ["0161-6420", "2168-6165", "0007-1161", "0002-9394", "2589-4196", "1057-0829", "0950-222X", "1755-375X", "0039-6257", "0028-4793", "0140-6736"] }
+      ],
+      "kw": ["glaucoma", "glôcôm", "glocom", "tăng nhãn áp", "nhãn áp", "cườm nước", "trabeculectomy", "trabeculotomy", "cắt bè", "mở vùng bè", "migs", "istent", "hydrus", "xen gel", "preserflo", "intraocular pressure", "iop", "goniotomy", "canaloplasty", "trabecular", "durysta", "idose", "ocular hypertension"],
+      "subs": [
+        { "id": "surg", "vi": "Phẫu thuật & laser", "en": "Surgery & lasers", "kw": ["migs", "stent", "trabeculectomy", "trabeculotomy", "cắt bè", "mở vùng bè", "laser", "slt", "goniotomy", "canaloplasty", "shunt", "microshunt", "istent", "hydrus", "xen", "preserflo", "omni", "phẫu thuật", "surgery", "surgical"] },
+        { "id": "drug", "vi": "Thuốc & thuốc cấy", "en": "Drugs & implants", "kw": ["drop", "drops", "eye drops", "latanoprost", "timolol", "netarsudil", "sustained", "durysta", "idose", "nhỏ mắt", "thuốc", "medication"] },
+        { "id": "dx", "vi": "Chẩn đoán & AI", "en": "Diagnosis & AI", "kw": ["ai", "artificial intelligence", "oct", "screening", "deep learning", "visual field", "sàng lọc", "chẩn đoán", "phát hiện sớm"] },
+        { "id": "trial", "vi": "Thử nghiệm & phê duyệt", "en": "Trials & approvals", "kw": ["fda", "approval", "approved", "clinical trial", "phase", "trial", "ce mark", "phê duyệt"] }
+      ]
+    },
+    {
+      "id": "retina", "group": "eye", "vi": "Võng mạc", "en": "Retina", "color": "#2E5E8C", "icon": "eye", "show": "clinicroom",
+      "desc": ["Bệnh võng mạc đái tháo đường, thoái hoá hoàng điểm, tiêm nội nhãn, phẫu thuật dịch kính – võng mạc, sàng lọc bằng AI.", "Diabetic retinopathy, macular degeneration, intravitreal injections, vitreoretinal surgery, AI screening."],
+      "tiers": ["gov", "sci", "pro", "press", "pr"],
+      "src": [
+        { "t": "gn", "lang": "en", "q": "(\"diabetic retinopathy\" OR \"diabetic macular edema\") (treatment OR screening OR AI OR trial OR approval) when:45d" },
+        { "t": "gn", "lang": "en", "q": "(\"macular degeneration\" OR \"geographic atrophy\" OR \"wet AMD\") (treatment OR trial OR approval OR \"gene therapy\") when:45d" },
+        { "t": "gn", "lang": "en", "q": "(faricimab OR Vabysmo OR aflibercept OR \"Eylea HD\" OR Syfovre OR Izervay OR \"port delivery\" OR \"anti-VEGF\") when:45d" },
+        { "t": "gn", "lang": "en", "q": "(vitrectomy OR \"retinal detachment\" OR \"macular hole\" OR \"epiretinal membrane\") (surgery OR technique OR study) when:90d" },
+        { "t": "gn", "lang": "en", "q": "(site:retinatoday.com OR site:modernretina.com) when:60d" },
+        { "t": "gn", "lang": "vi", "q": "(\"võng mạc\" OR \"hoàng điểm\" OR \"dịch kính\") when:90d" },
+        { "t": "gn", "lang": "vi", "q": "(\"võng mạc đái tháo đường\" OR \"thoái hóa hoàng điểm\" OR \"tiêm nội nhãn\" OR \"bong võng mạc\" OR \"cắt dịch kính\") when:180d" },
+        { "t": "epmc", "terms": ["diabetic retinopathy", "diabetic macular", "macular degeneration", "geographic atrophy", "retinal detachment", "vitrectomy", "macular hole", "anti-VEGF", "retinal vein occlusion"],
+          "issn": ["0161-6420", "2168-6165", "0007-1161", "0002-9394", "2468-6530", "0275-004X", "0950-222X", "1755-375X", "0039-6257", "0028-4793", "0140-6736", "0149-5992"] }
+      ],
+      "kw": ["retina", "retinal", "retinopathy", "macular", "macula", "amd", "geographic atrophy", "vitrectomy", "vitreoretinal", "anti-vegf", "faricimab", "vabysmo", "aflibercept", "eylea", "syfovre", "izervay",
+        "võng mạc", "hoàng điểm", "dịch kính", "tiêm nội nhãn", "bong võng mạc", "đái tháo đường"],
+      "subs": [
+        { "id": "drug", "vi": "Thuốc tiêm & sinh học", "en": "Injections & biologics", "kw": ["anti-vegf", "faricimab", "vabysmo", "aflibercept", "eylea", "biosimilar", "injection", "intravitreal", "tiêm", "syfovre", "izervay", "pegcetacoplan", "avacincaptad"] },
+        { "id": "surg", "vi": "Phẫu thuật dịch kính – võng mạc", "en": "Vitreoretinal surgery", "kw": ["vitrectomy", "cắt dịch kính", "bong võng mạc", "retinal detachment", "macular hole", "lỗ hoàng điểm", "epiretinal", "scleral buckle", "phẫu thuật", "surgery"] },
+        { "id": "dx", "vi": "Sàng lọc & AI", "en": "Screening & AI", "kw": ["ai", "artificial intelligence", "screening", "sàng lọc", "deep learning", "oct", "telemedicine", "camera", "chẩn đoán"] },
+        { "id": "new", "vi": "Liệu pháp mới", "en": "New therapies", "kw": ["gene therapy", "cell therapy", "port delivery", "sustained", "tyrosine kinase", "tki", "liệu pháp gen", "tế bào gốc"] }
+      ]
+    },
+    {
+      "id": "cataract", "group": "eye", "vi": "Đục thủy tinh thể & khúc xạ", "en": "Cataract & refractive", "color": "#2E7D8C", "icon": "eye", "show": "clinicroom",
+      "desc": ["Phẫu thuật phaco, femtosecond, thể thủy tinh nhân tạo (IOL) thế hệ mới, kiểm soát cận thị, phẫu thuật khúc xạ.", "Phaco and femtosecond surgery, new intraocular lenses (IOLs), myopia control, refractive surgery."],
+      "tiers": ["gov", "sci", "pro", "press", "pr"],
+      "src": [
+        { "t": "gn", "lang": "en", "q": "cataract surgery (IOL OR \"intraocular lens\" OR phaco OR femtosecond OR EDOF OR trifocal OR \"light adjustable\") when:45d" },
+        { "t": "gn", "lang": "en", "q": "(\"myopia control\" OR \"myopia management\" OR \"low-dose atropine\" OR orthokeratology) when:45d" },
+        { "t": "gn", "lang": "en", "q": "(SMILE OR LASIK OR \"implantable collamer\" OR \"phakic IOL\") (\"refractive surgery\" OR eye) when:60d" },
+        { "t": "gn", "lang": "en", "q": "(site:crstoday.com OR site:eyeworld.org OR site:ascrs.org OR site:escrs.org) when:60d" },
+        { "t": "gn", "lang": "vi", "q": "(\"đục thủy tinh thể\" OR \"đục thể thủy tinh\" OR phaco OR \"thể thủy tinh nhân tạo\") when:90d" },
+        { "t": "gn", "lang": "vi", "q": "(\"cận thị\" OR \"tật khúc xạ\" OR \"phẫu thuật khúc xạ\" OR femtosecond OR SMILE) (\"kỹ thuật\" OR \"phẫu thuật\" OR \"điều trị\") when:90d" },
+        { "t": "epmc", "terms": ["cataract", "phacoemulsification", "intraocular lens", "myopia", "refractive surgery", "keratorefractive", "femtosecond"],
+          "issn": ["0886-3350", "1081-597X", "0161-6420", "2168-6165", "0007-1161", "0002-9394", "0950-222X", "1755-375X"] }
+      ],
+      "kw": ["cataract", "phaco", "phacoemulsification", "iol", "intraocular lens", "femtosecond", "edof", "trifocal", "multifocal", "toric", "myopia", "refractive", "lasik", "smile", "orthokeratology", "atropine",
+        "đục thủy tinh thể", "đục thể thủy tinh", "thể thủy tinh", "cận thị", "khúc xạ", "mổ mắt", "phẫu thuật mắt"],
+      "subs": [
+        { "id": "iol", "vi": "Thể thủy tinh nhân tạo", "en": "Intraocular lenses", "kw": ["iol", "intraocular lens", "lens", "edof", "trifocal", "multifocal", "toric", "thể thủy tinh nhân tạo", "light adjustable"] },
+        { "id": "surg", "vi": "Kỹ thuật phaco & femto", "en": "Phaco & femto techniques", "kw": ["phaco", "phacoemulsification", "femtosecond", "femto", "incision", "đường rạch", "surgery", "surgical", "phẫu thuật"] },
+        { "id": "myo", "vi": "Cận thị & khúc xạ", "en": "Myopia & refractive", "kw": ["myopia", "cận thị", "atropine", "orthokeratology", "ortho-k", "smile", "lasik", "icl", "phakic", "khúc xạ", "refractive"] }
+      ]
+    },
+    {
+      "id": "endo", "group": "dental", "vi": "Nội nha & mũi khoan", "en": "Endodontics & burs", "color": "#8A5A00", "icon": "tooth", "show": "clinicroom",
+      "desc": ["Trâm NiTi, sửa soạn – bơm rửa – trám bít ống tủy, bảo tồn tủy, mũi khoan kim cương và kỹ thuật sửa soạn răng tối thiểu.", "NiTi files, canal shaping, irrigation and obturation, vital pulp therapy, diamond burs and minimally invasive preparation."],
+      "tiers": ["gov", "sci", "pro", "press", "pr"],
+      "src": [
+        { "t": "gn", "lang": "en", "q": "(endodontic OR endodontics OR \"root canal\") (NiTi OR rotary OR file OR files OR technique OR study OR irrigation) when:90d" },
+        { "t": "gn", "lang": "en", "q": "(\"diamond bur\" OR \"dental bur\" OR \"dental burs\" OR \"carbide bur\" OR \"tooth preparation\") when:180d" },
+        { "t": "gn", "lang": "en", "q": "(site:aae.org OR site:dentistrytoday.com OR site:dental-tribune.com OR site:insidedentistry.net) (endodontic OR \"root canal\" OR bur OR burs) when:120d" },
+        { "t": "gn", "lang": "en", "q": "(\"Dentsply Sirona\" OR VDW OR COLTENE OR FKG OR \"Kerr Dental\" OR MANI) (endodontic OR \"root canal\" OR file) when:180d" },
+        { "t": "gn", "lang": "vi", "q": "(\"nội nha\" OR \"điều trị tủy\" OR \"chữa tủy\" OR \"tủy răng\") when:120d" },
+        { "t": "gn", "lang": "vi", "q": "(\"mũi khoan\" OR \"trâm nội nha\") (\"nha khoa\" OR răng) when:180d" },
+        { "t": "epmc", "terms": ["endodontic", "root canal", "nickel-titanium", "NiTi", "reciprocating", "pulpotomy", "vital pulp", "apical periodontitis", "diamond bur", "tooth preparation"],
+          "issn": ["0099-2399", "0143-2885", "0300-5712", "1432-6981", "1329-1947", "0022-0345", "0002-8177"] }
+      ],
+      "kw": ["endodontic", "endodontics", "root canal", "niti", "nickel-titanium", "rotary", "reciprocating", "pulp", "pulpotomy", "apical", "obturation", "irrigation", "bur", "burs", "tooth preparation",
+        "nội nha", "điều trị tủy", "chữa tủy", "tủy răng", "trâm", "mũi khoan", "ống tủy"],
+      "subs": [
+        { "id": "file", "vi": "Trâm & sửa soạn ống tủy", "en": "Files & canal shaping", "kw": ["niti", "nickel-titanium", "rotary", "reciprocating", "file", "files", "trâm", "instrumentation", "glide path", "shaping", "sửa soạn"] },
+        { "id": "irr", "vi": "Bơm rửa & trám bít", "en": "Irrigation & obturation", "kw": ["irrigation", "irrigant", "hypochlorite", "obturation", "sealer", "bioceramic", "bơm rửa", "trám bít"] },
+        { "id": "bur", "vi": "Mũi khoan", "en": "Burs", "kw": ["bur", "burs", "diamond", "carbide", "mũi khoan", "tooth preparation", "preparation"] },
+        { "id": "pulp", "vi": "Bảo tồn tủy", "en": "Vital pulp therapy", "kw": ["vital pulp", "pulpotomy", "regenerative", "pulp capping", "mta", "bảo tồn tủy", "che tủy"] }
+      ]
+    },
+    {
+      "id": "resto", "group": "dental", "vi": "Phục hồi & thẩm mỹ răng", "en": "Restorative & aesthetics", "color": "#9B5A2C", "icon": "tooth", "show": "clinicroom",
+      "desc": ["Composite, keo dán (bond), tẩy trắng, phục hồi trực tiếp xâm lấn tối thiểu, nha khoa kỹ thuật số.", "Composites, adhesives (bonding), whitening, minimally invasive direct restorations, digital dentistry."],
+      "tiers": ["gov", "sci", "pro", "press", "pr"],
+      "src": [
+        { "t": "gn", "lang": "en", "q": "(\"composite resin\" OR \"bulk-fill\" OR \"universal adhesive\" OR \"dental adhesive\") (dental OR dentistry) when:120d" },
+        { "t": "gn", "lang": "en", "q": "(\"tooth whitening\" OR \"teeth whitening\" OR \"dental bleaching\") (dentist OR dental OR study) when:60d" },
+        { "t": "gn", "lang": "en", "q": "(\"injectable composite\" OR \"minimally invasive dentistry\" OR \"direct restoration\" OR \"dental restoration\") when:180d" },
+        { "t": "gn", "lang": "en", "q": "(site:dentistrytoday.com OR site:dental-tribune.com OR site:insidedentistry.net OR site:drbicuspid.com) (composite OR adhesive OR bonding OR whitening) when:120d" },
+        { "t": "gn", "lang": "en", "q": "(Ivoclar OR Solventum OR \"Kerr Dental\" OR \"GC Corporation\" OR Tokuyama OR Kulzer OR VOCO OR Ultradent OR Shofu) (composite OR adhesive OR bonding) when:180d" },
+        { "t": "gn", "lang": "vi", "q": "(\"trám răng\" OR composite OR \"tẩy trắng răng\" OR \"dán sứ\" OR \"phục hình răng\") (\"nha khoa\" OR răng) when:120d" },
+        { "t": "epmc", "terms": ["composite", "adhesive", "bulk-fill", "bonding", "whitening", "bleaching", "direct restoration", "restorative"],
+          "issn": ["0109-5641", "0300-5712", "0361-7734", "1461-5185", "1432-6981", "1496-4155", "0022-3913", "0002-8177"] }
+      ],
+      "kw": ["composite", "resin", "bulk-fill", "adhesive", "bonding", "bond", "whitening", "bleaching", "restoration", "restorative", "veneer", "digital dentistry", "cad/cam",
+        "trám răng", "composite", "tẩy trắng", "dán sứ", "phục hình", "phục hồi", "thẩm mỹ răng"],
+      "subs": [
+        { "id": "comp", "vi": "Composite", "en": "Composites", "kw": ["composite", "resin", "bulk-fill", "nano", "flowable", "injectable", "trám"] },
+        { "id": "bond", "vi": "Keo dán (bond)", "en": "Adhesives", "kw": ["adhesive", "bonding", "bond", "universal adhesive", "self-etch", "etch", "dán"] },
+        { "id": "white", "vi": "Tẩy trắng", "en": "Whitening", "kw": ["whitening", "bleaching", "tẩy trắng"] },
+        { "id": "dig", "vi": "Kỹ thuật số", "en": "Digital", "kw": ["digital", "cad/cam", "scanner", "3d printing", "in 3d", "ai", "artificial intelligence"] }
+      ]
+    },
+    {
+      "id": "wound", "group": "surgery", "vi": "Khâu & ghim da", "en": "Sutures & skin staplers", "color": "#2E6B4F", "icon": "suture", "show": "clinicroom",
+      "desc": ["Chỉ khâu, ghim da, kỹ thuật đóng vết mổ, phòng nhiễm khuẩn vết mổ — nghiên cứu ngoại khoa và thông tin các hãng.", "Sutures, skin staplers, wound-closure techniques, surgical site infection — surgical research and company news."],
+      "tiers": ["gov", "sci", "pro", "press", "pr"],
+      "src": [
+        { "t": "gn", "lang": "en", "q": "(\"skin stapler\" OR \"surgical staples\" OR \"skin closure\" OR \"wound closure\") when:120d" },
+        { "t": "gn", "lang": "en", "q": "(suture OR sutures) (surgical OR surgery) (\"surgical site infection\" OR antibacterial OR absorbable OR technique OR study) when:120d" },
+        { "t": "gn", "lang": "en", "q": "(\"surgical site infection\" OR \"surgical site infections\") (prevention OR closure OR study OR guideline) when:60d" },
+        { "t": "gn", "lang": "en", "q": "(Ethicon OR \"J&J MedTech\" OR Medtronic OR \"B. Braun\" OR Teleflex OR \"Smith+Nephew\" OR Baxter) (suture OR stapler OR \"wound closure\") when:180d" },
+        { "t": "gn", "lang": "vi", "q": "(\"chỉ khâu\" OR \"khâu vết mổ\" OR \"ghim da\" OR \"đóng vết mổ\" OR \"nhiễm khuẩn vết mổ\") when:180d" },
+        { "t": "epmc", "terms": ["skin closure", "wound closure", "skin staples", "staples", "suture", "sutures", "surgical site infection"],
+          "issn": ["2168-6254", "0007-1323", "0003-4932", "0039-6060", "0364-2313", "1743-9191", "1076-0512", "0032-1052", "1072-7515"] }
+      ],
+      "kw": ["suture", "sutures", "staple", "staples", "stapler", "skin closure", "wound closure", "surgical site infection", "ssi", "wound", "incision",
+        "chỉ khâu", "khâu", "ghim da", "vết mổ", "nhiễm khuẩn vết mổ", "đóng vết mổ"],
+      "subs": [
+        { "id": "stap", "vi": "Ghim da", "en": "Skin staplers", "kw": ["staple", "staples", "stapler", "ghim da", "ghim"] },
+        { "id": "sut", "vi": "Chỉ khâu", "en": "Sutures", "kw": ["suture", "sutures", "chỉ khâu", "khâu"] },
+        { "id": "ssi", "vi": "Nhiễm khuẩn vết mổ", "en": "Surgical site infection", "kw": ["surgical site infection", "ssi", "infection", "nhiễm khuẩn"] }
+      ]
+    }
+  ]
+}

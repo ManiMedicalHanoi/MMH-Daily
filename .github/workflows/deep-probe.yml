@@ -1,0 +1,44 @@
+# MMH Daily — CHUYÊN ĐỀ: chạy thử bộ gom (tools/deep.mjs) với nguồn thật, KHÔNG ghi vào kho. Đọc log để xem từng nguồn lấy được bao nhiêu bài.
+# Tự chạy khi sửa deep.json / tools/deep.mjs trên nhánh claude/** (máy Claude Code bị chặn các trang báo); bấm tay: Actions ▸ Chuyên đề — thử nguồn.
+name: Chuyên đề — thử nguồn
+on:
+  push:
+    branches: ['claude/**']
+    paths: ['deep.json', 'tools/deep.mjs', '.github/workflows/deep-probe.yml']
+  workflow_dispatch:
+    inputs:
+      topics: { description: 'Chuyên đề (dauthau,phapquy,glaucoma,retina,cataract,endo,resto,wound — trống = tất cả)', required: false }
+permissions: { contents: read }
+concurrency: { group: deep-probe, cancel-in-progress: true }
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Gom thử (ghi ra thư mục tạm)
+        env:
+          DEEP_OUT: ${{ runner.temp }}/deep
+          DEEP_REPORT: ${{ runner.temp }}/deep/_report.json
+          DEEP_TOPICS: ${{ inputs.topics }}
+          DEEP_MT_MAX: '40'
+        run: node tools/deep.mjs
+      - name: Báo cáo từng nguồn + bài mới nhất
+        if: always()
+        env: { D: '${{ runner.temp }}/deep' }
+        run: |
+          node -e '
+          const fs=require("fs"),D=process.env.D;
+          const rep=JSON.parse(fs.readFileSync(D+"/_report.json","utf8"));
+          for(const r of rep){
+            console.log("\n=== "+r.id+" · "+r.n+" bài · mới "+r.new+" · lấy "+r.got);
+            for(const s of r.src) console.log("  "+(s.err?"LỖI "+s.err:"ok "+String(s.ok).padStart(3)+" / rss "+(s.n??"")+" · khác miền "+(s.dom??"")+" · thiếu từ khoá "+(s.kw??"")+" · bỏ "+(s.junk??"")+" · cũ "+(s.old??""))+"  ⟵ "+s.s);
+            const f=JSON.parse(fs.readFileSync(D+"/"+r.id+".json","utf8"));
+            console.log("  từ vựng: "+(f.vocab||[]).slice(0,10).map(v=>v[0]).join(" · "));
+            for(const x of f.items.slice(0,14)) console.log("   ["+x.kind+"/"+x.tier+"] "+x.d.slice(0,10)+" "+x.src+" | "+x.t.slice(0,110)+(x.sub?" {"+x.sub.join(",")+"}":"")+(x.also?" +"+x.also.length:""));
+          }'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: deep-probe, path: '${{ runner.temp }}/deep', retention-days: 5 }
