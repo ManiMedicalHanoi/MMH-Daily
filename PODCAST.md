@@ -85,3 +85,12 @@ Xem thêm `WRITING.md` (chọn tin, giọng nói tự nhiên, phụ đề Việt
 - Phong cách YouTuber review công nghệ: hào hứng, nhanh, chuyển ý gọn ("Okay, next up…", "Quick reality check…"), mỗi phần kết bằng một câu chốt — vẫn tiếng Anh B1.
 - Bài kiểm tra nghe / bài học (Học bài này) dựng từ kịch bản như mọi số.
 
+
+## 9. Chuyên đề — số đi sâu (25/11/2026, người dùng: "đi sâu vào một chủ đề, xu hướng & kỹ thuật điều trị mới, văn bản pháp quy, đấu thầu")
+- Nguồn: `data/deep/<id>.json` (`tools/deep.mjs`, cấu hình `deep.json`): 8 chuyên đề — Đấu thầu y tế (chỉ Báo Đấu thầu) · Văn bản pháp quy (Thư viện Pháp luật, Luật Việt Nam, Chính phủ, Bộ Y tế) · Glôcôm · Võng mạc · Đục thủy tinh thể & khúc xạ · Nội nha & mũi khoan · Phục hồi & thẩm mỹ răng · Khâu & ghim da.
+  Mỗi bài có `kind` (news · doc · study · pr) và mức nguồn `tier` (gov · sci · pro · press · pr).
+- **The Clinic Room (T3)** tự chọn chuyên đề nhãn / nha / ngoại khoa có nhiều bài MỚI chưa lên sóng nhất trong 14 ngày (không lặp chuyên đề số trước); **Law & Tender Desk (T4)** dùng Đấu thầu + Văn bản pháp quy chưa lên sóng.
+  App ▸ Tổng hợp ngay ▸ Chuyên đề (`DAILY_DEEP=<id>`) ⇒ số đi sâu đúng chuyên đề đó (chương trình theo `show` của chuyên đề).
+- Có `deepDive` trong brief ⇒ phần chính của kịch bản xây trên 3–5 bài của chuyên đề: bệnh / quy định / kỹ thuật là gì (nói đơn giản), cái gì MỚI, bằng chứng (tên tạp chí / nguồn, kiểu nghiên cứu nói dễ hiểu, kết quả chính),
+  liên hệ cụ thể với sản phẩm / khách hàng MMH. `pr` = tin của hãng ⇒ "hãng cho biết", không nói như điều đã chứng minh. `study` ⇒ nói rõ loại nghiên cứu. Tin trong ngày chỉ điểm nhanh cuối số.
+  KHÔNG bịa số liệu ngoài phần tóm tắt. Ghi id các bài đã dùng vào `podcast.covered` (vào sổ đã lên sóng, không series nào đọc lại).

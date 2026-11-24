@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { DAY, vnDay, iso } from './lib.mjs';
 import { SHOWS, showFor, pickShow, HOW, LEARN, learnFor, GLOSSARY } from './shows.mjs';
 import { translateStories, translate } from './translate.mjs';
-import { airedCheck, inferCovered, recordAired, loadAired, AIRED_F } from './aired.mjs';
+import { airedCheck, inferCovered, recordAired, loadAired, AIRED_F, seenCheck, recordSeen, clusterSame } from './aired.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CFG = JSON.parse(fs.readFileSync(path.join(ROOT, 'config.json'), 'utf8'));
@@ -50,7 +50,12 @@ function pick(pool) {
     cand = strict.length >= 8 ? strict : [...strict, ...cand.filter(x => !hit(x) && x.sec === 'health')].slice(0, 12);
   }
   const rank = x => x.sc + (x.also?.length || 0) * 1.5 + Math.max(0, 1 - (NOW - new Date(x.d)) / (30 * 36e5)) + (x.img ? 0.3 : 0);
+  // 25/11/2026: không đăng lại tin / sự kiện đã lên số trong 14 ngày (data/seen.json); thiếu tin thì tin đã đăng xếp cuối thay vì bỏ hẳn
+  const SEEN = seenCheck(DATE), was = cand.filter(x => SEEN.is(x));
+  if (was.length) { const rest = cand.filter(x => !SEEN.is(x)); cand = rest.length >= 30 ? rest : [...rest, ...was.map(x => ({ ...x, sc: x.sc - 4 }))]; }
   cand.sort((a, b) => rank(b) - rank(a));
+  cand = clusterSame(cand);   // cùng sự kiện ở nhiều báo ⇒ 1 tin (giữ tin xếp cao nhất) + "cũng đăng trên …"
+  console.log(`Chống trùng: ${was.length} tin đã đăng trong ${SEEN.n} số gần đây · còn ${cand.length} tin ứng viên`);
   const sections = {};
   for (const [sec, def] of Object.entries(CFG.sections)) {
     if (sec === 'ai') continue;   // AI & Công nghệ chọn riêng bên dưới (tin quốc tế, giữ 10 ngày)
@@ -80,6 +85,34 @@ function pick(pool) {
   sections.ai = spread(ai.filter(x => !used.has(x.id)), CFG.sections.ai?.quota || 10, 2, 4);
   const aiPod = spread(ai.filter(x => !AIR.is(x)), 10, 2, 5);
   return { sections, desk, docs, lead, cand, aiPod, AIR };
+}
+
+// ── CHUYÊN ĐỀ cho podcast (25/11/2026, người dùng: "đi sâu vào một chủ đề"): data/deep/<id>.json (tools/deep.mjs) ──
+// The Clinic Room (T3): chuyên đề nhãn / nha / ngoại khoa có nhiều bài MỚI chưa lên sóng nhất (14 ngày), không trùng chuyên đề số trước; Law & Tender Desk (T4):
+// Đấu thầu + Văn bản pháp quy chưa lên sóng. DAILY_DEEP=<id> (app ▸ Tổng hợp ngay ▸ Chuyên đề) ⇒ số đi sâu đúng chuyên đề đó.
+const DEEP_CFG = readJson(path.join(ROOT, 'deep.json'), { topics: [] });
+const CLINIC_DEEP = ['glaucoma', 'endo', 'retina', 'resto', 'cataract', 'wound'];
+export function deepPick(showId, AIR, hist, want = process.env.DAILY_DEEP) {
+  const T = id => DEEP_CFG.topics.find(t => t.id === id);
+  const load = id => (readJson(path.join(ROOT, 'data', 'deep', id + '.json'), { items: [] }).items || []).map(x => ({ ...x, topic: id }));
+  const ok = (x, days) => NOW - new Date(x.first || x.d) <= days * DAY && !AIR.is(x);
+  let ids;
+  if (want && T(want)) ids = [want];
+  else if (showId === 'lawdesk') ids = ['dauthau', 'phapquy'];
+  else if (showId === 'clinicroom') {
+    const last = hist.find(h => h.show === 'clinicroom' && h.deep)?.deep, wk = Math.floor(+NOW / (7 * DAY));
+    const c = CLINIC_DEEP.filter(id => id !== last).map((id, i) => ({ id, n: load(id).filter(x => ok(x, 14)).length, r: (i + wk) % CLINIC_DEEP.length }))
+      .sort((a, b) => b.n - a.n || a.r - b.r);
+    ids = c[0] && c[0].n >= 3 ? [c[0].id] : [];
+  } else return null;
+  const score = x => (x.sc || 0) + Math.max(0, 2 - (NOW - new Date(x.d)) / (7 * DAY)) + (x.kind === 'study' ? 0.5 : 0);
+  const pool = ids.flatMap(load).filter(x => ok(x, want ? 60 : 21)).sort((a, b) => score(b) - score(a));
+  // trộn loại bài: nghiên cứu + tin chuyên ngành + văn bản + hãng (mỗi loại tối đa 4)
+  const by = {}, items = [];
+  for (const x of pool) { if (items.length >= 9) break; if ((by[x.kind] = (by[x.kind] || 0) + 1) > 4) continue; items.push(x); }
+  if (items.length < 2) return null;
+  const tt = ids.map(T).filter(Boolean);
+  return { ids, vi: tt.map(t => t.vi).join(' · '), en: tt.map(t => t.en).join(' · '), items };
 }
 
 // ── chữ cho giọng đọc ──
@@ -356,7 +389,12 @@ Recent editions (do not repeat their angle or opening): ${prev.join(' | ') || 'n
 ${POD}
 
 ${GL.text}
-${AI_SHOW ? `AI stories for the podcast — ai: ${JSON.stringify(aiList)}
+${picked.deep && !AI_SHOW ? `DEEP DIVE — "${picked.deep.en}" (the core of today's episode; specialist sources collected over the last weeks, none aired before):
+   build the main part of the show on 3–5 of these items — explain the condition / rule / technique simply, what is NEW, the evidence (journal or source by name, study design in plain words,
+   the key finding), and the concrete link to MMH products or customers. kind "pr" = company news: say "the company says"; never present it as proven. kind "study" = peer-reviewed:
+   say what kind of study it is. Today's other news only briefly at the end. Never invent numbers beyond the summaries. Include the ids you use in covered.
+   deep: ${JSON.stringify(picked.deep.items.map(x => ({ id: x.id, kind: x.kind, source: x.src, date: x.d.slice(0, 10), headline: x.h_en || x.t, summary: x.s_en || x.sum || '' })))}
+` : ''}${AI_SHOW ? `AI stories for the podcast — ai: ${JSON.stringify(aiList)}
 Health stories (for items 1–2 ONLY, not the podcast): ${JSON.stringify(pick('health').slice(0, 6))}` : `Stories — health: ${JSON.stringify(pick('health'))}
 economy: ${JSON.stringify(pick('economy'))}
 politics: ${JSON.stringify(pick('politics'))}
@@ -552,12 +590,22 @@ async function main() {
   const pool = readJson(path.join(ROOT, 'data', 'pool.json'), null);
   if (!pool) throw new Error('Chưa có data/pool.json — chạy collect.mjs trước');
   seedAired();
+  // lần đầu có sổ "đã đăng": ghi lại tin của các số còn giữ
+  if (!fs.existsSync(path.join(ROOT, 'data', 'seen.json'))) for (const f of fs.readdirSync(ED_DIR).filter(f => /^\d{4}-\d{2}-\d{2}\.json$/.test(f) && f < DATE).sort()) {
+    const e = readJson(path.join(ED_DIR, f), null); if (!e) continue;
+    const ids = [...new Set(Object.entries(e.sections || {}).filter(([k]) => k !== 'ai').flatMap(([, v]) => v))];
+    recordSeen(f.slice(0, 10), ids.map(id => ({ ...e.stories[id], id })).filter(x => x.t));
+  }
   const picked = pick(pool);
   const HIST = readJson(HIST_F, []).filter(h => h.date !== DATE);
   const onlyAI = FILTER.topics.length && FILTER.topics.every(t => t === 'ai');   // app ▸ Tổng hợp ngay chỉ chọn chủ đề AI ⇒ số AI Pulse
   let showId = (process.env.DAILY_SHOW && SHOWS[process.env.DAILY_SHOW]) ? process.env.DAILY_SHOW : onlyAI ? 'aipulse' : pickShow(DATE, picked, HIST);
   if (SHOWS[showId].ai) picked.sections.ai = [...new Map([...picked.aiPod, ...picked.sections.ai].map(x => [x.id, x])).values()].slice(0, 12);
   console.log(`Tin AI: ${picked.sections.ai.length} trên báo · ${picked.aiPod.length} chưa lên sóng · sổ đã lên sóng ${picked.AIR.n} số / ${picked.AIR.ids.size} tin`);
+  // chuyên đề đi sâu: ép chuyên đề (DAILY_DEEP) ⇒ chương trình hợp với chuyên đề đó
+  if (process.env.DAILY_DEEP && !process.env.DAILY_SHOW) { const t = DEEP_CFG.topics.find(x => x.id === process.env.DAILY_DEEP); if (t && SHOWS[t.show]) showId = t.show; }
+  picked.deep = deepPick(showId, picked.AIR, HIST);
+  if (picked.deep) console.log(`Chuyên đề cho podcast: ${picked.deep.en} · ${picked.deep.items.length} bài (${picked.deep.items.map(x => x.kind).join(', ')})`);
   const useAI = !!(process.env.ANTHROPIC_API_KEY || process.env.GEMINI_API_KEY);
   const index = readJson(path.join(ROOT, 'data', 'index.json'), { editions: [] });
   const no = (index.editions.find(e => e.date === DATE)?.no) || (index.editions.length ? Math.max(...index.editions.map(e => e.no || 0)) + 1 : 1);
@@ -565,6 +613,7 @@ async function main() {
     date: DATE, no, updated: iso(NOW), writer: '',
     lead: picked.lead?.id, sections: {}, healthDesk: { groups: picked.desk, order: Object.keys(DESK) }, docs: picked.docs.map(x => x.id),
     podcast: { show: showId, name: SHOWS[showId].name, hosts: SHOWS[showId].hosts, color: SHOWS[showId].color, rate: SHOWS[showId].rate || '-5%', learn: learnFor(DATE, showId) },
+    deepDive: picked.deep ? { ids: picked.deep.ids, vi: picked.deep.vi, en: picked.deep.en, items: picked.deep.items.map(x => x.id) } : undefined,
     filter: (FILTER.sources.length || FILTER.topics.length) ? { sources: FILTER.sources, topics: FILTER.topics, by: process.env.DAILY_BY || '' } : undefined,
     stories: {}, sources: pool.status.map(s => ({ id: s.id, lang: s.lang, ok: !!s.ok, kept: s.kept })),
   };
@@ -595,6 +644,7 @@ async function main() {
   (picked.read || []).forEach(x => keep.set(x.id, x));
   for (const ids of Object.values(picked.desk)) ids.forEach(id => { const x = picked.cand.find(y => y.id === id); if (x) keep.set(id, x); });
   for (const [id, x] of keep) ed.stories[id] = slim(x);
+  for (const x of picked.deep?.items || []) if (!ed.stories[x.id]) ed.stories[x.id] = { ...slim({ ...x, sec: 'health' }), deep: x.topic, tier: x.tier, dk: x.kind, jr: x.jr || undefined };
   ed.used = [...keep.keys()];
   const words = ed.podcast.turns.reduce((s, t) => s + t.text.split(/\s+/).length, 0);
   ed.podcast.words = words;
@@ -602,17 +652,18 @@ async function main() {
   fs.mkdirSync(ED_DIR, { recursive: true });
   fs.writeFileSync(path.join(ED_DIR, DATE + '.json'), JSON.stringify(ed));
   const lead = ed.stories[ed.lead];
-  const row = { date: DATE, no, show: showId, title: ed.podcast.title, lead: lead ? (lead.h_en || lead.t) : '', writer: ed.writer, words, study: (ed.study && ed.study.quiz && ed.study.quiz.length) || 0 };   // path.js ▸ lộ trình học chỉ lấy số có bài học
+  const row = { date: DATE, no, show: showId, deep: picked.deep?.ids, title: ed.podcast.title, lead: lead ? (lead.h_en || lead.t) : '', writer: ed.writer, words, study: (ed.study && ed.study.quiz && ed.study.quiz.length) || 0 };   // path.js ▸ lộ trình học chỉ lấy số có bài học
   index.editions = [row, ...index.editions.filter(e => e.date !== DATE)].sort((a, b) => b.date.localeCompare(a.date)).slice(0, KEEP_EDITIONS);
   const keepDates = new Set(index.editions.map(e => e.date));
   for (const f of fs.readdirSync(ED_DIR)) { const d = f.replace(/\.json$/, ''); if (/^\d{4}-\d{2}-\d{2}$/.test(d) && !keepDates.has(d)) fs.unlinkSync(path.join(ED_DIR, f)); }
   index.updated = iso(NOW);
   fs.writeFileSync(path.join(ROOT, 'data', 'index.json'), JSON.stringify(index));
   // sổ "đã lên sóng": tin podcast hôm nay đã nói ⇒ không series nào đọc lại trong 30 ngày
-  const look = new Map([...picked.cand, ...picked.aiPod, ...Object.values(picked.sections).flat(), ...picked.docs].map(x => [x.id, x]));
+  const look = new Map([...picked.cand, ...picked.aiPod, ...Object.values(picked.sections).flat(), ...picked.docs, ...(picked.deep?.items || [])].map(x => [x.id, x]));
+  recordSeen(DATE, [...keep.values()].filter(x => x.sec !== 'ai'));
   console.log(`Đã lên sóng hôm nay: ${recordAired(DATE, showId, (ed.podcast.covered || []).map(id => look.get(id)).filter(Boolean))} tin`);
   const T = ed.podcast.turns, all = T.map(t => t.text).join(' ');
-  const hrow = { date: DATE, show: showId, writer: ed.writer, mmh: ed.podcast.mmh || undefined, open: (T[0]?.text || '').slice(0, 140), close: (T[T.length - 1]?.text || '').slice(0, 140),
+  const hrow = { date: DATE, show: showId, deep: picked.deep?.ids?.[0], writer: ed.writer, mmh: ed.podcast.mmh || undefined, open: (T[0]?.text || '').slice(0, 140), close: (T[T.length - 1]?.text || '').slice(0, 140),
     vocab: [...(ed.vocab || []).map(v => v.en), ...(ed.study?.words || []).map(w => w.en)], phr: (ed.study?.phrases || []).map(p => p.en), grams: grams(all).slice(0, 700) };
   fs.writeFileSync(HIST_F, JSON.stringify([hrow, ...HIST].slice(0, 30)));
   if (ed.podcast.recap?.length) {

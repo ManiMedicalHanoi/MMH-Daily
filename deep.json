@@ -911,18 +911,28 @@
     "mua sắm",
     "bảo hiểm y tế",
     "bhyt",
-    "giá dịch vụ",
     "khám bệnh",
     "chữa bệnh",
     "y tế",
     "bệnh viện",
     "dược",
-    "thuốc"
+    "thuốc",
+    "giá dịch vụ y tế",
+    "giá dịch vụ khám",
+    "giá dịch vụ kỹ thuật",
+    "khám bệnh, chữa bệnh"
    ],
    "not": [
     "thú y",
     "thủy sản",
-    "thức ăn chăn nuôi"
+    "thức ăn chăn nuôi",
+    "thuốc lá",
+    "đo đạc",
+    "địa chính",
+    "chợ",
+    "hội nghị",
+    "đảng viên",
+    "thuế"
    ],
    "subs": [
     {
@@ -960,8 +970,10 @@
      "kw": [
       "bảo hiểm y tế",
       "bhyt",
-      "giá dịch vụ",
-      "thanh toán",
+      "giá dịch vụ y tế",
+      "giá dịch vụ khám",
+      "giá dịch vụ kỹ thuật",
+      "thanh toán bhyt",
       "viện phí",
       "giá khám"
      ]

@@ -30,7 +30,7 @@
   ];
   // phần trong từng mục: [khoá, VI, EN, gốc]
   const SEGS = {
-    listen: [['pod', 'Podcast', 'Podcast', '#/listen'], ['news', 'Bản tin', 'News', '#/'], ['report', 'MMH Report', 'MMH Report', '#/report']],
+    listen: [['pod', 'Podcast', 'Podcast', '#/listen'], ['news', 'Bản tin', 'News', '#/'], ['deep', 'Chuyên đề', 'Deep dives', '#/deep'], ['report', 'MMH Report', 'MMH Report', '#/report']],
     speak: [['lessons', 'Bài nói', 'Lessons', 'coach/#/'], ['live', 'Phiên dịch', 'Interpreter', 'coach/#/live'], ['words', 'Sổ từ', 'Word book', 'coach/#/words']],
   };
   const TTL = 3 * 36e5, MEM = 'mmh_tab_mem';
@@ -52,6 +52,7 @@
     const r = part(h)[0];
     if (h.startsWith('coach/')) return r === 'live' ? 'live' : r === 'words' ? 'words' : r === 'set' ? 'set' : 'lessons';
     if (r === 'listen') return 'pod';
+    if (r === 'deep') return 'deep';
     if (r === 'report' || r === 'noibo') return 'report';
     return 'news';
   }

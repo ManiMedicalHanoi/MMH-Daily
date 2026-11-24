@@ -14,9 +14,10 @@ on:
     paths: ['data/editions/**', 'data/inbox/**', 'data/requests/**']   # phiên Claude Code vừa viết số báo / bản tin nội bộ (đã khoá) ⇒ tạo giọng + đăng trang
   workflow_dispatch:
     inputs:
-      kind: { description: 'daily = tin hằng ngày · site = chỉ đăng lại trang (không viết, không tạo giọng) · weekly = MMH Report (bản tin nội bộ thứ Hai) · both = cả hai', required: false, default: 'daily' }
+      kind: { description: 'daily = tin hằng ngày · deep = chỉ cập nhật Chuyên đề + đăng trang · site = chỉ đăng lại trang (không viết, không tạo giọng) · weekly = MMH Report (bản tin nội bộ thứ Hai) · both = cả hai', required: false, default: 'daily' }
       show: { description: 'Ép chương trình podcast (để trống = theo lịch): talk · clinicroom · lawdesk · aipulse · headlines · english · weekly', required: false }
       sources: { description: 'Chỉ lấy tin từ các báo này (tên miền, cách nhau dấu phẩy; trống = tất cả)', required: false }
+      deep: { description: 'Số đi sâu một chuyên đề (deep.json: dauthau · phapquy · glaucoma · retina · cataract · endo · resto · wound; trống = theo lịch)', required: false }
       topics: { description: 'Chủ đề (dental,eye,tender,insurance,policy,hospital,market,economy,politics,society,ai; trống = tất cả; chỉ ai = số AI Pulse)', required: false }
       voice: { description: 'Giọng: edge (miễn phí) | eleven (ElevenLabs)', required: false, default: '' }
       voices: { description: 'Bộ giọng ElevenLabs (config.json ▸ voice.presets)', required: false }
@@ -32,7 +33,8 @@ jobs:
       HAS_INKEY: ${{ secrets.DAILY_INTERNAL_KEY != '' }}
       GH_TOKEN: ${{ github.token }}
       IS_REQ: ${{ github.event_name == 'push' && (contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/')) }}
-      DO_DAILY: ${{ github.event.schedule == '45 22 * * *' || (github.event_name == 'workflow_dispatch' && inputs.kind != 'weekly' && inputs.kind != 'site') || (github.event_name == 'push' && (contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/'))) }}
+      DO_DEEP: ${{ github.event.schedule == '45 22 * * *' || (github.event_name == 'workflow_dispatch' && inputs.kind != 'weekly' && inputs.kind != 'site') || (github.event_name == 'push' && (contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/'))) }}
+      DO_DAILY: ${{ github.event.schedule == '45 22 * * *' || (github.event_name == 'workflow_dispatch' && inputs.kind != 'weekly' && inputs.kind != 'site' && inputs.kind != 'deep') || (github.event_name == 'push' && (contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/'))) }}
       DO_AUDIO: ${{ github.event_name == 'push' && !(contains(join(github.event.head_commit.modified, ','), 'data/requests/') || contains(join(github.event.head_commit.added, ','), 'data/requests/')) }}
       DAILY_VOICE: ${{ inputs.voice || vars.DAILY_VOICE || '' }}
       DAILY_VOICES: ${{ inputs.voices || vars.DAILY_VOICES || '' }}
@@ -66,14 +68,19 @@ jobs:
       - name: Yêu cầu từ phiên Claude (data/requests/daily.json)
         if: env.IS_REQ == 'true'
         run: |
-          node -e "const r=require('./data/requests/daily.json');const c=s=>String(s||'').replace(/[^a-z0-9.,\-]/gi,'');console.log('REQ_SOURCES='+c(r.sources)+'\nREQ_TOPICS='+c(r.topics)+'\nREQ_SHOW='+c(r.show).replace(/[^a-z]/g,''))" >> $GITHUB_ENV
+          node -e "const r=require('./data/requests/daily.json');const c=s=>String(s||'').replace(/[^a-z0-9.,\-]/gi,'');console.log('REQ_SOURCES='+c(r.sources)+'\nREQ_TOPICS='+c(r.topics)+'\nREQ_SHOW='+c(r.show).replace(/[^a-z]/g,'')+'\nREQ_DEEP='+c(r.deep).replace(/[^a-z]/g,''))" >> $GITHUB_ENV
       # ── tin hằng ngày ──
       - name: Gom tin
         if: env.DO_DAILY == 'true'
         run: node tools/collect.mjs
+      - name: Chuyên đề (đấu thầu, văn bản pháp quy, glôcôm, võng mạc… — data/deep)
+        if: env.DO_DEEP == 'true'
+        continue-on-error: true
+        timeout-minutes: 15
+        run: node tools/deep.mjs
       - name: Dựng số báo
         if: env.DO_DAILY == 'true'
-        env: { ANTHROPIC_API_KEY: '${{ secrets.ANTHROPIC_API_KEY }}', GEMINI_API_KEY: '${{ secrets.GEMINI_API_KEY }}', DAILY_SHOW: '${{ inputs.show || env.REQ_SHOW }}', DAILY_SOURCES: '${{ inputs.sources || env.REQ_SOURCES }}', DAILY_TOPICS: '${{ inputs.topics || env.REQ_TOPICS }}', DAILY_BY: '${{ inputs.by }}' }
+        env: { ANTHROPIC_API_KEY: '${{ secrets.ANTHROPIC_API_KEY }}', GEMINI_API_KEY: '${{ secrets.GEMINI_API_KEY }}', DAILY_SHOW: '${{ inputs.show || env.REQ_SHOW }}', DAILY_DEEP: '${{ inputs.deep || env.REQ_DEEP }}', DAILY_SOURCES: '${{ inputs.sources || env.REQ_SOURCES }}', DAILY_TOPICS: '${{ inputs.topics || env.REQ_TOPICS }}', DAILY_BY: '${{ inputs.by }}' }
         run: node tools/edition.mjs
       - name: Tạo podcast
         if: env.DO_DAILY == 'true'
@@ -172,7 +179,7 @@ jobs:
       - name: Dựng trang (kèm MP3 21 ngày + bản tin nội bộ 8 tuần, đã mã hoá)
         run: |
           mkdir -p _site/audio
-          cp -r index.html app.css app.js install.js update.js learn.js pestel.js study.js rank.js chars.js social.js path.js fun.js qr.js guide.js shell.js shell.css tx.js duel.js sw.js manifest.webmanifest icons coach data _site/
+          cp -r index.html app.css app.js install.js update.js learn.js pestel.js study.js rank.js chars.js social.js path.js fun.js qr.js guide.js shell.js shell.css tx.js duel.js deep.js deep.css sw.js manifest.webmanifest icons coach data _site/
           mkdir -p _site/context && cp context/glossary.tsv _site/context/
           [ -d media ] && cp -r media _site/ || true
           rm -f _site/data/pool.json

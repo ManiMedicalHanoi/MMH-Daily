@@ -22,7 +22,10 @@
   }
   const tk = () => D.tkGet();
 
+  let DEEPX = null;   // 25/11/2026: danh sách chuyên đề (data/deep/index.json) cho lựa chọn "Đi sâu một chuyên đề"
+  const loadDeep = async () => { if (DEEPX) return; try { DEEPX = (await (await fetch('data/deep/index.json?t=' + Date.now(), { cache: 'no-store' })).json()).topics || []; } catch { DEEPX = []; } };
   async function loadSrc() {
+    loadDeep().then(() => { if (!dlg.hidden && !running && tk()) { paint(); wire(); } });
     if (SRC) return SRC;
     try { SRC = await (await fetch('data/sources.json?t=' + Date.now(), { cache: 'no-store' })).json(); } catch { SRC = { groups: [], topics: [], voice: { presets: [] } }; }
     return SRC;
@@ -48,6 +51,8 @@
     return `<div class="u2-head"><h2 id="upd-h">Tổng hợp bản tin ngay</h2><button type="button" class="u2-x" data-act="close" aria-label="Đóng">×</button></div>
       <div class="u2-seg" role="tablist">${[['daily', 'Tin tức & thị trường']].map(([k, l]) => `<button type="button" role="tab" data-kind="${k}" class="${sel.kind === k ? 'on' : ''}">${l}</button>`).join('')}</div>
       ${sel.kind === 'daily' ? `
+      ${(DEEPX || []).length ? `<section class="u2-sec"><h3>Đi sâu một chuyên đề <small>podcast xây trên các bài chuyên sâu mới nhất (nghiên cứu, văn bản, tin chuyên ngành) · bỏ trống = theo lịch</small></h3>
+        <div class="u2-chips">${DEEPX.map(t => `<button type="button" data-deep="${t.id}" class="${sel.deep === t.id ? 'on' : ''}">${esc(D.S.lang === 'en' && t.en ? t.en : t.vi)} <i>${t.new7 || 0}</i></button>`).join('')}</div></section>` : ''}
       <section class="u2-sec"><h3>Chủ đề <small>bỏ trống = tất cả · số trong ngoặc = tin 48 giờ qua</small></h3>
         <div class="u2-chips">${SRC.topics.map(t => `<button type="button" data-topic="${t.id}" class="${sel.topics.includes(t.id) ? 'on' : ''}">${esc(D.S.lang === 'en' && t.en ? t.en : t.vi)} <i>${t.n}</i></button>`).join('')}</div></section>
       <section class="u2-sec"><details ${store.get('mmh_daily_srcopen', false) ? 'open' : ''} id="u2-src"><summary><h3>Nguồn tin <small>${on}/${all} báo đang chọn</small></h3></summary>
@@ -111,6 +116,7 @@
     const all = SRC.groups.flatMap(g => g.outlets.map(o => o.dom));
     const on = all.filter(d => !sel.off.includes(d));
     const p = { tk: tk(), kind: sel.kind, writer: sel.writer, voice: sel.voice, voices: sel.voice === 'eleven' ? sel.preset : '',
+      deep: sel.kind === 'daily' ? (sel.deep || '') : '',
       topics: sel.kind === 'daily' ? sel.topics.join(',') : '', sources: sel.kind === 'daily' && on.length < all.length ? on.join(',') : '' };
     try {
       const d = await hubPost('dailyRun', p);
@@ -171,6 +177,7 @@
   box.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.kind) { sel.kind = b.dataset.kind; save(); paint(); wire(); }
+    else if (b.dataset.deep) { sel.deep = sel.deep === b.dataset.deep ? '' : b.dataset.deep; save(); box.querySelectorAll('[data-deep]').forEach(x => x.classList.toggle('on', x.dataset.deep === sel.deep)); }
     else if (b.dataset.topic) { const t = b.dataset.topic; sel.topics = sel.topics.includes(t) ? sel.topics.filter(x => x !== t) : [...sel.topics, t]; save(); b.classList.toggle('on'); }
     else if (b.dataset.pv) { e.preventDefault(); if (preview) preview.pause(); if (preview?.src === b.dataset.pv && !preview.ended && b.classList.contains('on')) { b.classList.remove('on'); return; }
       box.querySelectorAll('.u2-pv.on').forEach(x => x.classList.remove('on')); preview = new Audio(b.dataset.pv); preview.play().catch(() => D.toast('Không phát được bản nghe thử')); b.classList.add('on'); preview.onended = () => b.classList.remove('on'); }

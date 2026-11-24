@@ -123,7 +123,7 @@
     const W = store.get('mmh_coach_words', []) || [];
     if (W.some(x => String(x.en).toLowerCase() === c.w.toLowerCase())) return false;
     const today = new Date(Date.now() + 7 * 36e5).toISOString().slice(0, 10);
-    W.unshift({ en: c.w, vi: c.vi || '', ex: c.ex || '', src: 'Podcast ' + (c.date || ''), at: Date.now(), due: today, step: 0 });
+    W.unshift({ en: c.w, vi: c.vi || '', ex: c.ex || '', src: c.srcName || ('Podcast ' + (c.date || '')), at: Date.now(), due: today, step: 0 });
     store.set('mmh_coach_words', W);
     if (window.SHELL) SHELL.sync();
     return true;
@@ -131,9 +131,9 @@
   async function lookup(el, ed) {
     ensureCard(); hide(); el.classList.add('on');
     const raw = el.dataset.w || el.textContent, w = raw.replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g, ''); if (!w) return;
-    const line = el.closest('p'), ex = line ? (line.querySelector('.en')?.textContent || '').trim() : '';
+    const line = el.closest('p'), ex = line ? ((line.querySelector('.en') || line).textContent || '').trim() : '';
     const vs = vocabOf(ed), hit = vs.find(v => v.en.toLowerCase() === w.toLowerCase()) || vs.find(v => stems(w).includes(v.en.toLowerCase()));
-    cur = { w: hit ? hit.en : w, vi: hit ? hit.vi : '', ex: hit?.ex || ex, date: ed?.date };
+    cur = { w: hit ? hit.en : w, vi: hit ? hit.vi : '', ex: hit?.ex || ex, date: ed?.date, srcName: ed?.srcName };
     paint(el, { loading: !hit });
     if (!hit) {
       const [gl, gd] = await Promise.all([glossary(), gdict(w)]);
@@ -150,7 +150,7 @@
       ${o.loading ? `<p class="txc-vi muted">${L('Đang tra…', 'Looking up…')}</p>` : `<p class="txc-vi">${c.vi ? esc(c.vi) : L('Chưa tìm thấy nghĩa.', 'No meaning found.')}</p>`}
       ${(c.dict || []).length ? `<div class="txc-d">${c.dict.map(d => `<div><i>${esc(d.pos)}</i> ${esc(d.terms.join(', '))}</div>`).join('')}</div>` : ''}
       ${c.ex ? `<p class="txc-ex" lang="en">${esc(c.ex.length > 160 ? c.ex.slice(0, 157) + '…' : c.ex)}</p>` : ''}
-      <div class="txc-f"><span class="muted">${c.src === 'Google' ? 'Google Dịch' : c.src === 'MMH' ? L('Thuật ngữ MMH', 'MMH glossary') : L('Từ khoá của số này', 'This episode\'s keyword')}</span>
+      <div class="txc-f"><span class="muted">${c.src === 'Google' ? 'Google Dịch' : c.src === 'MMH' ? L('Thuật ngữ MMH', 'MMH glossary') : c.srcName ? L('Từ vựng chuyên đề', 'Deep-dive word') : L('Từ khoá của số này', 'This episode\'s keyword')}</span>
         <button type="button" class="txc-b" data-txc="save"${saved || o.loading ? ' disabled' : ''}>${saved ? L('Đã có trong Sổ từ', 'Already saved') : L('+ Lưu vào Sổ từ', '+ Save to word book')}</button></div>`;
     card.hidden = false;
     // máy tính: đặt thẻ ngay dưới từ; điện thoại: thẻ cố định ở đáy màn hình
@@ -173,5 +173,5 @@
     p.classList.add('open'); wrapWords(p.querySelector('.en'));
     return false;
   }
-  window.TX = { mark, onTap, lookup, vocabOf, hide };
+  window.TX = { mark, onTap, lookup, vocabOf, hide, wrapWords };
 })();

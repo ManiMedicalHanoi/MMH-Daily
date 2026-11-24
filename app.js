@@ -379,6 +379,7 @@
     else if (r === 'me' && window.RANK) html = RANK.mePage();
     else if (r === 'add' && window.RANK && RANK.addPage) html = RANK.addPage(a);
     else if (r === 'learn' && window.RANK && RANK.learnPage) html = RANK.learnPage();
+    else if (r === 'deep' && window.DEEP) html = DEEP.page(a);
     else html = front(ed);
     $('#view').innerHTML = html;
     lastLine = -1;
@@ -391,6 +392,7 @@
     if (r === 'me' && window.RANK) RANK.meLoad();
     if (window.RANK && RANK.after) RANK.after(r, ed, a);
     if (r === 'learn' && window.RANK && RANK.learnAfter) RANK.learnAfter();
+    if (window.DEEP) DEEP.after(r, a);
     syncUi();
     if (!S.routed) S.routed = true; else window.scrollTo({ top: 0 });
   }

@@ -1,6 +1,6 @@
 // MMH Daily — ghi phần Claude Code viết vào số báo (kiểm tra định dạng trước khi ghi).
 //   node tools/apply.mjs <ngày> <file kết quả .json>
-// File kết quả: { stories:[{id,h_en,h_vi,dek_en,s_vi,s_en,why_vi}], note:{en,vi}, health:{en,vi}, vocab:[{en,vi,ex}],
+// File kết quả: { stories:[{id,rel (0–3: mức liên quan MMH; 0 = bỏ khỏi số báo),h_en,h_vi,dek_en,s_vi,s_en,why_vi}], note:{en,vi}, health:{en,vi}, vocab:[{en,vi,ex}],
 //                podcast:{title, desc, covered:[id tin đã nói trong kịch bản], mmh:true|false (AI Pulse có góc MMH), turns:[{sp:'A'|'B', text, vi}]} }
 import fs from 'node:fs';
 import path from 'node:path';
@@ -28,6 +28,17 @@ if (err.length) { console.error('KHÔNG GHI — sửa lại:\n- ' + err.join('\n
 const TAG = /\s*\[[a-z][a-z ,'-]{1,28}\]\s*/gi;   // thẻ cảm xúc ElevenLabs v3 ⇒ say (giọng) / text (phụ đề)
 const speech = s => String(s).replace(/\bHCMC\b/g, 'Ho Chi Minh City').replace(/\bVND\b/g, 'dong').replace(/(\d)%/g, '$1 percent').replace(/\s+/g, ' ').trim();
 for (const s of out.stories) Object.assign(ed.stories[s.id], { h_en: s.h_en, h_vi: s.h_vi, dek: s.dek_en, s_vi: s.s_vi, s_en: s.s_en, why: s.why_vi || undefined, mt: undefined });
+// 25/11/2026: tin rel = 0 (thể thao, người nổi tiếng, bài tư vấn, ca bệnh không liên quan MMH) ⇒ bỏ khỏi số báo; tin dẫn = tin liên quan nhất (rel ≥ 2)
+const relOf = new Map((out.stories || []).filter(s => Number.isInteger(s.rel)).map(s => [s.id, s.rel]));
+if (relOf.size) {
+  const r = id => (relOf.has(id) ? relOf.get(id) : 1), drop = id => r(id) === 0 && ed.stories[id]?.sec !== 'ai';
+  for (const [id, v] of relOf) if (ed.stories[id]) ed.stories[id].rel = v;
+  for (const k of Object.keys(ed.sections)) ed.sections[k] = ed.sections[k].filter(id => !drop(id)).map((id, i) => [id, i]).sort((a, b) => r(b[0]) - r(a[0]) || a[1] - b[1]).map(x => x[0]);
+  for (const g of Object.keys(ed.healthDesk?.groups || {})) ed.healthDesk.groups[g] = ed.healthDesk.groups[g].filter(id => !drop(id));
+  ed.docs = (ed.docs || []).filter(id => !drop(id));
+  if (!ed.lead || drop(ed.lead) || r(ed.lead) < 2) { const c = [...(ed.sections.health || [])].sort((a, b) => r(b) - r(a) || (ed.stories[b].mmh || 0) - (ed.stories[a].mmh || 0))[0]; if (c) ed.lead = c; }
+  console.log(`Mức liên quan: bỏ ${[...relOf.values()].filter(v => v === 0).length} tin rel = 0 · tin dẫn ${ed.lead}`);
+}
 ed.note = out.note; ed.healthDesk.analysis = out.health; ed.vocab = out.vocab;
 Object.assign(ed.podcast, { title: out.podcast.title, desc: out.podcast.desc, turns: turns.map(t => { const raw = speech(t.text), text = raw.replace(TAG, ' ').replace(/\s+([,.?!])/g, '$1').replace(/\s+/g, ' ').trim();
   return Object.assign({ sp: t.sp, text, vi: String(t.vi).replace(TAG, ' ').trim() }, raw !== text && !t.rep ? { say: raw } : {}, t.rep ? { rep: true } : {}); }), words });
@@ -47,6 +58,6 @@ if (process.env.DAILY_VOICE) ed.podcast.voiceReq = { engine: process.env.DAILY_V
 ed.writer = 'claude-code'; ed.updated = new Date().toISOString();
 fs.writeFileSync(fp, JSON.stringify(ed));
 const ip = path.join(ROOT, 'data', 'index.json'), idx = JSON.parse(fs.readFileSync(ip, 'utf8'));
-const row = idx.editions.find(e => e.date === date); if (row) Object.assign(row, { writer: 'claude-code', words, title: out.podcast.title });
+const row = idx.editions.find(e => e.date === date); const ld = ed.stories[ed.lead]; if (row) Object.assign(row, { writer: 'claude-code', words, title: out.podcast.title }, ld ? { lead: ld.h_en || ld.t } : {});
 idx.updated = ed.updated; fs.writeFileSync(ip, JSON.stringify(idx));
 console.log(`Đã ghi số ${date}: ${out.stories.length} tin · ${turns.length} lượt lời · ${words} từ (≈ ${Math.round(words / 150)} phút). Đẩy lên main để GitHub tạo giọng + đăng trang.`);
