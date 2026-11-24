@@ -177,18 +177,23 @@
   function result() {
     const Q = ed.study.quiz, a = quiz(), sp = Object.values(L.spoke);
     return { quiz: Q.filter((q, i) => a[i] === q.a).length, quizN: Q.length, speak: sp.length ? Math.round(sp.reduce((s, r) => s + r.p, 0) / sp.length) : null,
-      spoken: sp.length, words: ed.study.words.filter(w => L.known[w.en] === 0).length };
+      spoken: sp.length, words: ed.study.words.filter(w => L.known[w.en] === 0).length,
+      known: ed.study.words.filter(w => L.known[w.en] === 1).length, wordsN: ed.study.words.filter(w => L.known[w.en] != null).length };
   }
+  const TL = (vi, en) => (D.L ? D.L(vi, en) : vi);
+  const xpMsg = d => { const me = d.me || {};
+    return TL(`Đã cộng <b>+${d.xp} XP</b>${d.repeat ? ' (làm lại = 20%)' : ''} · chuỗi <b>${me.streak || 0} ngày</b> · cấp ${me.lvl || 1} · giải ${me.leagueName || ''}${d.levelUp ? ' · <b>lên cấp ' + d.levelUp + '!</b>' : ''}${d.goalHit ? ' · <b>đạt mục tiêu hôm nay</b>' : ''}. `,
+      `<b>+${d.xp} XP</b> saved${d.repeat ? ' (repeat = 20%)' : ''} · <b>${me.streak || 0}-day</b> streak · level ${me.lvl || 1}${d.levelUp ? ' · <b>level up!</b>' : ''}${d.goalHit ? ' · <b>daily goal reached</b>' : ''}. `); };
   async function rankBox() {
     const el = document.getElementById('ls2-rank'); if (!el || !window.RANK) return;
     const r = result(), sig = JSON.stringify(r);
-    const link = '<button type="button" class="ls2-lnk" data-ls2="rank">Xem bảng xếp hạng ›</button>';
+    const link = `<button type="button" class="ls2-lnk" data-ls2="rank">${TL('Xem bảng xếp hạng ›', 'View the ranking ›')}</button>`;
     if (L.sentSig === sig && L.sentMsg) { el.innerHTML = L.sentMsg + link; return; }
-    el.innerHTML = 'Đang lưu điểm…';
+    el.innerHTML = TL('Đang lưu XP…', 'Saving XP…');
     const d = await RANK.submit(ed, r);
-    if (d.need) { el.innerHTML = 'Đăng nhập email công ty để lưu điểm và lên bảng xếp hạng. <button type="button" class="ls2-lnk" data-ls2="login">Đăng nhập</button>'; return; }
-    if (d.err) { el.innerHTML = 'Chưa lưu được điểm (' + esc(d.err) + ') — app sẽ tự gửi lại. ' + link; return; }
-    L.sentSig = sig; L.sentMsg = `Đã lưu <b>${d.best} điểm</b>${d.rank ? ` · bạn đang <b>hạng ${d.rank}/${d.of}</b> tuần này` : ''}. `; save();
+    if (d.need) { L.sentSig = sig; L.sentMsg = ''; save(); el.innerHTML = TL('Đăng nhập hoặc tạo tài khoản (email bất kỳ) để lưu XP, giữ chuỗi ngày học và lên bảng xếp hạng. ', 'Sign in or create an account (any email) to save XP, keep your streak and join the ranking. ') + `<button type="button" class="ls2-lnk" data-ls2="login">${TL('Đăng nhập / Tạo tài khoản', 'Sign in / Create account')}</button>`; return; }
+    if (d.err) { el.innerHTML = TL('Chưa lưu được XP (' + esc(d.err) + ') — app sẽ tự gửi lại. ', 'XP not saved yet (' + esc(d.err) + ') — the app will retry. ') + link; return; }
+    L.sentSig = sig; L.sentMsg = xpMsg(d); save();
     el.innerHTML = L.sentMsg + link;
   }
 
@@ -217,7 +222,7 @@
     if (k === 'mic') return mic(ds.t);
     if (k === 'redo') { store.set(qk(ed.date), {}); L.sentSig = ''; return go('quiz', 0); }
     if (k === 'rank') { close(); location.hash = '#/rank'; return; }
-    if (k === 'login') { RANK.login().then(okk => { if (okk) RANK.flush().then(d => { if (d && d.date === ed.date) { L.sentSig = JSON.stringify(result()); L.sentMsg = `Đã lưu <b>${d.best} điểm</b>${d.rank ? ` · bạn đang <b>hạng ${d.rank}/${d.of}</b> tuần này` : ''}. `; save(); } rankBox(); }); }); return; }
+    if (k === 'login') { RANK.login().then(okk => { if (!okk) return; RANK.flush().then(d => { if (d && d.date === ed.date) { L.sentSig = JSON.stringify(result()); L.sentMsg = xpMsg(d); save(); } else L.sentMsg = ''; rankBox(); }); }); return; }
   });
   ov.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
   // vuốt ngang trên thẻ từ khoá
