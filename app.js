@@ -329,7 +329,7 @@
   $('#mini-play').onclick = () => { if (!S.ep) return; audio.paused ? audio.play() : audio.pause(); };
   $('#mini-back').onclick = () => seekBy(-15);
   $('#mini-fwd').onclick = () => seekBy(15);
-  $('#mini-open').onclick = () => { if (S.ep) location.hash = /^i-/.test(S.ep.date) ? '#/noibo/' + S.ep.date.slice(2) : '#/listen/' + S.ep.date; };
+  $('#mini-open').onclick = () => { if (S.ep) location.hash = /^i-/.test(S.ep.date) ? '#/report/' + S.ep.date.slice(2) : '#/listen/' + S.ep.date; };
   $('#mini-bar').onclick = e => { if (!S.ep) return; const r = e.currentTarget.getBoundingClientRect(); audio.currentTime = (e.clientX - r.left) / r.width * (audio.duration || 0); };
   if ('mediaSession' in navigator) {
     navigator.mediaSession.setActionHandler('play', () => audio.play());
@@ -342,8 +342,13 @@
   async function route() {
     const h = location.hash.replace(/^#\/?/, '');
     const [r, a] = h.split('/');
-    if (r === 'noibo') { location.replace('#/'); return; }  // 23/11/2026: bỏ bản tin nội bộ (người dùng yêu cầu)
-    if (r === 'noibo-old') { if (!$('#m-date').textContent && S.index.editions[0]) $('#m-date').textContent = viDate(S.index.editions[0].date); document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === 'noibo')); return internalPage(); }
+    if (r === 'noibo') { location.replace('#/report' + (a ? '/' + a : '')); return; }   // link cũ ⇒ MMH Report
+    if (r === 'report') {  // 24/11/2026: MMH Report — bản tin nội bộ sáng thứ Hai (người dùng yêu cầu lại, chỉ nhóm Việt Nam)
+      if (!$('#m-date').textContent && S.index.editions[0]) $('#m-date').textContent = dateL(S.index.editions[0].date);
+      document.querySelectorAll('#nav a').forEach(x => x.classList.toggle('on', x.dataset.r === 'report'));
+      document.querySelectorAll('#tabbar [data-tab-k]').forEach(x => x.classList.toggle('on', x.dataset.tabK === 'news'));
+      return internalPage();
+    }
     let date = S.index.editions[0]?.date;
     if ((r === 'e' || r === 'listen') && a) date = a;
     if (!date) { $('#view').innerHTML = `<div class="empty">${L('Chưa có số báo nào. Số đầu tiên sẽ có sau lượt chạy sáng mai.', 'No editions yet. The first one will appear after tomorrow morning\'s run.')}</div>`; return; }
@@ -490,29 +495,20 @@
     Object.assign(IN, { key: d.key, kid: d.kid, admin: d.admin, pic: d.pic });
     return true;
   }
+  // Đăng nhập: dùng chung tài khoản app (rank.js ▸ RANK.login: email + mật khẩu / mã). Chỉ EMAIL CÔNG TY mở được (máy chủ dailyKey kiểm RH_Users).
   function loginHtml(msg) {
-    const st = S.login || {};
-    return `<div class="in-login"><h2>Bản tin nội bộ MMH</h2><p>Tổng kết công việc các phòng ban, đi địa bàn, kết quả thầu, đào tạo — mỗi Chủ nhật. Chỉ dành cho nhân sự MMH: đăng nhập bằng email công ty (giống Report Hub / CRM).</p>
-      ${st.sent ? `<form id="in-f2"><label>Mã 6 số đã gửi tới <b>${esc(st.email)}</b></label><input id="in-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" required><button class="in-btn" type="submit">Đăng nhập</button><button class="in-lnk" type="button" id="in-back">Đổi email</button></form>`
-        : `<form id="in-f1"><label for="in-email">Email công ty</label><input id="in-email" type="email" placeholder="ten@manimedicalhanoi.com" value="${esc(st.email || '')}" required><button class="in-btn" type="submit">Gửi mã</button></form>`}
+    return `<div class="in-login"><div class="kick">MMH Report</div><h2>${L('Bản tin nội bộ sáng thứ Hai', 'The Monday-morning internal bulletin')}</h2>
+      <p>${L('Tuần làm việc của MMH Việt Nam: Sales đi địa bàn và phản hồi khách hàng, sự kiện và ấn phẩm Marketing, đơn hàng, pháp lý, nhân sự của Back office — kế hoạch tuần trước đã làm tới đâu, tuần này làm gì. Mỗi tập một người dẫn.', 'The week at MMH Vietnam: sales visits and customer feedback, marketing events and designs, back-office orders, legal and HR — how last week\'s plans went and what\'s next. A new anchor every episode.')}</p>
+      <p>${L('Chỉ dành cho nhân sự MMH: đăng nhập bằng email công ty (@manimedicalhanoi.com hoặc @mani.inc).', 'MMH staff only: sign in with your company email (@manimedicalhanoi.com or @mani.inc).')}</p>
+      <button class="in-btn" type="button" id="in-login">${L('Đăng nhập', 'Sign in')}</button>
       ${msg ? `<p class="in-err">${esc(msg)}</p>` : ''}</div>`;
   }
   function wireLogin() {
-    const f1 = $('#in-f1'), f2 = $('#in-f2');
-    if (f1) f1.onsubmit = async e => {
-      e.preventDefault(); const email = $('#in-email').value.trim().toLowerCase();
-      f1.querySelector('button').disabled = true;
-      try { const d = await hub('rhAuthStart', { email }); if (!d.ok) throw new Error(d.error); S.login = { email, sent: true }; route(); }
-      catch (er) { $('#view').innerHTML = loginHtml(er.message); wireLogin(); }
+    const b = $('#in-login'); if (!b) return;
+    b.onclick = async () => {
+      if (!window.RANK?.login) { toast(L('Chưa tải xong, thử lại sau giây lát', 'Still loading, try again')); return; }
+      if (await RANK.login(L('MMH Report chỉ mở được bằng email công ty.', 'MMH Report opens with a company email only.'))) { IN.key = null; route(); }
     };
-    if (f2) {
-      $('#in-back').onclick = () => { S.login = { email: S.login.email }; route(); };
-      f2.onsubmit = async e => {
-        e.preventDefault(); f2.querySelector('[type=submit]').disabled = true;
-        try { const d = await hub('rhAuthVerify', { email: S.login.email, code: $('#in-code').value }); if (!d.ok) throw new Error(d.error); tkSet(d.token); S.login = null; route(); }
-        catch (er) { $('#view').innerHTML = loginHtml(er.message); wireLogin(); }
-      };
-    }
   }
   async function loadInEd(date) {
     if (IN.eds[date]) return IN.eds[date];
@@ -530,48 +526,60 @@
     a.file = URL.createObjectURL(new Blob([await decrypt(await r.arrayBuffer())], { type: 'audio/mpeg' }));
     a.blob = true;
   }
-  const num = n => (n || 0).toLocaleString('vi-VN');
-  const vnd = v => v >= 1e9 ? (v / 1e9).toFixed(1).replace('.', ',') + ' tỷ' : v >= 1e6 ? Math.round(v / 1e6) + ' triệu' : num(v);
+  const num = n => (n || 0).toLocaleString(S.lang === 'en' ? 'en-US' : 'vi-VN');
+  const vnd = v => v >= 1e9 ? (v / 1e9).toFixed(1).replace('.', S.lang === 'en' ? '.' : ',') + L(' tỷ', ' bn') : v >= 1e6 ? Math.round(v / 1e6) + L(' triệu', ' M') : num(v);
+  const dm = s => s ? `${+String(s).slice(8, 10)}/${+String(s).slice(5, 7)}` : '';
+  const RSEC = ['headline', 'sales', 'marketing', 'backoffice', 'followup', 'people', 'next'];
+  const fbOf = v => { const m = String(v.res || '').match(/3\.\s*Customer Feedback:\s*(.*?)(?:\s*4\.\s*Opportunities|$)/i); return (m && m[1].trim()) || ''; };
+  // MMH Report (24/11/2026): trang 1 tập — người dẫn, podcast + phụ đề, các mục văn xuôi do Claude viết, số liệu chi tiết thu gọn.
   function inPage(ed) {
-    const f = ed.facts, w = ed.week;
-    const visits = f.sales.reduce((s, t) => s + t.visits, 0), acts = f.sales.reduce((s, t) => s + t.activities, 0);
-    const orders = f.sales.reduce((s, t) => s + t.orders, 0), amount = f.sales.reduce((s, t) => s + t.orderAmount, 0);
-    const done = f.departments.reduce((s, d) => s + d.done, 0);
+    const f = ed.facts || {}, w = ed.week, p = ed.podcast, eps = (IN.idx.weeks || []).filter(x => x.series === 'report');
+    const sal = f.sales || [], deps = f.departments || [], dep = id => deps.find(d => d.id === id) || { count: {}, plan: {}, keys: [], trips: [] };
+    const sum = (a, k) => a.reduce((s, t) => s + (t.count?.[k] || 0), 0);
+    const delta = (a, b) => b ? `${a >= b ? '+' : ''}${a - b} ${L('so với tuần trước', 'vs last week')}` : '';
+    const mk = dep('marketing'), bo = dep('backoffice');
+    const planT = deps.reduce((s, d) => s + (d.plan?.total || 0), 0), planD = deps.reduce((s, d) => s + (d.plan?.done || 0), 0);
     const tile = (k, v, s) => `<div class="in-tile"><span>${k}</span><b>${v}</b>${s ? `<em>${s}</em>` : ''}</div>`;
-    const sec = k => (ed.sections || []).find(x => x.key === k);
-    const secTxt = k => { const x = sec(k); return x ? `<div class="in-ai"><p>${esc(S.lang === 'en' ? x.en : x.vi)}</p></div>` : ''; };
-    const p = ed.podcast, turns = (p.turns || []).filter(t => t.text), hosts = Object.fromEntries(p.hosts.map(h => [h.id, h]));
-    const wkStr = `${w.from.slice(8)}/${w.from.slice(5, 7)} – ${w.to.slice(8)}/${w.to.slice(5, 7)}/${w.to.slice(0, 4)}`;
-    const weeks = IN.idx.weeks || [];
-    return `<div class="in">
-      <div class="in-head"><div><div class="kick">Bản tin nội bộ · chỉ dành cho nhân sự MMH</div><h1 class="hl xl">${esc(ed.title?.[S.lang] || ed.title?.vi || 'Tuần ' + wkStr)}</h1>
-        ${ed.intro ? `<p class="dek">${esc(ed.intro[S.lang] || ed.intro.vi)}</p>` : `<p class="dek">Tuần ${wkStr}</p>`}</div>
-        <select class="in-wk" id="in-wk" aria-label="Chọn tuần">${weeks.map(x => `<option value="${x.date}"${'i-' + x.date === ed.date ? ' selected' : ''}>Tuần ${x.from.slice(8)}/${x.from.slice(5, 7)} – ${x.date.slice(8)}/${x.date.slice(5, 7)}</option>`).join('')}</select></div>
-      <div class="in-tiles">${tile('Gói thầu trúng', f.tenders.wins.length, f.tenders.fails ? f.tenders.fails + ' gói không trúng' : '')}${tile('Gặp khách hàng', num(visits), num(acts) + ' hoạt động')}${tile('Đơn hàng', num(orders), amount ? vnd(amount) + ' đ' : '')}${tile('Việc hoàn thành', num(done), f.departments.reduce((s, d) => s + d.overdue, 0) + ' quá hạn')}${tile('Buổi đào tạo', f.trainings.length, '')}</div>
-      <section class="ls in-player" style="--show:${p.color}">
-        <div class="in-ph"><div class="cv">${cover(p, w.to)}</div><div><div class="ls-k">Podcast nội bộ · ${esc(p.name)}</div><b>${esc(p.title || p.name)}</b><span>${esc(p.hosts.map(h => h.name).join(' & '))}${p.audio?.dur ? ' · ' + Math.round(p.audio.dur / 60) + ' phút' : ''}</span></div></div>
-        <div class="ls-ctl"><button class="bigplay" id="ls-play" type="button" data-inplay="1" aria-label="Phát">${ICON.play}</button>
-          <button class="ibtn" id="ls-back" type="button" aria-label="Lùi 15 giây">${$('#mini-back').innerHTML}</button><button class="ibtn" id="ls-fwd" type="button" aria-label="Tới 15 giây">${$('#mini-fwd').innerHTML}</button>
+    const turns = (p.turns || []).filter(t => t.text), hosts = Object.fromEntries(p.hosts.map(h => [h.id, h]));
+    const wkStr = `${dm(w.from)} – ${dm(w.to)}/${w.to.slice(0, 4)}`;
+    const secs = (ed.sections || []).slice().sort((a, b) => RSEC.indexOf(a.key) - RSEC.indexOf(b.key));
+    const visits = sal.flatMap(t => (t.visits || []).map(v => ({ ...v, team: t.name }))).filter(v => fbOf(v) || v.fb).slice(0, 12);
+    const orders = sal.flatMap(t => t.orders || []);
+    const events = mk.keys.filter(k => /event/i.test(k.type));
+    const nextV = sal.flatMap(t => (t.next || []).map(v => ({ ...v, team: t.name }))).sort((a, b) => a.d.localeCompare(b.d));
+    const nextT = deps.flatMap(d => d.keys.flatMap(k => k.items.filter(i => i.tag === 'next').map(i => ({ ...i, dep: d.name, key: k.key })))).sort((a, b) => (a.due || '').localeCompare(b.due || ''));
+    const trips = deps.flatMap(d => d.trips || []);
+    return `<div class="in rp">
+      <div class="in-head"><div><div class="kick">MMH Report · ${L('Tập', 'Episode')} ${ed.ep || ''} · ${L('chỉ dành cho nhân sự MMH', 'MMH staff only')}</div>
+        <h1 class="hl xl">${esc(ed.title?.[S.lang] || ed.title?.vi || 'MMH Report')}</h1>
+        <p class="dek">${esc(ed.intro?.[S.lang] || ed.intro?.vi || '')}</p>
+        <p class="rp-by">${L('Tuần', 'Week')} ${wkStr} · ${L('Người dẫn', 'Anchor')} <b>${esc(p.hosts[0]?.name || '')}</b></p></div>
+        <select class="in-wk" id="in-wk" aria-label="${L('Chọn tập', 'Choose an episode')}">${eps.map(x => `<option value="${x.date}"${'i-' + x.date === ed.date ? ' selected' : ''}>${L('Tập', 'Ep.')} ${x.ep} · ${dm(x.from)} – ${dm(x.date)}</option>`).join('')}</select></div>
+      <section class="ls in-player" style="--show:${p.color || '#9B2C2C'}">
+        <div class="in-ph"><div class="cv">${cover(p, w.to)}</div><div><div class="ls-k">MMH Report · ${L('Tập', 'Episode')} ${ed.ep || ''}</div><b>${esc(p.title || p.name)}</b><span>${esc(p.hosts.map(h => h.name).join(' & '))}${p.audio?.dur ? ' · ' + Math.round(p.audio.dur / 60) + L(' phút', ' min') : ' · ' + L('giọng đọc đang được tạo', 'audio is being made')}</span></div></div>
+        <div class="ls-ctl"><button class="bigplay" id="ls-play" type="button" data-inplay="1" aria-label="${L('Phát', 'Play')}">${ICON.play}</button>
+          <button class="ibtn" id="ls-back" type="button" aria-label="${L('Lùi 15 giây', 'Back 15 seconds')}">${$('#mini-back').innerHTML}</button><button class="ibtn" id="ls-fwd" type="button" aria-label="${L('Tới 15 giây', 'Forward 15 seconds')}">${$('#mini-fwd').innerHTML}</button>
           <button class="spd" id="ls-spd" type="button">${store.get('mmh_daily_rate', 1)}×</button></div>
         <div class="nowsub" id="nowsub"><span class="en"></span><span class="vi"></span></div>
         <div class="seek"><span id="ls-cur">0:00</span><div class="tr" id="ls-tr"><i id="ls-prog" style="width:0"></i></div><span id="ls-dur">${p.audio?.dur ? mmss(p.audio.dur) : '--:--'}</span></div>
-        <details class="in-tx"><summary>Lời thoại + phụ đề tiếng Việt</summary>
+        <details class="in-tx"><summary>${L('Lời đọc + phụ đề tiếng Việt', 'Transcript + Vietnamese subtitles')}</summary>
           <div class="subsel" id="subsel">${[['both', L('Anh + Việt', 'EN + VI')], ['en', L('Tiếng Anh', 'English')], ['vi', L('Tiếng Việt', 'Vietnamese')]].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div>
           <div class="tx sub-${S.sub}" id="tx">${turns.map((t, i) => `<p data-i="${i}" data-t="${t.t ?? ''}"><b>${esc(hosts[t.sp]?.name || t.sp)}</b><span class="en">${esc(t.text)}</span>${t.vi ? `<span class="vi">${esc(t.vi)}</span>` : ''}</p>`).join('')}</div></details>
       </section>
+      <div class="in-tiles">${tile(L('Hoạt động Sales', 'Sales activities'), num(sum(sal, 'done')), delta(sum(sal, 'done'), sum(sal, 'prevDone')))}${tile(L('Gặp khách', 'Customer visits'), num(sum(sal, 'visits')), num(sum(sal, 'accounts')) + L(' khách hàng', ' customers'))}${tile(L('Đơn hàng', 'Orders'), num(sum(sal, 'orders')), sum(sal, 'orderAmount') ? vnd(sum(sal, 'orderAmount')) + ' đ' : '')}${tile(L('Việc Marketing xong', 'Marketing tasks done'), num(mk.count.done), delta(mk.count.done || 0, mk.count.prevDone))}${tile(L('Việc Back office xong', 'Back-office tasks done'), num(bo.count.done), delta(bo.count.done || 0, bo.count.prevDone))}${tile(L('Đúng hẹn', 'On plan'), planT ? Math.round(planD / planT * 100) + '%' : '–', planT ? `${planD}/${planT} ${L('việc có hạn trong tuần', 'tasks due this week')}` : '')}</div>
+      <div class="rp-secs">${secs.map(x => `<section class="rp-sec rp-${x.key}"><h3>${esc(S.lang === 'en' ? x.h_en : x.h_vi)}</h3><p>${esc(S.lang === 'en' ? x.en : x.vi)}</p></section>`).join('')}</div>
+      <details class="rp-data"><summary>${L('Số liệu chi tiết của tuần', 'The week in detail')}</summary>
       <div class="in-grid">
-        <div class="in-card"><h3>Kết quả thầu</h3>${secTxt('tenders')}${f.tenders.wins.length ? `<ul class="in-list">${f.tenders.wins.map(x => `<li><b>${esc(x.hospital)}</b>${x.city ? ` · ${esc(x.city)}` : ''}<small>NPP ${esc(x.npp)} · phê duyệt ${esc(x.approve.slice(8))}/${esc(x.approve.slice(5, 7))}${x.value ? ' · ' + vnd(x.value) + ' đ' : ''}${x.products.length ? ' · ' + esc(x.products.join(', ')) : ''}</small></li>`).join('')}</ul>` : '<p class="none">Tuần này chưa có gói nào có kết quả.</p>'}</div>
-        <div class="in-card"><h3>Đi địa bàn & bán hàng</h3>${secTxt('sales')}<table class="in-tb"><thead><tr><th>Nhóm</th><th>Hoạt động</th><th>Gặp khách</th><th>Khách</th><th>Đơn</th></tr></thead><tbody>${f.sales.map(t => `<tr><td>${esc(t.name)}</td><td>${t.activities}</td><td>${t.visits}</td><td>${t.accounts}</td><td>${t.orders || '–'}</td></tr>`).join('')}</tbody></table>
-          ${f.sales.flatMap(t => t.highlights.slice(0, 2).map(h => `<blockquote><b>${esc(h.pic)} · ${esc(h.account)}</b>${h.province ? ` <small>${esc(h.province)}</small>` : ''}<span>${esc(h.result)}</span>${h.feedback ? `<small>Phản hồi: ${esc(h.feedback)}</small>` : ''}</blockquote>`)).slice(0, 6).join('')}</div>
-        <div class="in-card"><h3>Công việc các phòng ban</h3>${secTxt('departments')}${f.departments.map(d => `<div class="in-dep"><b>${esc(d.name)}</b><span>${d.done} việc xong · ${d.overdue} quá hạn · ${d.upcoming} đến hạn tuần sau</span>${d.highlights.slice(0, 3).map(h => `<p><b>${esc(h.pic)}</b> — ${esc(h.task)}: ${esc(h.result)}</p>`).join('')}</div>`).join('')}</div>
-        <div class="in-card"><h3>Sự kiện, đào tạo, công tác</h3>${secTxt('events')}${secTxt('training')}
-          ${f.departments.flatMap(d => d.events).length ? `<ul class="in-list">${f.departments.flatMap(d => d.events).slice(0, 8).map(e => `<li><b>${esc(e.name)}</b><small>${esc(e.task)} · ${esc(e.pic)} · ${e.status === 'done' ? 'đã xong' : 'đang làm'}</small></li>`).join('')}</ul>` : ''}
-          ${f.trainings.length ? `<ul class="in-list">${f.trainings.map(t => `<li><b>${esc(t.topic)}</b><small>${esc(t.date.slice(8))}/${esc(t.date.slice(5, 7))} · ${esc(t.trainer)} · ${t.people} người</small></li>`).join('')}</ul>` : ''}
-          ${f.departments.flatMap(d => d.trips).length ? `<ul class="in-list">${f.departments.flatMap(d => d.trips).slice(0, 6).map(t => `<li><b>${esc(t.pic)}</b><small>${esc(t.what)}</small></li>`).join('')}</ul>` : ''}</div>
-        <div class="in-card"><h3>Tuần tới</h3>${secTxt('next')}<ul class="in-list">${f.departments.flatMap(d => d.nextWeek.map(x => ({ ...x, dep: d.name }))).sort((a, b) => a.due.localeCompare(b.due)).slice(0, 10).map(x => `<li><b>${esc(x.task)}</b><small>${esc(x.dep)} · ${esc(x.pic)} · hạn ${esc(x.due.slice(8))}/${esc(x.due.slice(5, 7))}</small></li>`).join('') || '<li class="none">Chưa có việc đến hạn.</li>'}</ul></div>
-      </div>
+        <div class="in-card"><h3>${L('Đi địa bàn theo người', 'Field work by person')}</h3><table class="in-tb"><thead><tr><th>${L('Người', 'Person')}</th><th>${L('Hoạt động', 'Activities')}</th><th>${L('Gặp khách', 'Visits')}</th><th>${L('Khách', 'Customers')}</th></tr></thead><tbody>${sal.flatMap(t => Object.entries(t.byPic || {}).map(([k, v]) => `<tr><td>${esc(k)} <small>${esc(t.name)}</small></td><td>${v.done}</td><td>${v.visits}</td><td>${v.accounts}</td></tr>`)).join('') || `<tr><td colspan="4">${L('Chưa có', 'None')}</td></tr>`}</tbody></table></div>
+        <div class="in-card"><h3>${L('Khách hàng nói gì', 'What customers said')}</h3><ul class="in-list">${visits.map(v => `<li><b>${esc(v.acc)}</b><small>${esc(v.pic)} · ${esc(v.prov)} · ${dm(v.d)}${v.prod ? ' · ' + esc(v.prod) : ''}</small>${esc(fbOf(v) || v.fb)}${v.next ? `<small>${L('Tiếp theo', 'Next')}: ${esc(v.next)}</small>` : ''}</li>`).join('') || `<li class="none">${L('Chưa có phản hồi', 'No feedback')}</li>`}</ul></div>
+        <div class="in-card"><h3>${L('Đơn hàng trong tuần', 'Orders this week')}</h3><ul class="in-list">${orders.map(o => `<li><b>${esc(o.acc)}</b> · ${vnd(o.amount)} đ<small>${esc(o.pic)} · ${esc(o.prov)} · ${dm(o.d)} · ${esc(o.via)}</small><small>${esc(o.lines.join('; '))}</small></li>`).join('') || `<li class="none">${L('Không có đơn mới', 'No new orders')}</li>`}</ul></div>
+        <div class="in-card"><h3>${L('Sự kiện Marketing', 'Marketing events')}</h3><ul class="in-list">${events.map(k => `<li><b>${esc(k.key)}</b><small>${k.pct}% · ${k.items.filter(i => i.tag === 'done').length} ${L('việc xong trong tuần', 'tasks done this week')}${k.items.filter(i => i.tag === 'next').length ? ' · ' + k.items.filter(i => i.tag === 'next').length + L(' việc tuần này', ' due this week') : ''}</small></li>`).join('') || `<li class="none">${L('Không có', 'None')}</li>`}</ul></div>
+        <div class="in-card"><h3>${L('Lịch gặp khách tuần này', 'Visits planned this week')}</h3><ul class="in-list">${nextV.slice(0, 30).map(v => `<li><b>${dm(v.d)} · ${esc(v.acc)}</b><small>${esc(v.pic)} · ${esc(v.prov)}${v.prod ? ' · ' + esc(v.prod) : ''}</small>${v.plan ? esc(v.plan) : ''}</li>`).join('') || `<li class="none">${L('Chưa có lịch', 'Nothing planned')}</li>`}</ul></div>
+        <div class="in-card"><h3>${L('Việc đến hạn tuần này', 'Tasks due this week')}</h3><ul class="in-list">${nextT.slice(0, 30).map(x => `<li><b>${esc(x.t)}</b><small>${esc(x.dep)} · ${esc(x.pic)} · ${L('hạn', 'due')} ${dm(x.due)}</small></li>`).join('') || `<li class="none">${L('Chưa có', 'None')}</li>`}</ul>
+          ${trips.length ? `<h3 style="margin-top:14px">${L('Công tác', 'Business trips')}</h3><ul class="in-list">${trips.map(t => `<li><b>${esc(t.pic)}</b><small>${esc(t.what)}</small></li>`).join('')}</ul>` : ''}</div>
+      </div></details>
       ${IN.admin ? adminBox() : ''}
-      <p class="in-foot">Bản tin được mã hoá; chỉ người đăng nhập email công ty mới mở được. ${esc(IN.pic || '')} · <button class="in-lnk" type="button" id="in-out">Đăng xuất</button></p>
+      <p class="in-foot">${L('Bản tin được mã hoá; chỉ người đăng nhập email công ty mới mở được. Số liệu lấy từ Report Hub và CRM (nhóm Việt Nam).', 'Encrypted; only company-email accounts can open it. Data from Report Hub and CRM (Vietnam teams).')} ${esc(IN.pic || '')} · <button class="in-lnk" type="button" id="in-out">${L('Đăng xuất', 'Sign out')}</button></p>
     </div>`;
   }
   function adminBox(missing) {
@@ -582,39 +590,28 @@
   }
   async function internalPage() {
     document.body.classList.remove('dark');
-    if ((window.DAILY_CFG || {}).demo) {           // bản demo: dữ liệu giả, không mã hoá, không đăng nhập
-      try {
-        IN.idx = IN.idx || await (await fetch('data/internal/index.json', { cache: 'no-store' })).json();
-        const d = location.hash.split('/')[2] || IN.idx.weeks[0].date;
-        let ed = IN.eds[d];
-        if (!ed) { ed = await (await fetch(`data/internal/${d}.demo.json`, { cache: 'no-store' })).json(); ed.date = 'i-' + ed.date; ed.podcast.audio.blob = true; IN.eds[d] = ed; }
-        S.cur = ed; $('#view').innerHTML = '<p class="demo-note">Bản demo · dữ liệu giả — bản thật chỉ mở được khi đăng nhập email công ty.</p>' + inPage(ed);
-        $('#in-wk').onchange = e => { location.hash = '#/noibo/' + e.target.value; };
-        $('#in-out').onclick = () => toast('Bản demo không cần đăng nhập');
-        $('#ls-play').onclick = () => { if (!setEp(ed)) return; audio.paused ? audio.play() : audio.pause(); };
-        wireListen(ed); syncUi();
-      } catch (e) { $('#view').innerHTML = '<div class="empty">Không tải được bản demo.</div>'; }
-      return;
-    }
+    document.querySelector('meta[name=theme-color]').content = '#FBF9F4';
     $('#view').innerHTML = '<div class="skel" style="height:40px;width:60%"></div><div class="skel"></div>';
     try { if (!(await inKey())) { $('#view').innerHTML = loginHtml(); wireLogin(); return; } }
     catch (e) { $('#view').innerHTML = loginHtml(e.message); wireLogin(); return; }
     if (!IN.idx) { try { IN.idx = await (await fetch('data/internal/index.json?t=' + Date.now(), { cache: 'no-store' })).json(); } catch { IN.idx = { weeks: [] }; } }
-    const want = location.hash.split('/')[2] || IN.idx.weeks?.[0]?.date;
+    const eps = (IN.idx.weeks || []).filter(x => x.series === 'report');
+    const want = location.hash.split('/')[2] || eps[0]?.date;
     if (!want) {
-      $('#view').innerHTML = `<div class="in"><div class="empty in-first"><p>Chưa có bản tin nội bộ nào. Bản tin tự tạo lúc 19:00 Chủ nhật, hoặc tạo ngay cho tuần vừa rồi.</p>
-        <button type="button" class="u2-go" id="in-make">Tạo bản tin tuần này</button><p class="u2-small">Mất khoảng 5–20 phút. Trang tự hiện bản tin khi xong.</p></div>${IN.admin ? adminBox(true) : ''}</div>`;
-      wireAdmin(); $('#in-make').onclick = () => window.MMHUpdate?.open({ kind: 'weekly' }); return;
+      $('#view').innerHTML = `<div class="in"><div class="empty in-first"><p>${L('Chưa có tập MMH Report nào. Tập mới ra sáng thứ Hai hằng tuần.', 'No MMH Report episode yet. A new one comes out every Monday morning.')}</p></div>${IN.admin ? adminBox(true) : ''}</div>`;
+      wireAdmin(); return;
     }
     let ed;
-    try { ed = await loadInEd(want); } catch (e) { $('#view').innerHTML = `<div class="in"><div class="empty">${esc(e.message)}${IN.idx.kid && IN.idx.kid !== IN.kid ? ' — khoá đã đổi, Admin cần cập nhật khoá trên GitHub.' : ''}</div>${IN.admin ? adminBox(true) : ''}</div>`; wireAdmin(); return; }
+    try { ed = await loadInEd(want); } catch (e) { $('#view').innerHTML = `<div class="in"><div class="empty">${esc(e.message)}${IN.idx.kid && IN.idx.kid !== IN.kid ? L(' — khoá đã đổi, Admin cần cập nhật khoá trên GitHub.', ' — the key changed; Admin must update it on GitHub.') : ''}</div>${IN.admin ? adminBox(true) : ''}</div>`; wireAdmin(); return; }
+    if (ed.series !== 'report') { location.replace('#/report'); return; }
     S.cur = ed;
     $('#view').innerHTML = inPage(ed);
+    $('#foot').innerHTML = `<span><b>MMH Report</b> · ${L('bản tin nội bộ sáng thứ Hai', 'the Monday internal bulletin')}</span>`;
     wireAdmin();
-    $('#in-wk').onchange = e => { location.hash = '#/noibo/' + e.target.value; };
-    $('#in-out').onclick = () => { tkSet(''); IN.key = null; IN.eds = {}; route(); };
+    $('#in-wk').onchange = e => { location.hash = '#/report/' + e.target.value; };
+    $('#in-out').onclick = () => { if (window.RANK?.logout) RANK.logout(); else tkSet(''); IN.key = null; IN.eds = {}; route(); };
     $('#ls-play').onclick = async () => {
-      try { if (ed.podcast.audio && !ed.podcast.audio.blob) { toast('Đang giải mã âm thanh…'); await inAudio(ed); } if (!setEp(ed)) return; audio.paused ? audio.play() : audio.pause(); }
+      try { if (ed.podcast.audio && !ed.podcast.audio.blob) { toast(L('Đang giải mã âm thanh…', 'Decrypting audio…')); await inAudio(ed); } if (!setEp(ed)) return; audio.paused ? audio.play() : audio.pause(); }
       catch (er) { toast(er.message); }
     };
     wireListen(ed);
