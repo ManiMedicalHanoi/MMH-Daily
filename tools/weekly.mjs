@@ -213,6 +213,11 @@ async function aiWrite(F) {
       sections: J.arr(J.obj({ key: { type: 'string', enum: OUT_KEYS }, h_vi: J.str, h_en: J.str, vi: J.str, en: J.str })),
       podcast: J.obj({ title: J.str, turns: J.arr(J.obj({ sp: { type: 'string', enum: F.show.hosts.map(h => h.id) }, text: J.str, say: J.str, vi: J.str })) }),
       memo: J.obj({ angle: J.str, order: J.str }),
+      study: J.obj({
+        words: J.arr(J.obj({ en: J.str, vi: J.str, ex: J.str, turn: { type: 'integer' } })),
+        phrases: J.arr(J.obj({ en: J.str, vi: J.str, use: J.str, turn: { type: 'integer' } })),
+        grammar: J.arr(J.obj({ p: J.str, vi: J.str, ex: J.str, turn: { type: 'integer' } })),
+        quiz: J.arr(J.obj({ kind: { type: 'string', enum: ['gist', 'detail', 'vocab', 'inference'] }, q: J.str, opts: J.arr(J.str), a: { type: 'integer' }, why: J.str, turn: { type: 'integer' } })) }),
     }),
     user: 'FACTS (JSON):\n' + JSON.stringify(F),
   });

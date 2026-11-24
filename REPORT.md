@@ -58,7 +58,13 @@ Turn rows into stories. Group by theme, pick the 2–4 things that matter in eac
     { "key": "people" … },                            // công tác, đào tạo, cảm ơn, nhân sự
     { "key": "next" … } ],                            // tuần này cần theo dõi gì
   "podcast": { "title": "MMH Report · Episode N · …", "turns": [ { "sp": "A", "text": "…", "say": "[excited] …", "vi": "…" } ] },
-  "memo": { "angle": "cold-open-win | number | question | scene | quote | countdown | …", "order": "sales>marketing>backoffice>…" } }
+  "memo": { "angle": "cold-open-win | number | question | scene | quote | countdown | …", "order": "sales>marketing>backoffice>…" },
+  "study": {                                          // BÀI HỌC (nút "Bài học" ngay cạnh nút phát) — cùng mẫu số báo hằng ngày
+    "words":   [ { "en": "…", "vi": "nghĩa ngắn", "ex": "câu nguyên văn trong kịch bản", "turn": 3 } ],     // 10–12 từ / thuật ngữ công việc
+    "phrases": [ { "en": "…", "vi": "…", "use": "mẹo dùng ở chỗ làm (tiếng Việt)", "turn": 5 } ],          // 5–6 cụm nói hay (mở đầu, chuyển ý, khen…)
+    "grammar": [ { "p": "mẫu câu", "vi": "giải thích 1 câu", "ex": "câu trong kịch bản", "turn": 9 } ],     // 2–3 mẫu
+    "quiz":    [ { "kind": "gist|detail|vocab|inference", "q": "…", "opts": ["…","…","…","…"], "a": 1, "why": "giải thích tiếng Việt", "turn": 15 } ] } }  // 8 câu, theo thứ tự kịch bản
 ```
+`turn` = số thứ tự lượt lời (bắt đầu từ 0) nơi nghe thấy từ / câu đó — app phát đúng đoạn đó. Câu hỏi chỉ hỏi điều NÓI trong podcast; đổi vị trí đáp án đúng.
 `memo` is public (stored in plain text in `data/internal/index.json`): only the style label and section order, never content.
 Change the section order and the opening angle from the last episodes (`recent`).

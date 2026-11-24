@@ -1021,3 +1021,15 @@ button.pa-qi:hover{background:rgba(255,255,255,.04);border-color:var(--dline)}
 .nav-rp{color:#9B2C2C!important}
 @media (max-width:980px){ .rp .in-tiles{grid-template-columns:repeat(3,1fr)} .rp-secs{grid-template-columns:1fr} }
 @media (max-width:640px){ .rp .in-tiles{grid-template-columns:1fr 1fr} .rp-sec p{font-size:16px} }
+
+/* 25/11/2026: nút Play không bị bóp méo trên màn hình hẹp; nút "Bài học" ngay cạnh nút phát; "Chế độ học" thành nút phụ */
+.bigplay,.ibtn,.spd,.mini-play,.mini-btn,.mini-cover{flex:none;aspect-ratio:1/1}
+.spd{aspect-ratio:auto}
+.lesson-btn{flex:none;display:inline-flex;align-items:center;gap:7px;background:var(--show,#0E7C6B);color:#fff;border:0;border-radius:999px;padding:10px 16px 10px 13px;font:700 14px var(--sans);cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);white-space:nowrap}
+.lesson-btn svg{width:18px;height:18px}
+.lesson-btn:hover{filter:brightness(1.08)}
+.ls-ctl .learn-btn{flex:none}
+.mini-meta{cursor:pointer}
+@media (max-width:760px){ .ls-ctl{gap:8px} .ls-ctl .lesson-btn{padding:9px 13px 9px 11px;font-size:13.5px} .ls-ctl .lesson-btn~.learn-btn{padding:9px} .ls-ctl .lesson-btn~.learn-btn .lb{display:none} }
+@media (max-width:400px){ .ls-ctl .ibtn{width:36px;height:36px} .bigplay{width:52px;height:52px} .ls-ctl .spd{padding:7px 9px} }
+@media (max-width:400px){ .ls-ctl{gap:6px} .ls-ctl #ls-back{display:none} }

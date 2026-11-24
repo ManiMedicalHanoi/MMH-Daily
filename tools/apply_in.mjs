@@ -4,7 +4,8 @@
 //   { title:{vi,en}, intro:{vi,en},
 //     sections:[{ key:'headline'|'sales'|'marketing'|'backoffice'|'followup'|'people'|'next', h_vi, h_en, vi, en }],
 //     podcast:{ title, turns:[{ sp:'A', text, say?, vi }] },
-//     memo:{ angle, order } }            ← memo công khai (không có nội dung): kiểu mở đầu + thứ tự phần, để tập sau đổi cách
+//     memo:{ angle, order },             ← memo công khai (không có nội dung): kiểu mở đầu + thứ tự phần, để tập sau đổi cách
+//     study:{ words, phrases, grammar, quiz } }   ← bài học (cùng mẫu số báo hằng ngày)
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -36,7 +37,22 @@ export function check(F, out, { strict = true } = {}) {
   const blob = JSON.stringify(out);
   if (/[\w.+-]+@[\w-]+\.[\w.]{2,}/.test(blob) || /\b0\d{9,10}\b/.test(blob)) err.push('có email / số điện thoại — bỏ đi');
   if (strict && (!out.memo?.angle || !out.memo?.order)) err.push('thiếu memo.angle / memo.order');
+  err.push(...checkStudy(out.study, turns.length, strict));
   return { err, words };
+}
+
+// Bài học (study.js): cùng mẫu với số báo hằng ngày (edition.mjs ▸ studyWrite). turn = số thứ tự lượt lời nghe thấy từ / câu đó.
+export function checkStudy(st, n, strict = true) {
+  const err = [];
+  if (!st) { if (strict) err.push('thiếu study (bài học: words · phrases · grammar · quiz — REPORT.md ▸ 5)'); return err; }
+  const okT = x => Number.isInteger(x.turn) && x.turn >= 0 && x.turn < n;
+  if ((st.words || []).length < 8) err.push('study.words cần 8–12 từ');
+  if ((st.phrases || []).length < 4) err.push('study.phrases cần 4–6 cụm');
+  if ((st.grammar || []).length < 2) err.push('study.grammar cần 2–3 mẫu');
+  if ((st.quiz || []).length < 6) err.push('study.quiz cần 6–8 câu');
+  for (const [k, a] of Object.entries({ words: st.words, phrases: st.phrases, grammar: st.grammar, quiz: st.quiz })) (a || []).forEach((x, i) => { if (!okT(x)) err.push(`study.${k}[${i}]: turn sai`); });
+  (st.quiz || []).forEach((q, i) => { if (!q.q || !Array.isArray(q.opts) || q.opts.length !== 4 || !(q.a >= 0 && q.a < 4) || !q.why) err.push(`study.quiz[${i}]: cần q, 4 opts, a 0–3, why`); });
+  return err;
 }
 
 export function build(F, out, writer) {
@@ -50,6 +66,7 @@ export function build(F, out, writer) {
     title: out.title, intro: out.intro || { vi: '', en: '' }, sections: (out.sections || []).filter(x => KEYS.includes(x.key)),
     podcast: { show: 'report', name: show.name, anchor: show.anchor, hosts: show.hosts.map(h => ({ ...h, ...(hostFull(h)) })), color: show.color || '#9B2C2C',
       title: out.podcast?.title || `MMH Report · Episode ${F.ep}`, turns },
+    ...(out.study ? { study: { words: out.study.words, phrases: out.study.phrases, grammar: out.study.grammar, quiz: out.study.quiz } } : {}),
     vocab: GLOSSARY.filter(([en]) => text.includes(en.toLowerCase())).slice(0, 8).map(([en, vi]) => ({ en, vi })),
     memo: { angle: String(out.memo?.angle || '').slice(0, 60), order: String(out.memo?.order || '').slice(0, 120) },
   };

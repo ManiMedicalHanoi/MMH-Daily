@@ -169,7 +169,7 @@
   }
   // study.js ▸ Tổng kết: từ khoá + kiểm tra nghe + nói theo + hoàn thành bài
   async function submit(ed, r) {
-    const base = { date: ed.date, show: ed.podcast?.show || '' }, k = ed.date + '|';
+    const base = { date: String(ed.date).replace(/^i-/, ''), show: ed.podcast?.show || '' }, k = ed.date + '|';   // MMH Report: ngày 'i-…' ⇒ ngày thật, show = report
     const items = [
       r.wordsN ? { kind: 'vocab', ...base, right: r.known || 0, n: r.wordsN, key: k + 'vocab' } : null,
       r.quizN ? { kind: 'quiz', ...base, right: r.quiz, n: r.quizN, key: k + 'quiz' } : null,
