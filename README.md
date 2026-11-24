@@ -1,6 +1,12 @@
 # MMH Daily Podcast
 
-> Đổi tên từ "MMH Daily" (23/11/2026). Bản tin nội bộ Chủ nhật đã BỎ khỏi app + lịch chạy theo yêu cầu người dùng (code `tools/weekly.mjs`, dữ liệu mã hoá cũ vẫn giữ, chạy tay `kind=weekly` vẫn được). Chỉ còn tin từ báo / cơ quan chính thống, bệnh viện, hội y học; bỏ tin giải trí (`config.json ▸ kw.entertainment`).
+## MMH Report + Phiên dịch hội thoại (24/11/2026)
+- **MMH Report** (`#/report`, menu MMH Report): bản tin nội bộ sáng thứ Hai về tuần làm việc của MMH Việt Nam — Sales (gặp khách, phản hồi, bước tiếp theo, đơn hàng), Marketing (sự kiện, ấn phẩm),
+  Back office (đơn NPP, xuất nhập khẩu, đăng ký, pháp lý, nhân sự); đối chiếu kế hoạch tuần trước, kế hoạch tuần này. Podcast tiếng Anh + phụ đề Việt, mỗi tập một người dẫn kiểu MC thời sự.
+  Số liệu: `tools/weekly.mjs` (chỉ đọc Report Hub + CRM). Viết: phiên Claude theo `REPORT.md` (lịch hẹn sáng thứ Hai) ⇒ `tools/apply_in.mjs` khoá ⇒ GitHub tạo giọng + mã hoá. Chỉ email công ty mở được.
+- **Phiên dịch** (`coach/#/live`): để máy mở suốt cuộc họp — họ nói tiếng Anh ⇒ hiện tiếng Việt; bạn nói tiếng Việt ⇒ hiện câu tiếng Anh để nói lại (đọc to được); đoạn dài ⇒ ý chính tiếng Việt + câu nhắc lại tiếng Anh + gợi ý trả lời; hết họp ⇒ biên bản (ý chính, quyết định, việc cần làm) tải về .md.
+
+> Đổi tên từ "MMH Daily" (23/11/2026). Bản tin nội bộ Chủ nhật cũ đã bỏ; từ 24/11/2026 thay bằng **MMH Report** sáng thứ Hai (xem trên). Chỉ còn tin từ báo / cơ quan chính thống, bệnh viện, hội y học; bỏ tin giải trí (`config.json ▸ kw.entertainment`).
 
 Tờ báo buổi sáng của MMH + podcast tiếng Anh mỗi ngày.
 **Ưu tiên y tế** (đấu thầu, chính sách, đầu tư công, bệnh viện lớn, thiết bị y tế), sau đó kinh tế, chính trị, xã hội Việt Nam.

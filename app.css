@@ -1002,3 +1002,22 @@ button.pa-qi:hover{background:rgba(255,255,255,.04);border-color:var(--dline)}
 .pa-uh.shut:hover{opacity:1}
 .pa-l em{font-style:normal;color:#8FD08F;font-weight:700}
 @media (max-width:620px){.pa-top{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.pa-top::-webkit-scrollbar{display:none}.pa-s{flex:none;padding:5px 10px;font-size:13px}}
+
+/* ── MMH Report (24/11/2026): bản tin nội bộ sáng thứ Hai ── */
+.rp .in-head{align-items:flex-start}
+.rp-by{font:500 13.5px var(--sans);color:var(--ink3);margin:6px 0 0}
+.rp .in-tiles{grid-template-columns:repeat(6,1fr)}
+.rp-secs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px;margin:4px 0 20px}
+.rp-sec{border-top:2px solid var(--rule);padding:10px 0 8px}
+.rp-sec h3{font:800 20px/1.25 var(--display);margin:0 0 8px}
+.rp-sec p{margin:0;font-size:16.5px;line-height:1.62;color:var(--ink)}
+.rp-headline,.rp-next{grid-column:1/-1}
+.rp-headline{border-top-color:#9B2C2C}
+.rp-headline p{font-size:18px}
+.rp-data{border-top:1px solid var(--rule);padding-top:10px;margin-bottom:18px}
+.rp-data>summary{cursor:pointer;font:700 14px var(--sans);color:var(--accent-ink);padding:4px 0 12px}
+.rp .in-list li small+small{margin-top:1px}
+.in-tb td small{color:var(--ink3);font-size:11.5px}
+.nav-rp{color:#9B2C2C!important}
+@media (max-width:980px){ .rp .in-tiles{grid-template-columns:repeat(3,1fr)} .rp-secs{grid-template-columns:1fr} }
+@media (max-width:640px){ .rp .in-tiles{grid-template-columns:1fr 1fr} .rp-sec p{font-size:16px} }

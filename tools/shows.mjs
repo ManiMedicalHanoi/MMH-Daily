@@ -137,17 +137,26 @@ export const SHOWS = {
   },
 };
 
-// Bản tin nội bộ Chủ nhật — xoay vòng theo tuần: lúc 1 người dẫn, lúc 2 người.
-export const SHOWS_INTERNAL = {
-  thisweek: { name: 'MMH This Week', vi: 'MMH tuần này', style: 'duo', desc: 'Two colleagues look back at the week across MMH.',
-    hosts: [{ id: 'A', name: 'Ava', voice: 'en-US-AvaMultilingualNeural', role: 'Host' }, { id: 'B', name: 'Andrew', voice: 'en-US-AndrewMultilingualNeural', role: 'Co-host' }], color: '#8A5A00' },
-  notes: { name: 'Sunday Notes', vi: 'Ghi chú Chủ nhật', style: 'solo', desc: 'One host, the week at MMH in a relaxed Sunday chat.',
-    hosts: [{ id: 'A', name: 'Emma', voice: 'en-US-EmmaMultilingualNeural', role: 'Host' }], color: '#6B4E9B' },
-  roundup: { name: 'The MMH Roundup', vi: 'Tổng kết tuần', style: 'duo', desc: 'Wins, field work and what’s next — the team roundup.',
-    hosts: [{ id: 'A', name: 'Brian', voice: 'en-US-BrianMultilingualNeural', role: 'Host' }, { id: 'B', name: 'Sonia', voice: 'en-GB-SoniaNeural', role: 'Co-host' }], color: '#2F6F5E' },
-  desk: { name: 'From the Desk', vi: 'Từ bàn làm việc', style: 'solo', desc: 'One voice, the week’s numbers and stories from every team.',
-    hosts: [{ id: 'A', name: 'Andrew', voice: 'en-US-AndrewMultilingualNeural', role: 'Host' }], color: '#1F4E79' },
+// MMH REPORT — bản tin nội bộ sáng thứ Hai (24/11/2026, người dùng yêu cầu): 1 người dẫn kiểu MC thời sự, giàu năng lượng; MỖI TẬP MỘT NGƯỜI DẪN KHÁC (xoay vòng theo số tập).
+// el = giọng ElevenLabs riêng (không trùng giọng các series hằng ngày), voice = giọng miễn phí dự phòng.
+export const REPORT = {
+  id: 'report', name: 'MMH Report', vi: 'MMH Report', style: 'solo', color: '#9B2C2C',
+  desc: 'Monday morning news bulletin about MMH itself: what every Vietnam team did last week, how last week\'s plans turned out, and what is coming this week.',
+  anchors: [
+    { id: 'A', key: 'brian', name: 'Brian', voice: 'en-US-ChristopherNeural', el: 'nPczCjzI2devNBz1zQrb', role: 'Anchor', bio: 'Deep, confident US news-anchor voice; crisp headlines, big energy on wins.' },
+    { id: 'A', key: 'laura', name: 'Laura', voice: 'en-US-AriaNeural', el: 'FGY2WhTYpPnrIDTdsKH5', role: 'Anchor', bio: 'Bright, upbeat US anchor; quick pace, loves a good number.' },
+    { id: 'A', key: 'lily', name: 'Lily', voice: 'en-GB-LibbyNeural', el: 'pFZP5JQG7iQjIQuC4Bku', role: 'Anchor', bio: 'British newsreader; polished, warm, a touch of dry humour.' },
+    { id: 'A', key: 'charlie', name: 'Charlie', voice: 'en-AU-WilliamNeural', el: 'IKne3meq5aSn9XLyUdCD', role: 'Anchor', bio: 'Australian, energetic morning-show style; friendly shout-outs.' },
+    { id: 'A', key: 'jessica', name: 'Jessica', voice: 'en-US-JennyNeural', el: 'cgSgspJ2msm6clMCkdW9', role: 'Anchor', bio: 'Young, lively US anchor; conversational, fast transitions.' },
+    { id: 'A', key: 'roger', name: 'Roger', voice: 'en-US-GuyNeural', el: 'CwhRBWXzGAHq8TQ4Fs17', role: 'Anchor', bio: 'Seasoned US anchor; authoritative, measured, strong sign-off.' },
+  ],
 };
+/** Tập n ⇒ người dẫn (xoay vòng, tập 1 = Brian). */
+export function reportShow(ep) {
+  const a = REPORT.anchors[((Math.max(1, ep) - 1) % REPORT.anchors.length)];
+  return { id: REPORT.id, name: REPORT.name, anchor: a.key, color: REPORT.color, style: REPORT.style, desc: REPORT.desc, hosts: [a] };
+}
+export const SHOWS_INTERNAL = { report: REPORT };
 
 /* Lịch tuần (0 = CN): T2 MMH Talk · T3 The Clinic Room · T4 Law & Tender Desk · T5 AI Pulse · T6 Morning Headlines · T7 English at Work · CN Week in Review.
    (24/11/2026: T5 đổi từ MMH Talk sang AI Pulse — người dùng yêu cầu thêm chủ đề AI, các series luân phiên.) */

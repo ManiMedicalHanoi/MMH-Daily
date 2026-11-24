@@ -37,7 +37,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   fs.writeFileSync(path.join(ROOT, 'data', 'internal', `${date}.json.enc`), seal(Buffer.from(JSON.stringify(ed)), key));
   const ip = path.join(ROOT, 'data', 'internal', 'index.json');
   let idx = { weeks: [] }; try { idx = JSON.parse(fs.readFileSync(ip, 'utf8')); } catch { /* lần đầu */ }
-  idx.weeks = [{ date, from: ed.week.from, kid, show: ed.podcast.show, dur: ed.podcast.audio?.dur || 0, writer: ed.writer || '' }, ...idx.weeks.filter(w => w.date !== date)].sort((a, b) => b.date.localeCompare(a.date));
+  // sổ công khai: KHÔNG có nội dung — chỉ số tập, người dẫn, kiểu mở đầu / thứ tự phần (để tập sau đổi cách kể)
+  const pub = { date, from: ed.week.from, kid, show: ed.podcast.show, dur: ed.podcast.audio?.dur || 0, writer: ed.writer || '' };
+  if (ed.series === 'report') Object.assign(pub, { series: 'report', ep: ed.ep, anchor: ed.podcast.anchor || '', angle: ed.memo?.angle || '', order: ed.memo?.order || '' });
+  idx.weeks = [pub, ...idx.weeks.filter(w => w.date !== date)].sort((a, b) => b.date.localeCompare(a.date));
   idx.updated = new Date().toISOString(); idx.kid = kid;
   fs.writeFileSync(ip, JSON.stringify(idx));
   console.log(`Đã mã hoá bản tin nội bộ ${date} (khoá ${kid}).`);

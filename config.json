@@ -1363,7 +1363,7 @@
   ]
  },
  "internal": {
-  "_ghi_chu": "Bản tin nội bộ Chủ nhật — nguồn dữ liệu nội bộ (chỉ đọc). Kết quả luôn được mã hoá trước khi đưa lên trang.",
+  "_ghi_chu": "MMH Report (bản tin nội bộ sáng thứ Hai) — nguồn dữ liệu nội bộ CHỈ ĐỌC, chỉ nhóm Việt Nam. Kết quả luôn được mã hoá trước khi đưa lên trang.",
   "reportHub": [
    {
     "id": "marketing",
@@ -1394,18 +1394,6 @@
     "name": "Eyeless Sales",
     "url": "https://script.google.com/macros/s/AKfycbxsoTRbRWZRaf-z7-xRy_oIkM-Yv1HoCOjVRO-K6oRRh3Dr7MMg4v53K0qqpMfZ_K5IAg/exec",
     "orders": true
-   },
-   {
-    "id": "thai",
-    "name": "Thailand Surgical",
-    "url": "https://script.google.com/macros/s/AKfycbwglPhfcC3y20-lPO8mRC7yapGUyVHSO2Mp3k4fyPJXnraQEu6bbO4dysL0E9MNadwHwg/exec",
-    "orders": false
-   },
-   {
-    "id": "thaid",
-    "name": "Thailand Dental",
-    "url": "https://script.google.com/macros/s/AKfycbz2QxuRLqmadEoM5bWaXRflzOkX9J44JmxeKHOAQmwVvv-m--iD5CY1LHWty8bZZg74ug/exec",
-    "orders": false
    }
   ],
   "tenders": [

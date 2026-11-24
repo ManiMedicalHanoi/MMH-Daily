@@ -19,11 +19,11 @@ CHORDS = {  # nhạc hiệu: nốt gốc (Hz) theo chương trình
     'briefing': [392.0, 493.9, 587.3], 'twotakes': [349.2, 440.0, 523.3], 'healthdesk': [329.6, 415.3, 493.9],
     'markets': [293.7, 370.0, 440.0], 'editor': [261.6, 329.6, 392.0], 'explainer': [440.0, 523.3, 659.3], 'weekly': [311.1, 392.0, 466.2],
     'notes': [261.6, 311.1, 392.0], 'clinic': [369.99, 440.0, 554.4], 'story': [220.0, 277.2, 329.6], 'quickfive': [440.0, 554.4, 659.3],
-    'thisweek': [349.2, 440.0, 523.3, 659.3], 'notes': [261.6, 311.1, 392.0], 'roundup': [293.7, 370.0, 440.0, 587.3], 'desk': [329.6, 392.0, 493.9],
+    'thisweek': [349.2, 440.0, 523.3, 659.3], 'notes': [261.6, 311.1, 392.0], 'roundup': [293.7, 370.0, 440.0, 587.3], 'desk': [329.6, 392.0, 493.9], 'report': [392.0, 523.3, 659.3, 784.0],
 }
 PIPER = {'A': 'en_US-lessac-medium', 'B': 'en_GB-alan-medium'}
 TAGGED = {'eleven_v3', 'eleven_v4', 'eleven_v4_turbo'}   # mẫu đọc được thẻ cảm xúc [curious]…
-FEMALE = {'Ava', 'Emma', 'Jenny', 'Michelle', 'Libby', 'Sonia', 'Natasha', 'Aria', 'Sara', 'Clara', 'Jane', 'Nancy', 'Maisie', 'Hollie', 'Ana'}
+FEMALE = {'Laura', 'Lily', 'Jessica', 'Ava', 'Emma', 'Jenny', 'Michelle', 'Libby', 'Sonia', 'Natasha', 'Aria', 'Sara', 'Clara', 'Jane', 'Nancy', 'Maisie', 'Hollie', 'Ana'}
 
 
 def eleven_voices(hosts):

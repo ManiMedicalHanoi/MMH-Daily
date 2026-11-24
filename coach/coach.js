@@ -452,11 +452,13 @@ From a Vietnamese news summary (and a rough machine translation), return JSON on
     Voice.stop(); if (Rec.on) Rec.stop();
     const h = location.hash.replace(/^#\/?/, '');
     const [a, b, c] = h.split('/');
-    S.view = a === 'l' ? 'lesson' : a === 'words' ? 'words' : a === 'set' ? 'set' : a === 'ask' ? 'ask' : 'home';
+    S.view = a === 'l' ? 'lesson' : a === 'words' ? 'words' : a === 'set' ? 'set' : a === 'ask' ? 'ask' : a === 'live' ? 'live' : 'home';
     if (S.view !== 'ask' && ASK.ctl) ASK.ctl.abort();
+    if (S.view !== 'live' && window.LIVE) LIVE.leave();          // phiên dịch vẫn nghe tiếp khi xem trang khác
     $$('#ch-nav a').forEach(x => x.classList.toggle('on', x.dataset.r === (S.view === 'lesson' ? 'home' : S.view)));
     window.scrollTo({ top: 0 });
     if (S.view === 'ask') return renderAsk();
+    if (S.view === 'live') return window.LIVE ? LIVE.render() : null;   // Phiên dịch hội thoại (live.js)
     if (S.view === 'home') return renderHome();
     if (S.view === 'words') return renderWords();
     if (S.view === 'set') return renderSet();
@@ -1135,6 +1137,6 @@ Only the factors present, one line each, format "L: short Vietnamese note [n]" u
     if (e.target.id === 'my-theme' && e.key === 'Enter') { e.preventDefault(); $('[data-act="my-go"]').click(); }
   });
 
-  window.COACH = { align, ideaHit, toks, S, CFG };
+  window.COACH = { align, ideaHit, toks, S, CFG, gem, gemPost, Voice, toast, esc, LS, saveCfg };
   route();
 })();

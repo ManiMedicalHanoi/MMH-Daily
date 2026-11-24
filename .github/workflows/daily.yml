@@ -1,18 +1,20 @@
 # MMH Daily — đặt ở .github/workflows/daily.yml của kho riêng. Cần: Settings ▸ Pages ▸ Source = "GitHub Actions".
 #  • Mỗi sáng 05:45 (giờ VN): gom tin ⇒ số báo ⇒ podcast ⇒ MP3 lên Releases ⇒ đăng trang.
-#  • Tối Chủ nhật 19:00: BẢN TIN NỘI BỘ (Report Hub, CRM, thầu, đào tạo) ⇒ viết ⇒ giọng đọc ⇒ MÃ HOÁ (secret DAILY_INTERNAL_KEY) ⇒ chỉ lưu bản mã hoá.
-#    Chưa có DAILY_INTERNAL_KEY ⇒ bỏ qua bản tin nội bộ (không bao giờ lưu bản rõ). Admin lấy khoá: app ▸ Nội bộ ▸ Thiết lập (Admin).
+#  • MMH REPORT (bản tin nội bộ sáng thứ Hai, REPORT.md): phiên Claude (lịch hẹn thứ Hai) viết ⇒ khoá vào data/inbox ⇒ push ⇒ bước dưới tạo giọng + MÃ HOÁ (secret DAILY_INTERNAL_KEY).
+#    Dự phòng 10:00 thứ Hai (cron '0 3 * * 1'): chỉ khi tuần đó chưa có bản Claude viết VÀ có ANTHROPIC_API_KEY (không đăng bản mẫu máy móc theo lịch).
+#    Chưa có DAILY_INTERNAL_KEY ⇒ bỏ qua (không bao giờ lưu bản rõ). Admin lấy khoá: app ▸ MMH Report ▸ Thiết lập (Admin).
 #  • Tuỳ chọn: secret GEMINI_API_KEY (miễn phí, aistudio.google.com) hoặc ANTHROPIC_API_KEY ⇒ AI viết song ngữ, kịch bản tự nhiên, soạn sẵn bài luyện nói + tóm tắt chủ đề. Không có ⇒ bản mẫu miễn phí.
 name: MMH Daily
 on:
   schedule:
     - cron: '45 22 * * *'
+    - cron: '0 3 * * 1'
   push:
     branches: [main]
     paths: ['data/editions/**', 'data/inbox/**', 'data/requests/**']   # phiên Claude Code vừa viết số báo / bản tin nội bộ (đã khoá) ⇒ tạo giọng + đăng trang
   workflow_dispatch:
     inputs:
-      kind: { description: 'daily = tin hằng ngày · site = chỉ đăng lại trang (không viết, không tạo giọng) · weekly = bản tin nội bộ · both = cả hai', required: false, default: 'daily' }
+      kind: { description: 'daily = tin hằng ngày · site = chỉ đăng lại trang (không viết, không tạo giọng) · weekly = MMH Report (bản tin nội bộ thứ Hai) · both = cả hai', required: false, default: 'daily' }
       show: { description: 'Ép chương trình podcast (để trống = theo lịch): talk · clinicroom · lawdesk · aipulse · headlines · english · weekly', required: false }
       sources: { description: 'Chỉ lấy tin từ các báo này (tên miền, cách nhau dấu phẩy; trống = tất cả)', required: false }
       topics: { description: 'Chủ đề (dental,eye,tender,insurance,policy,hospital,market,economy,politics,society,ai; trống = tất cả; chỉ ai = số AI Pulse)', required: false }
@@ -35,7 +37,7 @@ jobs:
       DAILY_VOICE: ${{ inputs.voice || vars.DAILY_VOICE || '' }}
       DAILY_VOICES: ${{ inputs.voices || vars.DAILY_VOICES || '' }}
       ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-      DO_WEEKLY: ${{ github.event.schedule == '0 12 * * 0' || (github.event_name == 'workflow_dispatch' && (inputs.kind == 'weekly' || inputs.kind == 'both')) }}
+      DO_WEEKLY: ${{ github.event.schedule == '0 3 * * 1' || (github.event_name == 'workflow_dispatch' && (inputs.kind == 'weekly' || inputs.kind == 'both')) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -121,15 +123,16 @@ jobs:
             node tools/seal.mjs "$W/$D.json" "$W/mp3"
             rm -rf $W; git rm -q "$B"
             gh release delete "in-$D" -y --cleanup-tag 2>/dev/null || true
-            gh release create "in-$D" "audio/internal-$D.mp3.enc" --title "MMH nội bộ $D (mã hoá)" --notes "Bản mã hoá — Claude viết." --latest=false
+            gh release create "in-$D" "audio/internal-$D.mp3.enc" --title "MMH Report $D (mã hoá)" --notes "Bản mã hoá — Claude viết." --latest=false
           done
 
       # ── bản tin nội bộ Chủ nhật (bản rõ chỉ nằm ở RUNNER_TEMP, xoá ngay sau khi mã hoá) ──
-      - name: Bản tin nội bộ — Claude đã viết tuần này thì không ghi đè
+      - name: MMH Report — Claude đã viết tuần này thì không ghi đè; không có Claude API thì không đăng bản mẫu theo lịch
         if: env.DO_WEEKLY == 'true' && github.event_name == 'schedule'
         run: |
-          W=$(TZ=Asia/Ho_Chi_Minh date +%F)
-          node -e "const w=(require('./data/internal/index.json').weeks||[]).find(x=>x.date==='$W');process.exit(w&&w.writer==='claude-code'?0:1)" 2>/dev/null && echo "DO_WEEKLY=false" >> $GITHUB_ENV && echo "Tuần $W đã có bản Claude viết — bỏ qua bản tự động" || true
+          W=$(TZ=Asia/Ho_Chi_Minh date -d 'last sunday' +%F)
+          node -e "const w=(require('./data/internal/index.json').weeks||[]).find(x=>x.date==='$W');process.exit(w&&/claude/.test(w.writer)?0:1)" 2>/dev/null && echo "DO_WEEKLY=false" >> $GITHUB_ENV && echo "Tuần $W đã có bản Claude viết — bỏ qua bản tự động" || true
+          [ "$HAS_KEY" = "true" ] || { echo "DO_WEEKLY=false" >> $GITHUB_ENV; echo "Chưa có ANTHROPIC_API_KEY — không đăng bản mẫu theo lịch"; }
       - name: Bản tin nội bộ — gom + viết
         if: env.DO_WEEKLY == 'true' && env.HAS_INKEY == 'true'
         env: { ANTHROPIC_API_KEY: '${{ secrets.ANTHROPIC_API_KEY }}', WEEKLY_OUT: '${{ runner.temp }}/wk' }
