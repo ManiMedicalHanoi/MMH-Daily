@@ -160,7 +160,8 @@ jobs:
       - name: Dựng trang (kèm MP3 21 ngày + bản tin nội bộ 8 tuần, đã mã hoá)
         run: |
           mkdir -p _site/audio
-          cp -r index.html app.css app.js install.js update.js learn.js study.js rank.js guide.js sw.js manifest.webmanifest icons coach data _site/
+          cp -r index.html app.css app.js install.js update.js learn.js pestel.js study.js rank.js chars.js social.js qr.js guide.js sw.js manifest.webmanifest icons coach data _site/
+          [ -d media ] && cp -r media _site/ || true
           rm -f _site/data/pool.json
           cp audio/*.mp3 audio/*.enc _site/audio/ 2>/dev/null || true
           for d in $(ls data/editions | sort -r | head -7 | sed 's/.json//'); do
