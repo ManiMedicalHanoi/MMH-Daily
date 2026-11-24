@@ -32,6 +32,37 @@
     clearTimeout(tTimer);
     tTimer = setTimeout(async () => { if (!R.tok()) return; try { const d = await D.hub('dyProfile', { tk: R.tok(), topics: list.join(',') }); if (d.ok) R.setMe(d.me); } catch { /* mạng */ } }, 700);
   }
+  const PEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>';
+  /* ── chọn nhân vật: bấm ảnh nhân vật ở trang Tôi / thẻ chào ⇒ hộp chọn, lưu ngay ── */
+  function avPick() {
+    const me = R.meC(); if (!me) return R.login();
+    const C = window.CHARS, ids = (me.admin ? ['chip'] : []).concat(C.ids.filter(k => k !== 'chip'));
+    if (String(me.avatar).startsWith('c:')) ids.unshift(me.avatar);
+    let sel = me.avatar;
+    const dlg = document.createElement('div'); dlg.className = 'rk-dlg'; dlg.setAttribute('role', 'dialog'); dlg.setAttribute('aria-modal', 'true');
+    const paint = () => {
+      const c = String(sel).startsWith('c:') ? { n: L('Linh vật riêng', 'My mascot'), vi: '', en: '' } : C.list[sel] || C.list.chip;
+      dlg.innerHTML = `<div class="rk-box dy-box dy-avd"><button type="button" class="rk-x" data-x aria-label="${L('Đóng', 'Close')}">✕</button>
+        <h3>${L('Chọn nhân vật của bạn', 'Pick your character')}</h3>
+        <div class="dy-avprev">${['wave', 'cheer', 'think', 'sleepy'].map(m => R.av(sel, 64, m)).join('')}</div>
+        <p class="dy-avn"><b>${esc(c.n)}</b> ${esc(L(c.vi || '', c.en || ''))}</p>
+        <div class="dy-pick big">${ids.map(k => `<button type="button" data-k="${esc(k)}" class="${k === sel ? 'on' : ''}">${R.av(k, 56)}<small>${esc(k.startsWith('c:') ? L('Của tôi', 'Mine') : C.list[k].n)}</small></button>`).join('')}</div>
+        ${me.admin ? `<button type="button" class="rk-link" data-mk>${L('Tự tạo linh vật riêng (Admin) ›', 'Make your own mascot (Admin) ›')}</button>` : ''}
+        <button type="button" class="rk-btn" data-save>${L('Dùng nhân vật này', 'Use this character')}</button></div>`;
+    };
+    paint(); document.body.appendChild(dlg);
+    dlg.addEventListener('click', async e => {
+      if (e.target === dlg || e.target.closest('[data-x]')) return dlg.remove();
+      const b = e.target.closest('.dy-pick button'); if (b) { sel = b.dataset.k; return paint(); }
+      if (e.target.closest('[data-mk]')) { dlg.remove(); location.hash = '#/me'; setTimeout(() => { document.querySelector('[data-dy="tab"][data-k="set"]')?.click(); setTimeout(() => document.querySelector('.dy-maker')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 200); }, 600); return; }
+      const sv = e.target.closest('[data-save]'); if (!sv) return;
+      sv.disabled = true; sv.textContent = L('Đang lưu…', 'Saving…');
+      try { const d = await D.hub('dyProfile', { tk: R.tok(), avatar: sel }); if (R.authFail(d)) throw new Error(L('Hãy đăng nhập lại', 'Please sign in again')); if (!d.ok) throw new Error(d.error);
+        R.setMe(d.me); if (R.me()) R.me().me = d.me; dlg.remove(); D.toast(L('Đã đổi nhân vật', 'Character updated')); R.repaint(); document.querySelectorAll('.dy-hello').forEach(x => x.remove()); if (D.S.cur && location.hash.startsWith('#/listen')) hello(D.S.cur); }
+      catch (er) { sv.disabled = false; sv.textContent = L('Dùng nhân vật này', 'Use this character'); D.toast(er.message); }
+    });
+  }
+  R.avPick = avPick;
   const SHOWT = { aipulse: ['ai'], clinicroom: ['health', 'eye', 'dental', 'surgery'], lawdesk: ['tender', 'politics'], talk: ['health', 'tender', 'economy', 'eye', 'dental', 'surgery'],
     headlines: ['economy', 'politics', 'society', 'health'], english: ['english'], weekly: ['health', 'tender', 'economy'] };
   const KW = { ai: /\bai\b|artificial|tech|robot|digital/i, health: /health|hospital|patient|medic|y tế/i, eye: /eye|cataract|glaucoma|retina|ophthal|vision|phaco/i,
@@ -161,7 +192,7 @@
     const mood = !me ? 'wave' : me.studiedToday ? 'cheer' : me.gap > 2 ? 'sad' : me.gap > 1 ? 'sleepy' : 'wave';
     const askPush = pushOk() && !ios() && Notification.permission === 'default' && !store.get('mmh_dy_push_no', 0);
     const el = document.createElement('section'); el.className = 'dy-hello';
-    el.innerHTML = `<div class="dy-hl">${R.av(me ? me.avatar : 'chip', 58, mood)}<div class="dy-hm">
+    el.innerHTML = `<div class="dy-hl">${me ? `<button type="button" class="dy-avb" data-dys="avpick" aria-label="${L('Đổi nhân vật', 'Change character')}">${R.av(me.avatar, 58, mood)}<i>${PEN}</i></button>` : R.av('chip', 58, mood)}<div class="dy-hm">
         ${me ? `<b>${esc(L('Chào ' + me.nick + '!', 'Hi ' + me.nick + '!'))}</b><span>${me.studiedToday ? L('Hôm nay bạn đã học rồi — giỏi quá!', 'You studied today — great job!') : me.gap > 1 ? L('Lâu rồi chưa gặp, học 1 bài ngắn nhé!', 'Long time no see — try a short lesson!') : L('Nghe số hôm nay để giữ chuỗi nhé.', 'Listen today to keep your streak.')}</span>`
           : `<b>${L('Chíp chào bạn!', 'Hi, I\'m Chíp!')}</b><span>${L('Tạo tài khoản để lưu XP, giữ chuỗi ngày học và thi đua cùng đồng nghiệp.', 'Create an account to save XP, keep your streak and compete with colleagues.')}</span>`}</div>
         ${me ? `<a class="dy-hs" href="#/me"><span class="dy-fl">${R.flame}${me.streak}</span><span class="dy-ring sm" style="--p:${gp}"><b>${todayXp}</b></span></a>` : `<button type="button" class="st-go" data-rk="login">${L('Bắt đầu', 'Start')}</button>`}</div>
@@ -169,7 +200,24 @@
         : !tp.length ? `<button type="button" class="dy-pick-t" data-dys="topics">${L('Chọn chủ đề bạn quan tâm để được gợi ý bài kiểm tra phù hợp ›', 'Pick your topics to get quiz suggestions ›')}</button>` : ''}
       ${askPush ? `<div class="dy-push">${R.av('chip', 34, 'wave')}<span>${L('Bật "tinh tinh" khi có số podcast mới?', 'Get a ping when a new episode is out?')}</span><button type="button" class="st-go" data-dys="push1">${L('Bật', 'Turn on')}</button><button type="button" class="dy-x" data-dys="pushno" aria-label="${L('Để sau', 'Later')}">✕</button></div>` : ''}`;
     const hero = host.querySelector('.ls-hero'); host.insertBefore(el, hero || host.firstChild);
+    if (hero && !host.querySelector('#dy-lis')) { const li = document.createElement('div'); li.id = 'dy-lis'; li.className = 'dy-lis'; hero.insertAdjacentElement('afterend', li); paintLis(); }
   }
+  /* tiến độ nghe số đang xem: nghe tới 80% ⇒ hoàn thành (dyEvent listen ở rank.js) */
+  let lpT = 0;
+  const OKI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.2 4.2L19 7"/></svg>';
+  function paintLis() {
+    const el = document.getElementById('dy-lis'), ed = D.S.cur; if (!el || !ed) return;
+    const pct = ((store.get('mmh_dy_lpct', {}) || {})[ed.date]) || 0, done = !!((store.get('mmh_dy_lis', {}) || {})[ed.date]);
+    el.classList.toggle('ok', done);
+    el.innerHTML = done ? `${OKI}<span>${L('Đã nghe xong số này · nhiệm vụ "Nghe hết 1 số" hoàn thành', 'Episode finished · "Finish 1 episode" quest done')}</span>`
+      : `<span>${L(`Đã nghe ${pct}% · nghe tới 80% để tính hoàn thành (+10 XP)`, `Listened ${pct}% · reach 80% to finish (+10 XP)`)}</span><i style="--p:${Math.min(100, pct / 0.8)}%"></i>`;
+  }
+  D.audio.addEventListener('timeupdate', () => {
+    const a = D.audio, ep = D.S.ep; if (!ep || !a.duration) return;
+    const pct = Math.min(100, Math.round(a.currentTime / a.duration * 100)), m = store.get('mmh_dy_lpct', {}) || {};
+    if (pct > (m[ep.date] || 0) && Date.now() - lpT > 2500) { lpT = Date.now(); m[ep.date] = pct; store.set('mmh_dy_lpct', Object.fromEntries(Object.entries(m).slice(-30))); }
+    if (D.S.cur && D.S.cur.date === ep.date) paintLis();
+  });
   function forYou(ed) {
     const tp = myTopics(), v = document.getElementById('view'); if (!tp.length || !v || v.querySelector('.dy-fy')) return;
     const H = x => (D.S.lang === 'en' ? (x.h_en || x.t) : (x.h_vi || x.t));
@@ -241,6 +289,7 @@
     const k = t.dataset.dys, id = t.dataset.id;
     try {
       if (k === 'topic') return topicClick(t);
+      if (k === 'avpick') return avPick();
       if (k === 'topics') { e.preventDefault(); location.hash = '#/me'; setTimeout(() => document.querySelector('[data-dy="tab"][data-k="set"]')?.click(), 600); return; }
       if (k === 'tone') { tone(t.dataset.k); t.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === t)); if (R.tok()) D.hub('dyProfile', { tk: R.tok(), theme: t.dataset.k }).catch(() => {}); return; }
       if (k === 'push' || k === 'push1') { t.disabled = true; await pushToggle(k === 'push1' ? true : !pushState()); t.closest('.dy-push')?.remove(); if (k === 'push') R.repaint(); return; }

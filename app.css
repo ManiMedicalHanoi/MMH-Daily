@@ -965,3 +965,33 @@ body.dark .inst-btn{color:var(--mint);border-color:color-mix(in srgb,var(--mint)
 @keyframes funFall{to{transform:translateY(110vh) rotate(var(--r))}}
 @media (prefers-reduced-motion:reduce){.pa-n.cur>button,.pa-tip,.fun-conf i,.fun-mas.pop .dy-av{animation:none}}
 @media (max-width:620px){.pa-mas{display:none}.pa-skr{grid-template-columns:92px 1fr 42px}.fun-mas{bottom:calc(84px + env(safe-area-inset-bottom))}}
+
+/* ══════════ v18 — sửa giao diện theo phản hồi 24/11/2026: thẻ chào, chọn nhân vật, nhiệm vụ bấm được, tiến độ nghe, lịch sử học lại ══════════ */
+.dy-hello .st-go,.dy-push .st-go{width:auto;flex:none}
+.dy-hl{flex-wrap:wrap}
+.dy-hm{flex:1 1 0;min-width:0}
+.dy-hl>.st-go{padding:10px 20px}
+@media (max-width:620px){.dy-hl>.st-go{flex:1 1 100%;width:100%}.dy-push{flex-wrap:wrap}.dy-push span{flex:1 1 calc(100% - 90px)}.dy-push .st-go{margin-left:46px}}
+.dy-avb{position:relative;flex:none;padding:0;border:0;background:none;border-radius:50%;cursor:pointer}
+.dy-avb>i{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#F2F3F5;color:#111;box-shadow:0 2px 6px rgba(0,0,0,.4);font-style:normal}
+.dy-avb>i svg{width:14px;height:14px}
+.dy-avb:hover>i{background:var(--mint)}
+.dy-avd{justify-items:center;text-align:center}
+.dy-avprev{display:flex;gap:6px;justify-content:center}
+.dy-avn{margin:0;color:#A9B0BB;font:500 13.5px var(--sans)}.dy-avn b{color:#F2F3F5;font-size:16px;margin-right:4px}
+.dy-pick.big{width:100%;grid-template-columns:repeat(4,1fr);max-height:42vh;overflow:auto;padding:2px}
+/* nhiệm vụ bấm được */
+button.pa-qi{width:100%;border:1px solid transparent;background:none;color:inherit;text-align:left;border-radius:14px;padding:8px 6px;cursor:pointer;font:inherit}
+button.pa-qi:hover{background:rgba(255,255,255,.04);border-color:var(--dline)}
+.pa-qi small{color:var(--dtext3);font:500 12px var(--sans)}
+.pa-chev{width:18px;height:18px;flex:none;color:var(--dtext3)}
+/* tiến độ nghe dưới thẻ podcast */
+.dy-lis{position:relative;display:flex;gap:8px;align-items:center;margin:10px 0 0;padding:10px 14px;border-radius:12px;background:#15181D;border:1px solid var(--dline);color:var(--dtext2);font:600 13px var(--sans);overflow:hidden}
+.dy-lis span{position:relative;z-index:1}
+.dy-lis i{position:absolute;inset:0 auto 0 0;width:var(--p);background:color-mix(in srgb,var(--mint) 16%,transparent);transition:width .4s}
+.dy-lis.ok{color:#BFF0D9;border-color:color-mix(in srgb,var(--mint) 40%,transparent)}
+.dy-lis svg{width:18px;height:18px;color:var(--mint);flex:none}
+/* lịch sử các lần học */
+.st-hist{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font:500 12.5px var(--sans);color:var(--dtext3)}
+.st-hist b{color:var(--dtext2);margin-right:2px}
+.st-hist span{border:1px solid var(--dline);border-radius:999px;padding:3px 10px}.st-hist span.new{color:#BFF0D9;border-color:color-mix(in srgb,var(--mint) 40%,transparent)}
