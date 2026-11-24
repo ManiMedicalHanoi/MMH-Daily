@@ -115,8 +115,17 @@ jobs:
         if: env.HAS_INKEY == 'true' && github.event_name == 'push'
         env: { DAILY_INTERNAL_KEY: '${{ secrets.DAILY_INTERNAL_KEY }}' }
         run: |
+          # bản bổ sung (vd. bài học) cho tập đã đăng: mở ⇒ gộp vào bản mã hoá cũ ⇒ không tạo lại giọng
+          for B in data/inbox/*.patch.sealed; do
+            [ -f "$B" ] || continue
+            W=${{ runner.temp }}/pt; mkdir -p $W
+            node tools/inbox.mjs open "$B" "$W/p.json"
+            node tools/patch_in.mjs "$W/p.json"
+            rm -rf $W; git rm -q "$B"
+          done
           for B in data/inbox/*.sealed; do
             [ -f "$B" ] || continue
+            case "$B" in *.patch.sealed) continue;; esac
             W=${{ runner.temp }}/in; mkdir -p $W; D=$(basename "$B" .sealed)
             node tools/inbox.mjs open "$B" "$W/$D.json"
             python3 tools/audio.py --ed "$W/$D.json" --out "$W/mp3"

@@ -329,7 +329,17 @@
   $('#mini-play').onclick = () => { if (!S.ep) return; audio.paused ? audio.play() : audio.pause(); };
   $('#mini-back').onclick = () => seekBy(-15);
   $('#mini-fwd').onclick = () => seekBy(15);
-  $('#mini-open').onclick = () => { if (S.ep) location.hash = /^i-/.test(S.ep.date) ? '#/report/' + S.ep.date.slice(2) : '#/listen/' + S.ep.date; };
+  // Bấm thanh podcast thu nhỏ (ảnh bìa hoặc tên) ⇒ mở trình phát đầy đủ. Đang ở đúng trang đó (cùng #hash ⇒ trình duyệt không chuyển trang) ⇒ cuộn lên trình phát.
+  const openFull = () => {
+    if (!S.ep) return;
+    const want = /^i-/.test(S.ep.date) ? '#/report/' + S.ep.date.slice(2) : '#/listen/' + S.ep.date;
+    const here = S.cur && S.cur.date === S.ep.date && document.getElementById('ls-play');
+    if (here) { document.querySelector('.ls-ctl')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    location.hash = want;
+  };
+  $('#mini-open').onclick = openFull;
+  const mm = document.querySelector('.mini-meta');
+  if (mm) { mm.setAttribute('role', 'button'); mm.tabIndex = 0; mm.onclick = openFull; mm.onkeydown = e => { if (e.key === 'Enter') openFull(); }; }
   $('#mini-bar').onclick = e => { if (!S.ep) return; const r = e.currentTarget.getBoundingClientRect(); audio.currentTime = (e.clientX - r.left) / r.width * (audio.duration || 0); };
   if ('mediaSession' in navigator) {
     navigator.mediaSession.setActionHandler('play', () => audio.play());
@@ -566,6 +576,7 @@
           <div class="subsel" id="subsel">${[['both', L('Anh + Việt', 'EN + VI')], ['en', L('Tiếng Anh', 'English')], ['vi', L('Tiếng Việt', 'Vietnamese')]].map(([k, l]) => `<button type="button" data-sub="${k}" class="${S.sub === k ? 'on' : ''}">${l}</button>`).join('')}</div>
           <div class="tx sub-${S.sub}" id="tx">${turns.map((t, i) => `<p data-i="${i}" data-t="${t.t ?? ''}"><b>${esc(hosts[t.sp]?.name || t.sp)}</b><span class="en">${esc(t.text)}</span>${t.vi ? `<span class="vi">${esc(t.vi)}</span>` : ''}</p>`).join('')}</div></details>
       </section>
+      ${window.STUDY ? STUDY.html(ed) : ''}
       <div class="in-tiles">${tile(L('Hoạt động Sales', 'Sales activities'), num(sum(sal, 'done')), delta(sum(sal, 'done'), sum(sal, 'prevDone')))}${tile(L('Gặp khách', 'Customer visits'), num(sum(sal, 'visits')), num(sum(sal, 'accounts')) + L(' khách hàng', ' customers'))}${tile(L('Đơn hàng', 'Orders'), num(sum(sal, 'orders')), sum(sal, 'orderAmount') ? vnd(sum(sal, 'orderAmount')) + ' đ' : '')}${tile(L('Việc Marketing xong', 'Marketing tasks done'), num(mk.count.done), delta(mk.count.done || 0, mk.count.prevDone))}${tile(L('Việc Back office xong', 'Back-office tasks done'), num(bo.count.done), delta(bo.count.done || 0, bo.count.prevDone))}${tile(L('Đúng hẹn', 'On plan'), planT ? Math.round(planD / planT * 100) + '%' : '–', planT ? `${planD}/${planT} ${L('việc có hạn trong tuần', 'tasks due this week')}` : '')}</div>
       <div class="rp-secs">${secs.map(x => `<section class="rp-sec rp-${x.key}"><h3>${esc(S.lang === 'en' ? x.h_en : x.h_vi)}</h3><p>${esc(S.lang === 'en' ? x.en : x.vi)}</p></section>`).join('')}</div>
       <details class="rp-data"><summary>${L('Số liệu chi tiết của tuần', 'The week in detail')}</summary>
@@ -653,6 +664,6 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !dlg.hidden) close(); });
   })();
 
-  window.DAILY = { showName, showColor, S, L, tr, EN, dateL, route, playDate, IN, setEp, loadEd, hub, tkGet, tkSet, inKey, toast, store, esc, audio, viDate, mmss, ICON, loadIndex, seekBy, HUB };
+  window.DAILY = { showName, showColor, S, L, tr, EN, dateL, route, playDate, IN, setEp, loadEd, hub, tkGet, tkSet, inKey, toast, store, esc, audio, viDate, mmss, ICON, loadIndex, seekBy, HUB, inAudio };
   boot();
 })();

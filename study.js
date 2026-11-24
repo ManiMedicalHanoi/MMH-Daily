@@ -243,5 +243,12 @@
   ov.addEventListener('touchstart', e => { if (e.target.closest('.ls2-card')) x0 = e.touches[0].clientX; }, { passive: true });
   ov.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 60 && L.step === 'words') ov.querySelector(`[data-ls2="know"][data-v="${dx > 0 ? 1 : 0}"]`)?.click(); });
 
-  document.addEventListener('click', e => { if (e.target.closest('[data-ls2="open"]')) { e.preventDefault(); STUDY.open(ed); } });
+  // MMH Report (bản tin nội bộ, ngày 'i-…'): âm thanh đã mã hoá ⇒ giải mã trước khi vào bài (bước Nghe / Kiểm tra cần phát từng đoạn)
+  async function openReady(e) {
+    if (e && /^i-/.test(e.date) && e.podcast?.audio && !e.podcast.audio.blob && D.inAudio) {
+      try { D.toast((D.L || (v => v))('Đang chuẩn bị âm thanh…', 'Preparing audio…')); await D.inAudio(e); } catch (er) { D.toast(er.message); }
+    }
+    STUDY.open(e);
+  }
+  document.addEventListener('click', e => { if (e.target.closest('[data-ls2="open"]')) { e.preventDefault(); openReady(D.S.cur && D.S.cur.study ? D.S.cur : ed); } });
 })();

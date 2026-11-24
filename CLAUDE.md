@@ -35,11 +35,12 @@ Cần mạng tới `script.google.com` (môi trường Claude Code này gọi đ
 1. `WEEKLY_FACTS_ONLY=1 WEEKLY_OUT=<thư mục tạm ngoài repo> node tools/weekly.mjs` ⇒ `<Chủ nhật>.facts.json` (~100 KB: việc Report Hub theo Key task, lượt đi địa bàn + phản hồi khách,
    đơn hàng, công tác, đào tạo, so với tuần trước, kế hoạch đã hẹn trong tuần: xong / dời / còn mở; `ep` = số tập, `show.hosts[0]` = người dẫn, `recent` = kiểu mở đầu các tập trước).
    Tuần khác: `WEEK_END=yyyy-mm-dd` (Chủ nhật). Node phiên Claude có thể cần `NODE_USE_ENV_PROXY=1`.
-2. Đọc REPORT.md + toàn bộ facts. Viết `out.json` theo REPORT.md ▸ 5 (tiêu đề, intro, 7 mục văn xuôi Việt + Anh, kịch bản 1.000–1.600 từ, `say` có thẻ cảm xúc, `memo`).
+2. Đọc REPORT.md + toàn bộ facts. Viết `out.json` theo REPORT.md ▸ 5 (tiêu đề, intro, 7 mục văn xuôi Việt + Anh, kịch bản 1.000–1.600 từ, `say` có thẻ cảm xúc, `memo`, **`study` = bài học**: từ khoá, cụm, ngữ pháp, 8 câu kiểm tra nghe).
    Soát từng câu với facts (số, ngày, thứ trong tuần, tên). Không đoán giới tính người — dùng tên.
 3. `node tools/apply_in.mjs <facts> <out.json>` (báo lỗi ⇒ sửa ⇒ chạy lại) ⇒ khoá vào `data/inbox/<CN>.sealed`, xoá bản rõ.
 4. `git add data/inbox && git commit -m "MMH Report tập N" && git push origin HEAD:main` ⇒ GitHub mở hộp thư, tạo giọng (ElevenLabs nếu có khoá), mã hoá, đăng (≈ 5–10 phút).
    App ▸ MMH Report (`#/report`): đăng nhập email công ty. KHÔNG commit file nào trong thư mục tạm; KHÔNG ghi tên người / khách hàng vào commit message.
+Bổ sung cho tập đã đăng (không tạo lại giọng): `{date, patch:{study…}}` ⇒ `node tools/inbox.mjs seal-patch <file>` ⇒ `data/inbox/<CN>.patch.sealed` ⇒ push (workflow ▸ `tools/patch_in.mjs`).
 Dự phòng: workflow cron 10:00 thứ Hai chỉ viết khi tuần đó chưa có bản Claude VÀ có `ANTHROPIC_API_KEY` (không gửi dữ liệu nội bộ cho Gemini gói miễn phí).
 Đo 24/11/2026 (tập 1): facts ~94.000 ký tự ≈ 35–45 nghìn token đọc + ~10 nghìn token viết.
 

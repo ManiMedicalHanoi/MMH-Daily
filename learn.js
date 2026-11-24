@@ -121,7 +121,10 @@
   const inject = () => {
     const ctl = document.querySelector('#view .ls-ctl'); if (!ctl || ctl.querySelector('.learn-btn')) return;
     const L = D.L || (v => v);
-    ctl.insertAdjacentHTML('beforeend', '<button type="button" class="learn-btn" title="' + L('Phụ đề chạy theo từng câu, lặp câu, nói theo', 'Line-by-line subtitles, repeat a line, speak along') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5 12 3l9 3.5-9 3.5z M7 8.6V13c0 1.7 2.2 3 5 3s5-1.3 5-3V8.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>' + L('Chế độ học', 'Study mode') + '</button>');
+    // 25/11/2026 (người dùng): nút BÀI HỌC (kiểm tra + thực hành, study.js) đứng ngay cạnh nút phát; "Chế độ học" lùi xuống thành nút phụ.
+    const cur = D.S.cur, st = cur && cur.study;
+    if (st && (st.quiz?.length || st.words?.length)) ctl.insertAdjacentHTML('beforeend', '<button type="button" class="lesson-btn" data-ls2="open" title="' + L('Từ khoá · nghe · kiểm tra · nói theo', 'Keywords · listen · quiz · speak') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' + L('Bài học', 'Lesson') + '</button>');
+    ctl.insertAdjacentHTML('beforeend', '<button type="button" class="learn-btn" title="' + L('Chế độ học: phụ đề chạy theo từng câu, lặp câu, nói theo', 'Study mode: line-by-line subtitles, repeat a line, speak along') + '" aria-label="' + L('Chế độ học', 'Study mode') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5 12 3l9 3.5-9 3.5z M7 8.6V13c0 1.7 2.2 3 5 3s5-1.3 5-3V8.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="lb">' + L('Chế độ học', 'Study mode') + '</span></button>');
     ctl.querySelector('.learn-btn').onclick = () => open(D.S.cur);
   };
   new MutationObserver(inject).observe(document.getElementById('view'), { childList: true, subtree: false });

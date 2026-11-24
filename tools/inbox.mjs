@@ -4,6 +4,7 @@
 // Khoá riêng X25519 = HKDF(DAILY_INTERNAL_KEY) ⇒ không cần thêm secret mới.
 //   node tools/inbox.mjs pub                     (Actions, có khoá) ⇒ ghi data/inbox.pub.json
 //   node tools/inbox.mjs seal <bản rõ.json>      (phiên Claude)     ⇒ data/inbox/<ngày>.sealed, XOÁ bản rõ
+//   node tools/inbox.mjs seal-patch <bổ sung.json>  (phiên Claude) ⇒ data/inbox/<ngày>.patch.sealed — {date, patch:{study…}} gộp vào bản đã đăng
 //   node tools/inbox.mjs open <file.sealed> <ra.json>  (Actions)   ⇒ bản rõ (thư mục tạm)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -59,6 +60,15 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     fs.writeFileSync(out, JSON.stringify({ date: ed.date, kid: pub.kid, ...sealTo(plain, pub.x25519) }));
     fs.rmSync(a);                                   // không để bản rõ lại trên máy
     console.log(`Đã khoá ⇒ data/inbox/${ed.date}.sealed (bản rõ đã xoá). Đẩy lên main để GitHub tạo giọng đọc + đăng.`);
+  } else if (cmd === 'seal-patch') {             // bổ sung vào bản tin đã đăng (vd. bài học) mà không tạo lại giọng: {date, patch:{…}}
+    let pub; try { pub = JSON.parse(fs.readFileSync(PUB, 'utf8')); } catch { console.error('Chưa có data/inbox.pub.json'); process.exit(1); }
+    const plain = fs.readFileSync(a), p = JSON.parse(plain);
+    if (!p.date || !p.patch) { console.error('Cần {date, patch}'); process.exit(1); }
+    const out = path.join(ROOT, 'data', 'inbox', `${p.date}.patch.sealed`);
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    fs.writeFileSync(out, JSON.stringify({ date: p.date, kid: pub.kid, ...sealTo(plain, pub.x25519) }));
+    fs.rmSync(a);
+    console.log(`Đã khoá bản bổ sung ⇒ data/inbox/${p.date}.patch.sealed (bản rõ đã xoá).`);
   } else if (cmd === 'open') {
     if (!KEY) { console.error('Thiếu DAILY_INTERNAL_KEY'); process.exit(1); }
     fs.writeFileSync(b, openWith(JSON.parse(fs.readFileSync(a, 'utf8')), KEY));
