@@ -85,10 +85,8 @@ Trang riêng trong cùng app (menu **Luyện nói**, lối tắt app). Mỗi đo
   gọi thẳng từ trình duyệt, tự chọn mẫu Flash mới nhất khi mẫu cũ không còn); chưa có key ⇒ chấm theo `ideas` có sẵn. Giọng mẫu: giọng trình duyệt hoặc Azure Neural TTS (key + vùng, tuỳ chọn).
 - Không dùng tài khoản Claude của người dùng trong trang này (điều khoản Anthropic không cho dùng gói thuê bao trong app tự làm).
 
-## Hỏi tin (`coach/#/ask`, từ 23/11/2026)
-Hỏi bằng chữ hoặc giọng nói (Việt / Anh) về tin của 7 số gần nhất ⇒ chọn tối đa 12 tin khớp nhất (hoặc các tin người dùng tick) ⇒ Gemini trả lời **dạng chữ, hiện dần** (stream SSE, tắt "suy nghĩ" để nhanh):
-English (có trích nguồn [n]) · Tiếng Việt · PESTEL · Ảnh hưởng tới MMH · Từ vựng (tự vào Sổ từ) · 3 câu hỏi tiếp. Đọc to từng câu ngay khi viết xong (giọng trình duyệt / Azure, miễn phí), "Luyện đọc" từng câu (chấm từng từ).
-Chỉ trả lời từ các tin đưa vào (tóm tắt của báo, không đọc toàn văn bài). Nhãn PESTEL trên mỗi tin: `pestel.js` (luật từ khoá, chạy trên trình duyệt, dùng chung trang báo + Hỏi tin).
+## Hỏi tin — đã bỏ (24/11/2026, người dùng yêu cầu)
+Trang hỏi AI về tin tức (`coach/#/ask`) đã gỡ; link cũ tự về trang Luyện nói. Nhãn PESTEL trên mỗi tin (`pestel.js`) vẫn dùng ở trang báo.
 
 ## Soạn sẵn bằng Gemini trên máy chủ (từ 23/11/2026)
 Secret **`GEMINI_API_KEY`** (Settings ▸ Secrets and variables ▸ Actions; key miễn phí ở aistudio.google.com) ⇒ `tools/ai.mjs` viết bằng Gemini khi không có `ANTHROPIC_API_KEY`

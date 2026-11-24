@@ -9,7 +9,7 @@
   const esc = D.esc, store = D.store, L = (vi, en) => (D.L ? D.L(vi, en) : vi);
   const SHOW = { talk: 'MMH Talk', clinicroom: 'The Clinic Room', lawdesk: 'Law & Tender Desk', headlines: 'Morning Headlines', english: 'English at Work', aipulse: 'AI Pulse', weekly: 'Week in Review' };
   const KIND = { listen: ['Nghe podcast', 'Listened'], quiz: ['Kiểm tra nghe', 'Listening quiz'], vocab: ['Từ khoá', 'Keywords'], read: ['Đọc', 'Reading'], dictation: ['Chép chính tả', 'Dictation'],
-    speak: ['Nói theo', 'Speaking'], lesson: ['Xong bài học', 'Finished a lesson'], coach: ['Luyện nói', 'Speaking coach'], flash: ['Thẻ từ', 'Flashcards'] };
+    speak: ['Nói theo', 'Speaking'], lesson: ['Xong bài học', 'Finished a lesson'], coach: ['Luyện nói', 'Speaking coach'], flash: ['Thẻ từ', 'Flashcards'], duel: ['Thưởng thách đấu', 'Challenge bonus'] };
   const AV = { chip: ['Chíp', '#0E7C6B'], mochi: ['Mochi', '#7C8BA1'], tofu: ['Tofu', '#D98B3A'], capy: ['Capy', '#8B6A4E'], pip: ['Pip', '#3A5CAA'], kiko: ['Kiko', '#C8553D'], bao: ['Bảo', '#4A4A4A'],
     rang: ['Răng Xinh', '#3FA7B4'], iris: ['Iris', '#2F8F83'], bit: ['Bit', '#5B6CD9'], so: ['Sò', '#9A6B3F'], nhim: ['Nhím', '#7A5C3A'], hana: ['Hana', '#D9708F'] };
   const PICK = Object.keys(AV).filter(k => k !== 'chip');
@@ -201,6 +201,7 @@
   /* ── trang Bảng xếp hạng ── */
   let period = store.get('mmh_dy_per', 'league');
   function page() {
+    if (/^#\/rank\/friends/.test(location.hash)) period = 'friends';
     return `<div class="rk dy"><div class="rk-head"><div><p class="ls-k">${L('Thi đua học tiếng Anh', 'English learning challenge')}</p><h1 class="ls-t">${L('Bảng xếp hạng', 'Ranking')}</h1>
         <p class="rk-sub">${L('XP có được khi nghe podcast, làm bài kiểm tra, học từ khoá, nói theo và luyện nói. Làm lại một bài chỉ được 20% XP.', 'Earn XP by listening, taking quizzes, learning keywords, repeating lines and speaking practice. Repeating a lesson gives 20% XP.')}</p></div>
         <div class="ls2-sub rk-per">${[['league', L('Giải đấu', 'League')], ['friends', L('Bạn bè', 'Friends')], ['week', L('Tuần', 'Week')], ['month', L('Tháng', 'Month')]].map(([k, n]) => `<button type="button" data-rk="per" data-k="${k}" class="${period === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
@@ -223,10 +224,12 @@
     el.innerHTML = `${lgBar}<p class="rk-range">${fmtD(d.from)} – ${fmtD(d.to)} · ${rows.length} ${L('người tham gia', 'learners')}${mine >= 0 ? ` · ${L('bạn đang', 'you are')} <b>${L('hạng ', '#')}${mine + 1}</b>` : ` · ${L('bạn chưa có XP trong kỳ này', 'no XP yet this period')}`}</p>
       ${rows.length ? `<div class="rk-pod">${rows.slice(0, 3).map((x, i) => `<div class="rk-p${x.me ? ' me' : ''}" style="--m:${medal[i]}">${av(x.avatar, 54)}<i>${i + 1}</i><b>${esc(x.nick)}</b><span>${num(x.xp)} XP</span></div>`).join('')}</div>` : ''}
       <ol class="rk-list">${rows.map((x, i) => `<li class="${x.me ? 'me' : ''}"><span class="rk-n">${i + 1}</span><span class="rk-who dy-who">${av(x.avatar, 36)}<span><b>${esc(x.nick)}</b><small>${L('Cấp', 'Lv')} ${x.lvl} · ${esc(lgN(x.league))}</small></span></span>
-        <span class="rk-st">${x.streak ? `<span class="dy-fl">${flame}${x.streak}</span>` : ''}${x.lessons ? ` · ${x.lessons} ${L('bài', 'lessons')}` : ''}</span><span class="rk-pt">${num(x.xp)}<small>XP</small>${!x.me && x.id && R.addBtn ? R.addBtn(x.id) : ''}</span></li>`).join('') || `<li class="rk-none">${period === 'friends' ? L('Chưa có bạn bè nào có XP tuần này. Mời bạn học cùng ở trang Tôi ▸ Bạn bè.', 'No friends with XP this week. Invite friends from Me ▸ Friends.') : L('Chưa ai có XP trong kỳ này. Hãy là người đầu tiên!', 'No XP yet this period. Be the first!')}</li>`}</ol>
+        <span class="rk-st">${x.streak ? `<span class="dy-fl">${flame}${x.streak}</span>` : ''}${x.lessons ? ` · ${x.lessons} ${L('bài', 'lessons')}` : ''}</span><span class="rk-pt">${num(x.xp)}<small>XP</small>${!x.me && x.id && R.addBtn ? R.addBtn(x.id) : ''}</span></li>`).join('') || `<li class="rk-none">${period === 'friends' ? L('Chưa có bạn bè nào có XP tuần này. Mời bạn học cùng ở bên dưới.', 'No friends with XP this week. Invite friends below.') : L('Chưa ai có XP trong kỳ này. Hãy là người đầu tiên!', 'No XP yet this period. Be the first!')}</li>`}</ol>
+      ${period === 'friends' && R.panes && R.panes.friends ? `<h2 class="ls-sh">${L('Bạn bè của tôi', 'My friends')}</h2><div id="rk-fr">${R.panes.friends(d)}</div>` : ''}
       <h2 class="ls-sh">${L('Hoạt động gần đây', 'Recent activity')}</h2>
       <div class="rk-feed dy-feed">${(d.recent || []).map(x => `<div>${av(x.avatar, 32)}<p><b>${esc(x.nick)}</b> · ${esc(L(...(KIND[x.kind] || [x.kind, x.kind])))}${x.date ? ` <a href="#/listen/${esc(x.date)}">${esc(SHOW[x.show] || x.show || '')} ${fmtD(x.date)}</a>` : ''}<small>${ago(x.at)}</small></p><em>+${x.xp} XP</em></div>`).join('') || `<p class="rk-none">${L('Chưa có hoạt động.', 'No activity yet.')}</p>`}</div>
       ${me ? `<p class="rk-foot">${av(me.avatar, 22)} ${esc(me.nick)} · <a class="rk-link" href="#/me">${L('Trang của tôi ›', 'My profile ›')}</a></p>` : ''}`;
+    if (period === 'friends' && R.onPane) R.onPane('friends');
   }
 
   /* ── trang "Tôi" ── */
@@ -342,5 +345,5 @@
   }, 3000);
   try { localStorage.removeItem('mmh_daily_score_q'); } catch { /* cũ (v3.48) */ }
 
-  Object.assign(R, { page, load, mePage, meLoad, submit, event, login, flush, logout, pending: () => Q().length, av, tok, post, meC, setMe, authFail, gate, num, ago, fmtD, lgN, LEAGUES, flame, KIND, SHOW, L, me: () => ME, repaint: () => { const el = document.getElementById('me-body'); if (el && ME) el.innerHTML = meHtml(ME); } });
+  Object.assign(R, { page, load, mePage, meLoad, submit, event, login, flush, logout, pending: () => Q().length, av, tok, post, meC, setMe, authFail, gate, num, ago, fmtD, lgN, LEAGUES, flame, KIND, SHOW, L, me: () => ME, repaint: () => { const el = document.getElementById('me-body'); if (el && ME) el.innerHTML = meHtml(ME); const rf = document.getElementById('rk-fr'); if (rf && R.panes && R.panes.friends) { rf.innerHTML = R.panes.friends(); if (R.onPane) R.onPane('friends'); } } });
 })();

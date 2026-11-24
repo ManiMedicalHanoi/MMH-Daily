@@ -70,11 +70,12 @@
       else if (step !== 'done') mascot(base(), step === 'quiz' ? L('Nghe kỹ rồi chọn nhé!', 'Listen closely, then choose!') : step === 'speak' ? L('Nói to, rõ từng chữ nhé!', 'Speak up, nice and clear!') : '');
     }
   }
-  function confetti() {
+  function confetti(host) {
     const c = document.createElement('div'); c.className = 'fun-conf';
     c.innerHTML = Array.from({ length: 28 }, (_, i) => `<i style="--x:${Math.round(Math.random() * 100)}%;--d:${(Math.random() * 0.6).toFixed(2)}s;--r:${Math.round(Math.random() * 360)}deg;--c:${['#FFC94A', '#6FD6BF', '#F07A8A', '#7FB6F0', '#B9A7F5'][i % 5]}"></i>`).join('');
-    ov.appendChild(c); setTimeout(() => c.remove(), 2600);
+    (host || ov || document.body).appendChild(c); setTimeout(() => c.remove(), 2600);
   }
+  window.FUN = { sound: k => SND[k] && SND[k](), confetti };   // duel.js (thách đấu) dùng chung âm thanh + pháo giấy
   setTimeout(function wire() {
     ov = document.querySelector('.ls2'); if (!ov) return setTimeout(wire, 800);
     ov.addEventListener('click', e => { const t = e.target.closest('[data-ls2]'); if (!t) return; if (t.dataset.ls2 === 'ans') expect = { k: 'quiz', at: Date.now() }; if (t.dataset.ls2 === 'mic') expect = { k: 'speak', at: Date.now() }; }, true);
