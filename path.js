@@ -19,8 +19,15 @@
   const fmt = s => { const [, m, d] = s.split('-'); return `${+d}/${+m}`; };
 
   /* ── trạng thái từng bài ── */
+  // lịch sử các lần học (study.js ghi mmh_dy_hist:<ngày>, học lại KHÔNG xoá) ⇒ lần tốt nhất
+  function bestOf(date) {
+    const H = store.get('mmh_dy_hist:' + date, []) || [], r0 = store.get('mmh_dy_res:' + date, null), all = r0 ? [...H, r0] : H;
+    const sc = r => (r.quizN ? r.quiz / r.quizN : 0) * 100 + (r.speak || 0) / 10;
+    return all.length ? all.reduce((a, b) => (sc(b) > sc(a) ? b : a)) : null;
+  }
+  R.bestOf = bestOf;
   function stateOf(date) {
-    const done = ((R.me() || {}).done || {})[date] || {}, l = store.get('mmh_daily_lesson:' + date, {}) || {}, res = store.get('mmh_dy_res:' + date, null);
+    const done = ((R.me() || {}).done || {})[date] || {}, l = store.get('mmh_daily_lesson:' + date, {}) || {}, res = bestOf(date);
     const lis = (store.get('mmh_dy_lis', {}) || {})[date];
     let stars = 0;
     if (done.listen || lis || l.step) stars = 1;
@@ -42,19 +49,26 @@
   const starsOf = it => it.kind === 'pod' ? stateOf(it.e.date).stars : coachStars(it.x.id);
   const startedOf = it => it.kind === 'pod' ? stateOf(it.e.date).started : !!((store.get('mmh_coach_prog', {}) || {})[it.x.id]);
   /* ── nhiệm vụ hằng ngày (từ nhật ký máy chủ hôm nay) ── */
+  // nhiệm vụ hằng ngày: bấm vào ⇒ tới đúng việc cần làm tiếp
+  const latestStudy = () => (D.S.index?.editions || []).find(e => e.study) || (D.S.index?.editions || [])[0];
+  const lisPct = date => ((store.get('mmh_dy_lpct', {}) || {})[date]) || 0;
   function quests() {
-    const me = R.meC(), d = R.me() || {}, today = d.today || ymd(new Date());
+    const me = R.meC(), d = R.me() || {}, today = d.today || ymd(new Date()), last = (D.S.index?.editions || [])[0];
     const log = (d.log || []).filter(x => x.at && ymd(new Date(x.at)) === today);
     const w = d.week || [], xp = w.length ? w[w.length - 1].xp : 0, goal = me ? me.goal || 50 : 50;
     const right = log.filter(x => /quiz|vocab|flash|read|dictation/.test(x.kind)).reduce((s, x) => { try { return s + (JSON.parse(x.d || '{}').right || 0); } catch { return s; } }, 0);
+    const lisDone = log.some(x => x.kind === 'listen') || !!(last && (store.get('mmh_dy_lis', {}) || {})[last.date]);
+    const lp = last ? Math.min(80, lisPct(last.date)) : 0;
     return [
-      { t: L(`Đạt ${goal} XP`, `Earn ${goal} XP`), v: xp, n: goal },
-      { t: L('Nghe hết 1 số podcast', 'Finish 1 podcast episode'), v: log.some(x => x.kind === 'listen') ? 1 : 0, n: 1 },
-      { t: L('Trả lời đúng 8 câu', 'Get 8 answers right'), v: Math.min(8, right), n: 8 },
-      { t: L('Nói theo hoặc Luyện nói 1 lần', 'Speak once (repeat or coach)'), v: log.some(x => x.kind === 'speak' || x.kind === 'coach') ? 1 : 0, n: 1 }
+      { t: L(`Đạt ${goal} XP`, `Earn ${goal} XP`), h: L('Học bài tiếp theo trên lộ trình', 'Do the next lesson on your path'), v: xp, n: goal, go: 'next' },
+      { t: L('Nghe hết 1 số podcast', 'Finish 1 podcast episode'), h: lisDone ? L('Đã nghe xong', 'Done') : L(`Nghe tới 80% số mới nhất (đang ${lp}%)`, `Listen to 80% of the latest episode (now ${lp}%)`), v: lisDone ? 80 : lp, n: 80, unit: '%', go: 'listen' },
+      { t: L('Trả lời đúng 8 câu', 'Get 8 answers right'), h: L('Làm bài kiểm tra nghe của số mới', 'Take the listening quiz of the latest episode'), v: Math.min(8, right), n: 8, go: 'quiz' },
+      { t: L('Nói theo hoặc Luyện nói 1 lần', 'Speak once (repeat or coach)'), h: L('Mở Luyện nói, nói 1 đoạn', 'Open Speaking and say one passage'), v: log.some(x => x.kind === 'speak' || x.kind === 'coach') ? 1 : 0, n: 1, go: 'speak' }
     ];
   }
-  const questHtml = () => `<section class="pa-q"><h3>${L('Nhiệm vụ hôm nay', 'Daily quests')}</h3>${quests().map(q => { const p = Math.min(100, Math.round(q.v / q.n * 100)); return `<div class="pa-qi${p >= 100 ? ' ok' : ''}"><span>${ICON.chest}</span><div><b>${esc(q.t)}</b><i style="--p:${p}%"><em>${Math.min(q.v, q.n)} / ${q.n}</em></i></div></div>`; }).join('')}
+  const CHEV = '<svg class="pa-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>';
+  const questHtml = () => `<section class="pa-q"><h3>${L('Nhiệm vụ hôm nay', 'Daily quests')}</h3>${quests().map(q => { const p = Math.min(100, Math.round(q.v / q.n * 100)), ok = p >= 100;
+      return `<button type="button" class="pa-qi${ok ? ' ok' : ''}" data-pa="quest" data-go="${q.go}"><span>${ICON.chest}</span><div><b>${esc(q.t)}</b><small>${esc(q.h)}</small><i style="--p:${p}%"><em>${q.unit ? `${q.v}${q.unit} / ${q.n}${q.unit}` : `${Math.min(q.v, q.n)} / ${q.n}`}</em></i></div>${ok ? '' : CHEV}</button>`; }).join('')}
     ${R.tok() ? '' : `<p class="dy-small">${L('Đăng nhập để tính nhiệm vụ và XP.', 'Sign in to track quests and XP.')}</p>`}</section>`;
 
   /* ── trang Lộ trình ── */
@@ -103,8 +117,8 @@
     return [
       ['listen', L('Nghe hiểu', 'Listening'), pct(sum.listen), sum.listen[1] + L(' câu', ' questions')],
       ['vocab', L('Từ vựng', 'Vocabulary'), pct(sum.vocab), sum.vocab[1] + L(' từ', ' words')],
-      ['speak', L('Nói theo', 'Repeat aloud'), pct(sum.speak, 1), sum.speak[1] + L(' lượt', ' tries')],
-      ['coach', L('Luyện nói', 'Speaking coach'), pct(sum.coach, 1), sum.coach[1] + L(' đoạn', ' passages')]
+      ['speak', L('Nói theo', 'Repeat aloud'), pct(sum.speak, 1), sum.speak[1] + L(' lượt', sum.speak[1] === 1 ? ' try' : ' tries')],
+      ['coach', L('Luyện nói', 'Speaking coach'), pct(sum.coach, 1), sum.coach[1] ? sum.coach[1] + L(' đoạn', sum.coach[1] === 1 ? ' passage' : ' passages') : L('Chưa luyện', 'Not yet')]
     ];
   }
   function level(sk) {
@@ -123,6 +137,14 @@
   /* ── thao tác ── */
   document.addEventListener('click', async e => {
     const t = e.target.closest('[data-pa]'); if (!t) return;
+    if (t.dataset.pa === 'quest') {
+      const g = t.dataset.go, e = latestStudy();
+      if (g === 'speak') { location.href = 'coach/'; return; }
+      if (g === 'listen') { location.hash = '#/listen'; setTimeout(() => { const ed = D.S.cur; if (ed && D.S.ep?.date !== ed.date) D.setEp(ed); if (D.audio.paused) D.audio.play().catch(() => {}); }, 700); return; }
+      if (g === 'next') { if (!location.hash.startsWith('#/learn')) { location.hash = '#/learn'; return; } document.querySelector('.pa-n.cur > button')?.click(); return; }
+      if (g === 'quiz' && e) { const ed = await D.loadEd(e.date); if (window.STUDY && ed.study) { STUDY.open(ed); setTimeout(() => document.querySelector('[data-ls2="step"][data-k="quiz"]')?.click(), 50); } return; }
+      return;
+    }
     if (t.dataset.pa === 'review') { location.href = 'coach/#/words'; return; }
     if (t.dataset.pa === 'coach') { location.href = 'coach/#/l/' + encodeURIComponent(t.dataset.id); return; }
     const date = t.dataset.date; t.disabled = true;

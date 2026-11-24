@@ -43,6 +43,11 @@
     const done = Object.keys(q).length, right = (s.quiz || []).filter((x, i) => q[i] === x.a).length;
     return { l, done, right, nq, finished: l.step === 'done' };
   }
+  function histHtml(date, L) {   // các lần đã học (giữ khi học lại)
+    const H = (store.get('mmh_dy_hist:' + date, []) || []).slice().reverse(); if (!H.length) return '';
+    const d = t => new Date(t).toLocaleDateString(D.S.lang === 'en' ? 'en-GB' : 'vi-VN', { day: 'numeric', month: 'numeric' });
+    return `<div class="st-hist"><b>${L(`Đã học ${H.length} lần`, `Studied ${H.length} time${H.length > 1 ? 's' : ''}`)}</b>${H.slice(0, 4).map((x, i) => `<span${i === 0 ? ' class="new"' : ''}>${L('Lần', 'Try')} ${x.round || H.length - i} · ${d(x.at)} · ${x.quiz}/${x.quizN}${x.speak != null ? ` · ${L('nói', 'speak')} ${x.speak}%` : ''}</span>`).join('')}</div>`;
+  }
   window.STUDY = {
     html(e) {
       ed = e; const s = e.study; if (!s || !(s.quiz?.length || s.words?.length)) return '';
@@ -51,8 +56,8 @@
       return `<section class="ls-box st" id="study">
         <div class="st-hero"><div><h3>${L('Học bài này', 'Study this episode')}</h3><p>${L(`4 bước · khoảng 10 phút: ${s.words.length} từ khoá · nghe · ${p.nq} câu kiểm tra · ${s.phrases.length + s.grammar.length} câu nói theo`, `4 steps · about 10 minutes: ${s.words.length} keywords · listen · ${p.nq} questions · ${s.phrases.length + s.grammar.length} lines to repeat`)}</p>
           <div class="st-steps">${STEPS.slice(0, 4).map(([k, n], i) => `<span class="${i < idx || p.finished ? 'ok' : i === idx ? 'on' : ''}">${i + 1}. ${L(n, SN[k] || n)}</span>`).join('')}</div>
-          ${p.done ? `<p class="st-sc">${L('Kiểm tra nghe', 'Listening quiz')}: <b>${p.right}/${p.nq}</b></p>` : ''}</div>
-          <div class="st-btns"><a class="st-rk" href="#/rank">${L('Bảng xếp hạng', 'Ranking')}</a><button class="st-go" type="button" data-ls2="open">${p.finished ? L('Học lại', 'Study again') : idx > 0 ? L('Học tiếp', 'Continue') : L('Bắt đầu', 'Start')}</button></div></div>
+          ${p.done ? `<p class="st-sc">${L('Kiểm tra nghe', 'Listening quiz')}: <b>${p.right}/${p.nq}</b></p>` : ''}${histHtml(e.date, L)}</div>
+          <div class="st-btns"><a class="st-rk" href="#/rank">${L('Bảng xếp hạng', 'Ranking')}</a><button class="st-go" type="button" data-ls2="open">${p.finished ? L('Học lại (giữ kết quả cũ)', 'Study again (keeps history)') : idx > 0 ? L('Học tiếp', 'Continue') : L('Bắt đầu', 'Start')}</button></div></div>
         <details class="st-all"><summary>${L('Xem nhanh toàn bộ từ, cụm, ngữ pháp', 'All words, phrases and grammar')}</summary>
           <dl class="st-dl">${s.words.map(w => `<dt>${esc(w.en)}</dt><dd>${esc(w.vi)}</dd>`).join('')}${s.phrases.map(x => `<dt>${esc(x.en)}</dt><dd>${esc(x.vi)}</dd>`).join('')}${s.grammar.map(g => `<dt>${esc(g.p)}</dt><dd>${esc(g.vi)}</dd>`).join('')}</dl></details>
       </section>`;
@@ -62,7 +67,11 @@
       const L = (D.L || ((v) => v));
       return `<nav class="ls-tabs" aria-label="${L('Chuyển nhanh', 'Quick links')}"><a class="on" href="#/listen/${e.date}">${L('Nghe', 'Listen')}</a>${ok ? `<button type="button" data-ls2="open">${L('Học bài này', 'Study this episode')}</button>` : ''}<a href="coach/#/">${L('Luyện nói', 'Speaking')}</a><a href="#/rank">${L('Xếp hạng', 'Ranking')}</a></nav>`;
     },
-    open(e) { if (e) ed = e; if (!ed?.study) return; L = load(ed.date); if (L.step === 'done') Object.assign(L, { step: 'words', i: 0 }); ov.hidden = false; document.documentElement.classList.add('ls2-on'); render(); }
+    open(e) {   // học lại: kết quả lần trước đã nằm trong lịch sử (mmh_dy_hist) ⇒ bắt đầu lượt mới với bài kiểm tra trống, KHÔNG xoá lịch sử
+      if (e) ed = e; if (!ed?.study) return; L = load(ed.date);
+      if (L.step === 'done') { store.set(qk(ed.date), {}); Object.assign(L, { step: 'words', i: 0, spoke: {}, sentSig: '', sentMsg: '', round: (L.round || 1) + 1 }); save(); }
+      ov.hidden = false; document.documentElement.classList.add('ls2-on'); render();
+    },
   };
 
   /* ── khung học toàn màn hình ── */
@@ -187,7 +196,10 @@
   async function rankBox() {
     const el = document.getElementById('ls2-rank'); if (!el || !window.RANK) return;
     const r = result(), sig = JSON.stringify(r);
-    store.set('mmh_dy_res:' + ed.date, { ...r, at: Date.now() });   // path.js ▸ sao bài + hiệu quả học
+    if (L.sentSig !== sig) {   // mỗi lượt học xong ⇒ 1 dòng lịch sử (học lại không xoá); path.js ▸ sao bài theo lần tốt nhất
+      const now = { ...r, at: Date.now(), round: L.round || 1 }, H = (store.get('mmh_dy_hist:' + ed.date, []) || []).filter(x => (x.round || 1) !== now.round);
+      store.set('mmh_dy_hist:' + ed.date, [...H, now].slice(-12)); store.set('mmh_dy_res:' + ed.date, now);
+    }
     const link = `<button type="button" class="ls2-lnk" data-ls2="rank">${TL('Xem bảng xếp hạng ›', 'View the ranking ›')}</button>`;
     if (L.sentSig === sig && L.sentMsg) { el.innerHTML = L.sentMsg + link; return; }
     el.innerHTML = TL('Đang lưu XP…', 'Saving XP…');
