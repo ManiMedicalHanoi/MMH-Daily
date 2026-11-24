@@ -1,0 +1,17 @@
+{"note":"Danh sách nhân vật MMH Daily Podcast — bản nháp chờ người dùng duyệt. look/pose = lời mô tả gửi Gemini (tiếng Anh).",
+"chars":[
+{"id":"mic","sys":true,"name":"Mic","vi":"Bé Mic — linh vật hệ thống, đi nhắc bài","look":"a small round chubby microphone creature with a teal mesh head, tiny arms and legs, wearing big soft over-ear headphones, rosy cheeks",
+ "moods":{"happy":"waving cheerfully, big smile, tiny sparkles around","sad":"sitting alone hugging its knees, big teary eyes, one small tear, drooping headphones, a little grey raincloud above","cheer":"jumping with joy holding a small golden trophy star, confetti"}},
+{"id":"mochi","name":"Mochi","vi":"Mèo trắng mọt sách","look":"a fluffy round white cat with round glasses and a tiny teal scarf","pose":"holding an open book, proud smile"},
+{"id":"tofu","name":"Tofu","vi":"Chó Shiba lạc quan","look":"a cream-and-orange shiba inu puppy with a teal bandana","pose":"tail wagging, tongue out, giving a thumbs up paw"},
+{"id":"capy","name":"Capy","vi":"Capybara chill","look":"a calm round brown capybara with a small orange on its head","pose":"relaxing with half-closed happy eyes, wearing tiny headphones"},
+{"id":"pip","name":"Pip","vi":"Chim cánh cụt bác sĩ","look":"a tiny chubby penguin wearing a little white doctor coat and a teal stethoscope","pose":"saluting with a flipper, confident smile"},
+{"id":"kiko","name":"Kiko","vi":"Cáo nhỏ mê podcast","look":"a small red fox with fluffy tail, wearing teal over-ear headphones","pose":"eyes closed enjoying music, swaying, music notes floating"},
+{"id":"bao","name":"Bảo","vi":"Gấu trúc ham ăn ham học","look":"a chubby baby panda holding a steamed bun","pose":"taking a bite of the bun while reading flashcards, happy"},
+{"id":"rang","name":"Răng Xinh","vi":"Chiếc răng (team Nha khoa)","look":"a cute shiny white molar tooth character with tiny arms and legs and a small teal bow","pose":"sparkling clean, winking, holding a tiny toothbrush like a sword"},
+{"id":"iris","name":"Iris","vi":"Mắt tròn (team Nhãn khoa)","look":"a cute round eyeball character with a big teal iris, long lashes, tiny arms and legs, wearing small round glasses","pose":"curious look, holding a tiny magnifying glass"},
+{"id":"bit","name":"Bit","vi":"Robot AI tí hon","look":"a tiny round white robot with a teal glowing face screen showing happy eyes, small antenna with a light bulb","pose":"floating slightly, typing on a tiny laptop, excited"},
+{"id":"so","name":"Sò","vi":"Rái cá MC","look":"a cute river otter holding a small microphone, wearing a teal bow tie","pose":"presenting like a TV host, one hand raised, big smile"},
+{"id":"nhim","name":"Nhím","vi":"Nhím chăm chỉ","look":"a small hedgehog with soft round spikes and a pencil tucked behind its ear","pose":"writing notes in a tiny notebook, focused and happy"},
+{"id":"hana","name":"Hana","vi":"Thỏ hồng Nhật Bản","look":"a soft pink bunny with a small sakura flower clip on one ear and a teal backpack","pose":"hopping happily, waving"}
+]}
